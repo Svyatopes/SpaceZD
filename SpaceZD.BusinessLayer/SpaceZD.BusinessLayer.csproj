@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SpaceZD.DataLayer\SpaceZD.DataLayer.csproj" />
+  </ItemGroup>
+
 </Project>
