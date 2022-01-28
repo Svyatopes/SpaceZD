@@ -7,7 +7,6 @@
         public Route Route { get; set; }
         public LinkedList<TripStation> Stations { get; set; }
         public DateTime StartTime { get; set; }
-        public List<Ticket> Tickets { get; set; }
         public List<Order> Orders { get; set; }
 
     }
