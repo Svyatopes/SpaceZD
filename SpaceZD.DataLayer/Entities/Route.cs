@@ -9,8 +9,8 @@
         public DateTime StartTime { get; set; }
         public Station StartStation { get; set; }
         public Station EndStation { get; set; }
-        public decimal PricePerStation { get; set; }
-        public bool IsDeleted { get; set; }
+        public decimal PricePerStation { get; set; }       
         public List<Trip> Trips { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

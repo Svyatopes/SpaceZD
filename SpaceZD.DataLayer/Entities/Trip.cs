@@ -10,6 +10,5 @@
         public List<Ticket> Tickets { get; set; }
         public List<Order> Orders { get; set; }
 
-
     }
 }

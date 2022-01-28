@@ -10,6 +10,7 @@ namespace SpaceZD.DataLayer.Entities
         public string PasswordHash { get; set; }
         public List<Order> Orders { get; set; }
         public Role Role { get; set; }
+        public bool IsDeleted { get; set; }
 
     }
 }

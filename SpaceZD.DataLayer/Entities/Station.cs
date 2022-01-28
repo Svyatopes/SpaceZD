@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public List<Station> NearStation { get; set; }
         public List<Platform> Platforms { get; set; }
+        public List<Route> Routes { get; set; }
         public bool IsDeleted { get; set; }
     }
 }
