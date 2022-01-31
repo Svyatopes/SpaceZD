@@ -7,7 +7,9 @@ public class Station
     public virtual ICollection<Station> NearStation { get; set; }
     public virtual ICollection<Platform> Platforms { get; set; }
     public bool IsDeleted { get; set; }
-    public virtual ICollection<Route> Routes { get; set; }
+    public virtual ICollection<Route> RoutesWithStartStation { get; set; }
+    public virtual ICollection<Route> RoutesWithEndStation { get; set; }
+    public virtual ICollection<Transit> TransitsWithStartStation { get; set; }
+    public virtual ICollection<Transit> TransitsWithEndStation { get; set; }
     public virtual ICollection<TripStation> TripStations { get; set; }
-    public virtual ICollection<Transit> Transits { get; set; }
 }

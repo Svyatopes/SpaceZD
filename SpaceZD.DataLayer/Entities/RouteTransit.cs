@@ -7,5 +7,5 @@ public class RouteTransit
     public TimeSpan DepartingTime { get; set; }
     public TimeSpan ArrivalTime { get; set; }
     public bool IsDeleted { get; set; }
-    public virtual ICollection<Route> Routes { get; set; }
+    public virtual Route Route { get; set; }
 }

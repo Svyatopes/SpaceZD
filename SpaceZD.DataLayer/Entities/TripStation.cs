@@ -8,5 +8,6 @@ public class TripStation
     public DateTime ArrivalTime { get; set; }
     public DateTime DepartingTime { get; set; }
     public virtual Trip Trip { get; set; }
-    public virtual ICollection<Order> Orders { get; set; }
+    public virtual ICollection<Order> OrdersWithStartStation { get; set; }
+    public virtual ICollection<Order> OrdersWithEndStation { get; set; }
 }
