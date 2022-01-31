@@ -29,12 +29,11 @@ public static class ModelBuilderExtensions
 
     public static void DisableCascadeDelete(this ModelBuilder modelBuilder)
     {
-        foreach (IMutableForeignKey entity in modelBuilder.Model
+        foreach (IMutableForeignKey foreignKey in modelBuilder.Model
                                                           .GetEntityTypes()
-                                                          .SelectMany(t => t.GetForeignKeys())
-                                                          .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade))
+                                                          .SelectMany(t => t.GetForeignKeys()))
         {
-            entity.DeleteBehavior = DeleteBehavior.NoAction;
+            foreignKey.DeleteBehavior = DeleteBehavior.NoAction;
         }
 
     }

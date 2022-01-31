@@ -6,10 +6,12 @@ namespace SpaceZD.DataLayer;
 
 public class VeryVeryImportantContext : DbContext
 {
+    private const string _localDb = "Data Source=Stepa-PC;Initial Catalog=SpaseZD;User ID=Stepa195;Password=195";
+    private const string _devEduDb = "Data Source=80.78.240.16;Initial Catalog=SpaseZD;User ID=student;Password=qwe!23";
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-            optionsBuilder.UseSqlServer("Data Source=Stepa-PC;Initial Catalog=SpaseZD;User ID=Stepa195;Password=195");
+            optionsBuilder.UseSqlServer(_localDb);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -18,9 +20,7 @@ public class VeryVeryImportantContext : DbContext
 
         modelBuilder.MaxLengthOfAllStringsInTables(100);
 
-        modelBuilder.IsDeletedPropertyFalse();
-
-        modelBuilder.DisableCascadeDelete();
+        modelBuilder.IsDeletedPropertyFalse();        
 
         modelBuilder.Entity<Order>()
                     .HasOne(e => e.StartStation)
@@ -50,6 +50,8 @@ public class VeryVeryImportantContext : DbContext
         modelBuilder.Entity<Transit>()
                     .Property(p => p.Price)
                     .HasPrecision(9, 2);
+
+        modelBuilder.DisableCascadeDelete();
     }
 
     public DbSet<Carriage> Carriages { get; set; }

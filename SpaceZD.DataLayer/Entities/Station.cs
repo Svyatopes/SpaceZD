@@ -4,7 +4,6 @@ public class Station
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public virtual ICollection<Station> NearStation { get; set; }
     public virtual ICollection<Platform> Platforms { get; set; }
     public bool IsDeleted { get; set; }
     public virtual ICollection<Route> RoutesWithStartStation { get; set; }
