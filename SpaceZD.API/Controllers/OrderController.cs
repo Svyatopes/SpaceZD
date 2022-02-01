@@ -8,19 +8,19 @@ namespace SpaceZD.API.Controllers
     public class OrderController : ControllerBase
     {
         [HttpGet]
-        public ActionResult GetOrders()
+        public ActionResult<List<OrderModel>> GetOrders()
         {
-            return Ok("Must be orders");
+            return Ok(new List<OrderModel> { new OrderModel() });
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetOrderById(int id)
+        public ActionResult<OrderModel> GetOrderById(int id)
         {
-            return Ok("MustBeOrder");
+            return Ok(new OrderModel());
         }
 
         [HttpGet("with-tickets/{id}")]
-        public ActionResult GetOrderByIdWithTickets(int id)
+        public ActionResult<OrderModel> GetOrderByIdWithTickets(int id)
         {
             return NotFound("Can't find(((((");
         }
