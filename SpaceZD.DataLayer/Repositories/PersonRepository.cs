@@ -21,7 +21,7 @@ namespace SpaceZD.DataLayer.Repositories
             return person;
         }
 
-        public List<Person> GetOrders()
+        public List<Person> GetPersons()
         {
             var context = VeryVeryImportantContext.GetInstance();
             var persons = context.Persons.ToList();
