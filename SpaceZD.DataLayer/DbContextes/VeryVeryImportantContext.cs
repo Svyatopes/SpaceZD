@@ -2,16 +2,26 @@
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Extensions;
 
-namespace SpaceZD.DataLayer;
+namespace SpaceZD.DataLayer.DbContextes;
 
 public class VeryVeryImportantContext : DbContext
 {
-    private const string _localDb = "Data Source=Stepa-PC;Initial Catalog=SpaseZD;User ID=Stepa195;Password=195";
+    private const string _localDbStepa = "Data Source=Stepa-PC;Initial Catalog=SpaseZD;User ID=Stepa195;Password=195";
     private const string _devEduDb = "Data Source=80.78.240.16;Initial Catalog=SpaseZD;User ID=student;Password=qwe!23";
+
+    private static VeryVeryImportantContext _instance;
+
+    public static VeryVeryImportantContext GetInstance()
+    {
+        if (_instance == null)
+            _instance = new VeryVeryImportantContext();
+        return _instance;
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-            optionsBuilder.UseSqlServer(_localDb);
+            optionsBuilder.UseSqlServer(_localDbStepa);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
