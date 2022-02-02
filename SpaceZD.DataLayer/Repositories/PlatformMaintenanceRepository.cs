@@ -12,7 +12,7 @@ public class PlatformMaintenanceRepository
     public void Add(PlatformMaintenance platformMaintenance)
     {
         _context.PlatformMaintenances.Add(platformMaintenance);
-        Save();
+        _context.SaveChanges();
     }
 
     public PlatformMaintenance GetEntity(int id)
@@ -30,7 +30,7 @@ public class PlatformMaintenanceRepository
     {
         GetEntity(id).IsDeleted = true;
         
-        Save();
+        _context.SaveChanges();
     }
 
     public void Update(PlatformMaintenance platformMaintenance)
@@ -42,8 +42,6 @@ public class PlatformMaintenanceRepository
         entity.EndTime   = platformMaintenance.EndTime;
         entity.IsDeleted = platformMaintenance.IsDeleted;
         
-        Save();
+        _context.SaveChanges();
     }
-
-    public void Save() => _context.SaveChanges();
 }

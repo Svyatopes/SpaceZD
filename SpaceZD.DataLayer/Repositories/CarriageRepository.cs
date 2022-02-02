@@ -12,7 +12,7 @@ public class CarriageRepository
     public void Add(Carriage carriage)
     {
         _context.Carriages.Add(carriage);
-        Save();
+        _context.SaveChanges();
     }
 
     public Carriage GetEntity(int id)
@@ -30,7 +30,7 @@ public class CarriageRepository
     {
         GetEntity(id).IsDeleted = true;
         
-        Save();
+        _context.SaveChanges();
     }
 
     public void Update(Carriage carriage)
@@ -43,8 +43,6 @@ public class CarriageRepository
         entity.Type      = carriage.Type;
         entity.IsDeleted = carriage.IsDeleted;
         
-        Save();
+        _context.SaveChanges();
     }
-
-    public void Save() => _context.SaveChanges();
 }
