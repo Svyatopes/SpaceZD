@@ -1,88 +1,51 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories
 {
-    public class PersonRepository
+    public class PersonRepository : BaseRepository, IRepository<Person>, ISoftDelete<Person>
     {
-        public Person GetPersonById(int id)
+        public Person GetEntity(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
+
+        public List<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
+
+        public void Add(Person person)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            var person = context.Persons.FirstOrDefault(o => o.Id == id);
-            return person;
+            _context.Persons.Add(person);
+            _context.SaveChanges();
         }
 
-        public Person GetPersonByIdWithTickets(int id)
+        public bool Update(Person person)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            var person = context.Persons.Include(o => o.Tickets)
-                                        .FirstOrDefault(o => o.Id == id);
-            return person;
-        }
-
-        public List<Person> GetPersons()
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var persons = context.Persons.ToList();
-            return persons;
-        }
-
-        public void AddPerson(Person person)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            context.Persons.Add(person);
-            context.SaveChanges();
-        }
-
-        public void EditPerson(Person person)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-
-            var personInDB = GetPersonById(person.Id);
+            var personInDB = GetEntity(person.Id);
 
             if (personInDB == null)
-                throw new Exception($"Not found person with {person.Id} to edit");
+                return false;
 
-            if (personInDB.FirstName != person.FirstName)
-                personInDB.FirstName = person.FirstName;
+            personInDB.FirstName = person.FirstName;
+            personInDB.LastName = person.LastName;
+            personInDB.Patronymic = person.Patronymic;
+            personInDB.Passport = person.Passport;
 
-            if (personInDB.LastName != person.LastName)
-                personInDB.LastName = person.LastName;
-
-            if (personInDB.Patronymic != person.Patronymic)
-                personInDB.Patronymic = person.Patronymic;
-
-            if (personInDB.Passport != person.Passport)
-                personInDB.Passport = person.Passport;
-
-            context.SaveChanges();
+            _context.SaveChanges();
+            return true;
         }
 
-        public void DeletePerson(int id)
+        public bool Update(int id, bool isDeleted)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            var personInDB = context.Persons.FirstOrDefault(o => o.Id == id);
+            var personInDB = GetEntity(id);
 
             if (personInDB == null)
-                throw new Exception($"Not found person with {id} to delete");
+                return false;
 
-            personInDB.IsDeleted = true;
+            personInDB.IsDeleted = isDeleted;
 
-            context.SaveChanges();
-        }
+            _context.SaveChanges();
 
-        public void RestorePerson(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var personInDB = context.Persons.FirstOrDefault(o => o.Id == id);
+            return true;
 
-            if (personInDB == null)
-                throw new Exception($"Not found person with {id} to restore");
-
-            personInDB.IsDeleted = false;
-
-            context.SaveChanges();
         }
     }
 }

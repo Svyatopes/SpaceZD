@@ -1,76 +1,50 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories
 {
-    public class PlatformRepository
+    public class PlatformRepository : BaseRepository, IRepository<Platform>, ISoftDelete<Platform>
     {
-        public Platform GetPlatformById(int id)
+        public Platform GetEntity(int id) => _context.Platforms.FirstOrDefault(x => x.Id == id);
+
+
+        public List<Platform> GetList(bool includeAll = false) => _context.Platforms.Where(p => !p.IsDeleted || includeAll).ToList();
+
+
+        public void Add(Platform platform)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            var platform = context.Platforms.Include(p => p.Station)
-                                            .FirstOrDefault(o => o.Id == id);
-            return platform;
+            _context.Platforms.Add(platform);
+            _context.SaveChanges();
         }
 
-
-        public List<Platform> GetPlatforms()
+        public bool Update(Platform platform)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            var platforms = context.Platforms.ToList();
-            return platforms;
-        }
-
-        public void AddPlatform(Platform platform)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            context.Platforms.Add(platform);
-            context.SaveChanges();
-        }
-
-        public void EditPlatform(Platform platform)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-
-            var platformInDB = GetPlatformById(platform.Id);
+            var platformInDB = GetEntity(platform.Id);
 
             if (platformInDB == null)
-                throw new Exception($"Not found Platform with {platform.Id} to edit");
+                return false;
 
-            if (platformInDB.Number != platform.Number)
-                platformInDB.Number = platform.Number;
+            platformInDB.Number = platform.Number;
 
-            if (platform.Station != null && platformInDB.Station.Id != platform.Station.Id)
-                platformInDB.Station = platform.Station;
+            platformInDB.Station = platform.Station;
 
-            context.SaveChanges();
+            _context.SaveChanges();
+            return true;
         }
 
-        public void DeletePlatform(int id)
+        public bool Update(int id, bool isDeleted)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            var platformInDB = context.Platforms.FirstOrDefault(o => o.Id == id);
+            var platformInDB = GetEntity(id);
 
             if (platformInDB == null)
-                throw new Exception($"Not found Platform with {id} to delete");
+                return false;
 
-            platformInDB.IsDeleted = true;
+            platformInDB.IsDeleted = isDeleted;
 
-            context.SaveChanges();
-        }
-
-        public void RestorePlatform(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var platformInDB = context.Platforms.FirstOrDefault(o => o.Id == id);
-
-            if (platformInDB == null)
-                throw new Exception($"Not found Platform with {id} to restore");
-
-            platformInDB.IsDeleted = false;
-
-            context.SaveChanges();
+            _context.SaveChanges();
+            return true;
         }
 
     }
