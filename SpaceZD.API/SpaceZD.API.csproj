@@ -14,4 +14,9 @@
     <ProjectReference Include="..\SpaceZD.BusinessLayer\SpaceZD.BusinessLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Inputs" />
+    <Folder Include="Models\Outputs" />
+  </ItemGroup>
+
 </Project>
