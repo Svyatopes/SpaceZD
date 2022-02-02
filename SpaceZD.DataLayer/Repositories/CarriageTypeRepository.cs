@@ -16,15 +16,16 @@ public class CarriageTypeRepository
 
     public CarriageType? GetEntity(int id) => _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<CarriageType> GetListEntity() => _context.CarriageTypes.Where(t => !t.IsDeleted).ToList();
+    public IEnumerable<CarriageType> GetListEntity(bool includeAll = false) => _context.CarriageTypes.Where(c => !c.IsDeleted || includeAll).ToList();
 
-    public bool Delete(int id)
+    public bool Update(int id, bool isDeleted)
     {
         var entity = GetEntity(id);
         if (entity is null)
             return false;
 
-        entity.IsDeleted = true;
+        entity.IsDeleted = isDeleted;
+
         _context.SaveChanges();
 
         return true;
