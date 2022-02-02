@@ -27,24 +27,16 @@ namespace SpaceZD.DataLayer.Repositories
             context.Tickets.Add(ticket);
             context.SaveChanges();
 
-        }
+        }        
 
-        public void DeleteTicket(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var ticket = context.Tickets.FirstOrDefault(t => t.Id == id);
-            context.Tickets.Remove(ticket);
-            context.SaveChanges();
-        }
-
-        public void EditTicket(Ticket ticket)
+        public bool UpdateTicket(Ticket ticket)
         {
             var context = VeryVeryImportantContext.GetInstance();
 
             var ticketInDb = GetTicketById(ticket.Id);
 
             if (ticketInDb == null)
-                throw new Exception($"Not found ticket with {ticket.Id} to edit");
+                return false;
 
             if (ticketInDb.Order != null && ticketInDb.Order.Id != ticket.Order.Id)
                 ticketInDb.Order = ticket.Order;
@@ -62,6 +54,7 @@ namespace SpaceZD.DataLayer.Repositories
                 ticketInDb.Person = ticket.Person;
 
             context.SaveChanges();
+            return true;
         }      
         
     }

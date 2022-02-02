@@ -7,14 +7,14 @@ namespace SpaceZD.DataLayer.Repositories
     public class UserRepository
     {
 
-
         public List<User> GetUsers()
         {
+            var includeAll = false;
             var context = VeryVeryImportantContext.GetInstance();
-            var users = context.Users.ToList();
+            var users = context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
             return users;
         }
-
+        
         public User GetUserById(int id)
         {
             var context = VeryVeryImportantContext.GetInstance();
@@ -35,24 +35,16 @@ namespace SpaceZD.DataLayer.Repositories
             context.Users.Add(user);
             context.SaveChanges();
 
-        }
+        }       
 
-        public void DeleteUser(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var user = context.Users.FirstOrDefault(t => t.Id == id);
-            user.IsDeleted = true;
-            context.SaveChanges();
-        }
-
-        public void EditUser(User user)
+        public bool UpdateUser(User user)
         {
             var context = VeryVeryImportantContext.GetInstance();
 
             var userInDb = GetUserById(user.Id);
 
             if (userInDb == null)
-                throw new Exception($"Not found ticket with {user.Id} to edit");
+                return false;
 
             if (userInDb.Name != user.Name)
                 userInDb.Name = user.Name;
@@ -67,6 +59,23 @@ namespace SpaceZD.DataLayer.Repositories
                 userInDb.Orders = user.Orders;            
 
             context.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateUser(int id, bool isDeleted)
+        {
+            var context = VeryVeryImportantContext.GetInstance();
+
+            var user = GetUserById(id);
+            if (user is null)
+                return false;
+
+            user.IsDeleted = isDeleted;
+
+            context.SaveChanges();
+
+            return true;
+
         }
 
     }
