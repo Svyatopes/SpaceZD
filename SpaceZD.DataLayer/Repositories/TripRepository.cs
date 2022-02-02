@@ -15,13 +15,15 @@ namespace SpaceZD.DataLayer.Repositories
             Save();
         }
 
-        public Trip? GetEntity(int id) => _context.Trips.FirstOrDefault(c => c.Id == id);
+        public Trip? GetById(int id) => _context.Trips.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<Trip> GetListEntity() => _context.Trips.ToList();
+        public IEnumerable<Trip> GetAll() => _context.Trips.Where(t => !t.IsDeleted).ToList();
+
+        public IEnumerable<Trip> GetAllDeleted() => _context.Trips.Where(t => t.IsDeleted).ToList();
 
         public bool Delete(int id)
         {
-            var entity = GetEntity(id);
+            var entity = GetById(id);
 
             if (entity == null) return false;
 
@@ -33,7 +35,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public bool Recover(int id)
         {
-            var entity = GetEntity(id);
+            var entity = GetById(id);
 
             if (entity == null) return false;
 
@@ -45,7 +47,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public bool Update(Trip trip)
         {
-            var entity = GetEntity(trip.Id);
+            var entity = GetById(trip.Id);
             if (entity == null) return false;
 
             entity.Train = trip.Train;

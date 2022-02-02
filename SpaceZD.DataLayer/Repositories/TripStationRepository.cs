@@ -14,13 +14,13 @@ namespace SpaceZD.DataLayer.Repositories
             Save();
         }
 
-        public TripStation? GetEntity(int id) => _context.TripStations.FirstOrDefault(c => c.Id == id);
+        public TripStation? GetById(int id) => _context.TripStations.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<TripStation> GetListEntity() => _context.TripStations.ToList();
+        public IEnumerable<TripStation> GetAll() => _context.TripStations.ToList();
 
         public bool Update(TripStation tripStation)
         {
-            var entity = GetEntity(tripStation.Id);
+            var entity = GetById(tripStation.Id);
             if (entity == null) return false;
 
             entity.Station = tripStation.Station;
