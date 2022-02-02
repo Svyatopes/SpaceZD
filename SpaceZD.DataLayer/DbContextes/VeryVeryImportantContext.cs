@@ -61,7 +61,7 @@ public class VeryVeryImportantContext : DbContext
 
     public DbSet<Carriage> Carriages { get; set; }
     public DbSet<CarriageType> CarriageTypes { get; set; }
-    public DbSet<NotWorkPlatform> NotWorkPlatforms { get; set; }
+    public DbSet<PlatformMaintenance> PlatformMaintenances { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Person> Persons { get; set; }
     public DbSet<Platform> Platforms { get; set; }
