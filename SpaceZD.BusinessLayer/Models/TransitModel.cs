@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpaceZD.BusinessLayer.Models
 {
-    internal class TransitModel
+    public class TransitModel
     {
         public int Id { get; set; }
         public virtual StationModel StartStation { get; set; }

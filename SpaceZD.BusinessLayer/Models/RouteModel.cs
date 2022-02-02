@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpaceZD.BusinessLayer.Models
 {
-    internal class RouteModel
+    public class RouteModel
     {
     }
 }
