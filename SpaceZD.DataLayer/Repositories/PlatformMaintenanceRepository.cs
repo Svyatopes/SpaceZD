@@ -24,7 +24,7 @@ public class PlatformMaintenanceRepository
         return entity;
     }
 
-    public IEnumerable<PlatformMaintenance> GetListEntity() => _context.PlatformMaintenances.ToList();
+    public IEnumerable<PlatformMaintenance> GetListEntity() => _context.PlatformMaintenances.Where(t => !t.IsDeleted).ToList();
 
     public void Delete(int id)
     {

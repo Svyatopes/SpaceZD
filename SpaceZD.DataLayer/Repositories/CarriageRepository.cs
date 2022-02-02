@@ -24,7 +24,7 @@ public class CarriageRepository
         return entity;
     }
 
-    public IEnumerable<Carriage> GetListEntity() => _context.Carriages.ToList();
+    public IEnumerable<Carriage> GetListEntity() => _context.Carriages.Where(t => !t.IsDeleted).ToList();
 
     public void Delete(int id)
     {
