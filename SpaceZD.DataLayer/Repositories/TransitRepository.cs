@@ -18,33 +18,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public IEnumerable<Transit> GetAll() => _context.Transits.Where(t => !t.IsDeleted).ToList();
 
-        public IEnumerable<Transit> GetAllDeleted() => _context.Transits.Where(t => t.IsDeleted).ToList();
-
-        public bool Delete(int id)
-        {
-            var entity = GetById(id);
-
-            if (entity == null) return false;
-
-            entity.IsDeleted = true;
-            Save();
-
-            return true;
-        }
-
-        public bool Recover(int id)
-        {
-            var entity = GetById(id);
-
-            if (entity == null) return false;
-
-            entity.IsDeleted = false;
-            Save();
-
-            return true;
-        }
-
-        public bool Update(Transit transit)
+        public bool Update(Transit transit, bool IsDeleted)
         {
             var entity = GetById(transit.Id);
             if (entity == null) return false;
@@ -53,6 +27,7 @@ namespace SpaceZD.DataLayer.Repositories
             entity.EndStation = transit.EndStation;
             entity.Price = transit.Price;
             entity.RouteTransit = transit.RouteTransit;
+            entity.IsDeleted = IsDeleted;
 
             Save();
             return true;
