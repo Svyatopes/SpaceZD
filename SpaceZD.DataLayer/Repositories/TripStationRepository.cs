@@ -14,21 +14,14 @@ namespace SpaceZD.DataLayer.Repositories
             Save();
         }
 
-        public TripStation GetEntity(int id)
-        {
-            var entity = _context.TripStations.FirstOrDefault(c => c.Id == id);
-            if (entity == null)
-                throw new Exception($"TripStation c Id = {id} не найден");
-
-            return entity;
-        }
+        public TripStation? GetEntity(int id) => _context.TripStations.FirstOrDefault(c => c.Id == id);
 
         public IEnumerable<TripStation> GetListEntity() => _context.TripStations.ToList();
 
-
-        public void Update(TripStation tripStation)
+        public bool Update(TripStation tripStation)
         {
             var entity = GetEntity(tripStation.Id);
+            if (entity == null) return false;
 
             entity.Station = tripStation.Station;
             entity.Platform = tripStation.Platform;
@@ -39,8 +32,9 @@ namespace SpaceZD.DataLayer.Repositories
             entity.OrdersWithEndStation = tripStation.OrdersWithEndStation;
 
             Save();
+            return true;
         }
 
-        public void Save() => _context.SaveChanges();
+        private void Save() => _context.SaveChanges();
     }
 }

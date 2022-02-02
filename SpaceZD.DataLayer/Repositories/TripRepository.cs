@@ -15,38 +15,49 @@ namespace SpaceZD.DataLayer.Repositories
             Save();
         }
 
-        public Trip GetEntity(int id)
-        {
-            var entity = _context.Trips.FirstOrDefault(c => c.Id == id);
-            if (entity == null)
-                throw new Exception($"Trip c Id = {id} не найден");
-
-            return entity;
-        }
+        public Trip? GetEntity(int id) => _context.Trips.FirstOrDefault(c => c.Id == id);
 
         public IEnumerable<Trip> GetListEntity() => _context.Trips.ToList();
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
-            GetEntity(id).IsDeleted = true;
+            var entity = GetEntity(id);
 
+            if (entity == null) return false;
+
+            entity.IsDeleted = true;
             Save();
+
+            return true;
         }
 
-        public void Update(Trip trip)
+        public bool Recover(int id)
+        {
+            var entity = GetEntity(id);
+
+            if (entity == null) return false;
+
+            entity.IsDeleted = false;
+            Save();
+
+            return true;
+        }
+
+        public bool Update(Trip trip)
         {
             var entity = GetEntity(trip.Id);
+            if (entity == null) return false;
 
             entity.Train = trip.Train;
             entity.Route = trip.Route;
             entity.Stations = trip.Stations;
             entity.StartTime = trip.StartTime;
             entity.Orders = trip.Orders;
-            entity.IsDeleted = trip.IsDeleted;
 
             Save();
+            return true;
         }
 
-        public void Save() => _context.SaveChanges();
+        private void Save() => _context.SaveChanges();
     }
 }
