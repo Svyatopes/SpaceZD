@@ -4,8 +4,8 @@ public class CarriageModel
 {
     public int Id { get; set; }
     public int Number { get; set; }
-    //public CarriageType Type { get; set; }
+    public CarriageTypeModel Type { get; set; }
     public bool IsDeleted { get; set; }
-    //public Train Train { get; set; }
-    //public List<Ticket> Tickets { get; set; }
+    //public TrainModel Train { get; set; }
+    //public List<TicketModel> Tickets { get; set; }
 }
