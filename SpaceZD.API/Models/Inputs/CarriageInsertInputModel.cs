@@ -1,6 +1,6 @@
 namespace SpaceZD.API.Models;
 
-public class CarriageCreateInputModel
+public class CarriageInsertInputModel
 {
     public int Number { get; set; }
     public int TypeId { get; set; }
