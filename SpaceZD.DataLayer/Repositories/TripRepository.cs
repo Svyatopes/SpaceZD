@@ -19,7 +19,18 @@ namespace SpaceZD.DataLayer.Repositories
 
         public IEnumerable<Trip> GetAll() => _context.Trips.Where(t => !t.IsDeleted).ToList();
 
-        public bool Update(Trip trip, bool IsDeleted)
+        public bool Update(int id, bool isDeleted)
+        {
+            var entity = GetById(id);
+            if (entity == null) return false;
+
+            entity.IsDeleted = isDeleted;
+
+            Save();
+            return true;
+        }
+
+        public bool Update(Trip trip)
         {
             var entity = GetById(trip.Id);
             if (entity == null) return false;
@@ -29,7 +40,6 @@ namespace SpaceZD.DataLayer.Repositories
             entity.Stations = trip.Stations;
             entity.StartTime = trip.StartTime;
             entity.Orders = trip.Orders;
-            entity.IsDeleted = IsDeleted;
 
             Save();
             return true;
