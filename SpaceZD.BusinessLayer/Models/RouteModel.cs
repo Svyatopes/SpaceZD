@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Code { get; set; }
-        //public List<RouteTransit> Transits { get; set; }
+        public List<RouteTransitModel> Transits { get; set; }
         public DateTime StartTime { get; set; }
         //public virtual Station StartStation { get; set; }
         // public virtual Station EndStation { get; set; }
