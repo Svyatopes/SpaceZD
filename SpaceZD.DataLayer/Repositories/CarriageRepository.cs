@@ -15,27 +15,26 @@ public class CarriageRepository
         _context.SaveChanges();
     }
 
-    public Carriage GetEntity(int id)
-    {
-        var entity = _context.Carriages.FirstOrDefault(c => c.Id == id);
-        if (entity == null)
-            throw new Exception($"Carriage c Id = {id} не найден");
-
-        return entity;
-    }
+    public Carriage? GetEntity(int id) => _context.Carriages.FirstOrDefault(c => c.Id == id);
 
     public IEnumerable<Carriage> GetListEntity() => _context.Carriages.Where(t => !t.IsDeleted).ToList();
 
-    public void Delete(int id)
+    public bool Delete(int id)
     {
-        GetEntity(id).IsDeleted = true;
-        
+        var entity = GetEntity(id);
+        if (entity is null)
+            return false;
+
+        entity.IsDeleted = true;
         _context.SaveChanges();
+        return true;
     }
 
-    public void Update(Carriage carriage)
+    public bool Update(Carriage carriage)
     {
         var entity = GetEntity(carriage.Id);
+        if (entity is null)
+            return false;
         
         entity.Number    = carriage.Number;
         entity.Tickets   = carriage.Tickets;
@@ -44,5 +43,6 @@ public class CarriageRepository
         entity.IsDeleted = carriage.IsDeleted;
         
         _context.SaveChanges();
+        return true;
     }
 }

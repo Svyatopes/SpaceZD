@@ -15,33 +15,33 @@ public class PlatformMaintenanceRepository
         _context.SaveChanges();
     }
 
-    public PlatformMaintenance GetEntity(int id)
-    {
-        var entity = _context.PlatformMaintenances.FirstOrDefault(p => p.Id == id);
-        if (entity == null)
-            throw new Exception($"PlatformMaintenance c Id = {id} не найден");
-
-        return entity;
-    }
+    public PlatformMaintenance? GetEntity(int id) => _context.PlatformMaintenances.FirstOrDefault(p => p.Id == id);
 
     public IEnumerable<PlatformMaintenance> GetListEntity() => _context.PlatformMaintenances.Where(t => !t.IsDeleted).ToList();
 
-    public void Delete(int id)
+    public bool Delete(int id)
     {
-        GetEntity(id).IsDeleted = true;
-        
+        var entity = GetEntity(id);
+        if (entity is null)
+            return false;
+
+        entity.IsDeleted = true;
         _context.SaveChanges();
+        return true;
     }
 
-    public void Update(PlatformMaintenance platformMaintenance)
+    public bool Update(PlatformMaintenance platformMaintenance)
     {
         var entity = GetEntity(platformMaintenance.Id);
+        if (entity is null)
+            return false;
 
         entity.Platform  = platformMaintenance.Platform;
         entity.StartTime = platformMaintenance.StartTime;
         entity.EndTime   = platformMaintenance.EndTime;
         entity.IsDeleted = platformMaintenance.IsDeleted;
-        
+
         _context.SaveChanges();
+        return true;
     }
 }

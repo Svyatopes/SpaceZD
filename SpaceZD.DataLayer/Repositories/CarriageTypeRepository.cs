@@ -15,38 +15,35 @@ public class CarriageTypeRepository
         _context.SaveChanges();
     }
 
-    public CarriageType GetEntity(int id)
-    {
-        var entity = _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
-        if (entity == null)
-            throw new Exception($"CarriageType c Id = {id} не найден");
-
-        return entity;
-    }
+    public CarriageType? GetEntity(int id) => _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
 
     public IEnumerable<CarriageType> GetListEntity() => _context.CarriageTypes.Where(t => !t.IsDeleted).ToList();
 
-    public void Delete(int id)
+    public bool Delete(int id)
     {
         var entity = GetEntity(id);
-        foreach (var carriage in entity.Carriages)
-            carriage.IsDeleted = true;
+        if (entity is null)
+            return false;
+
         entity.IsDeleted = true;
-        
         _context.SaveChanges();
+
+        return true;
     }
 
-    public void Update(CarriageType carriageType)
+    public bool Update(CarriageType carriageType)
     {
         var entity = GetEntity(carriageType.Id);
-        
+        if (entity is null)
+            return false;
+
         entity.Name          = carriageType.Name;
         entity.Carriages     = carriageType.Carriages;
         entity.NumberOfSeats = carriageType.NumberOfSeats;
         entity.IsDeleted     = carriageType.IsDeleted;
 
-        _context.Entry(entity).State = EntityState.Modified;
-
         _context.SaveChanges();
+
+        return true;
     }
 }
