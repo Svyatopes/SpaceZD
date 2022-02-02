@@ -18,14 +18,16 @@ public class PlatformMaintenanceRepository
 
     public IEnumerable<PlatformMaintenance> GetListEntity() => _context.PlatformMaintenances.Where(t => !t.IsDeleted).ToList();
 
-    public bool Delete(int id)
+    public bool Update(int id, bool isDeleted)
     {
         var entity = GetEntity(id);
         if (entity is null)
             return false;
 
-        entity.IsDeleted = true;
+        entity.IsDeleted = isDeleted;
+
         _context.SaveChanges();
+
         return true;
     }
 
@@ -40,7 +42,7 @@ public class PlatformMaintenanceRepository
         entity.EndTime = platformMaintenance.EndTime;
 
         _context.SaveChanges();
-        
+
         return true;
     }
 }
