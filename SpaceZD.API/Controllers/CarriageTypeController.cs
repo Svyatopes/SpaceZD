@@ -22,7 +22,7 @@ public class CarriageTypeController : ControllerBase
     [HttpGet("with-carriage/{id}")]
     public ActionResult<CarriageTypeModel> GetCarriageTypeByIdWithCarriage(int id)
     {
-        return NotFound("Can't find(((((");
+        return Ok(new CarriageTypeModel().Carriages);
     }
 
     [HttpPost]
