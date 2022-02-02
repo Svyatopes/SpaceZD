@@ -1,6 +1,6 @@
 namespace SpaceZD.BusinessLayer.Models;
 
-public class CarrigeTypeModel
+public class CarriageTypeModel
 {
     public int Id { get; set; }
     public string Name { get; set; }
