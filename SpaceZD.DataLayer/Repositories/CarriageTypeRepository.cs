@@ -40,7 +40,6 @@ public class CarriageTypeRepository
         entity.Name          = carriageType.Name;
         entity.Carriages     = carriageType.Carriages;
         entity.NumberOfSeats = carriageType.NumberOfSeats;
-        entity.IsDeleted     = carriageType.IsDeleted;
 
         _context.SaveChanges();
 

@@ -39,7 +39,6 @@ public class PlatformMaintenanceRepository
         entity.Platform  = platformMaintenance.Platform;
         entity.StartTime = platformMaintenance.StartTime;
         entity.EndTime   = platformMaintenance.EndTime;
-        entity.IsDeleted = platformMaintenance.IsDeleted;
 
         _context.SaveChanges();
         return true;

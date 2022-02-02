@@ -40,7 +40,6 @@ public class CarriageRepository
         entity.Tickets   = carriage.Tickets;
         entity.Train     = carriage.Train;
         entity.Type      = carriage.Type;
-        entity.IsDeleted = carriage.IsDeleted;
         
         _context.SaveChanges();
         return true;
