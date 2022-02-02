@@ -9,28 +9,23 @@ public class VeryVeryImportantContext : DbContext
     private const string _localDbStepa = "Data Source=Stepa-PC;Initial Catalog=SpaseZD;User ID=Stepa195;Password=195";
     private const string _devEduDb = "Data Source=80.78.240.16;Initial Catalog=SpaseZD;User ID=student;Password=qwe!23";
 
-    private static VeryVeryImportantContext _instance;
+    private static VeryVeryImportantContext? _instance;
 
-    public static VeryVeryImportantContext GetInstance()
-    {
-        if (_instance == null)
-            _instance = new VeryVeryImportantContext();
-        return _instance;
-    }
+    public static VeryVeryImportantContext GetInstance() => _instance ??= new VeryVeryImportantContext();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
             optionsBuilder.UseSqlServer(_localDbStepa);
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.RemovePluralizingTableNameConvention();
 
         modelBuilder.MaxLengthOfAllStringsInTables(100);
 
-        modelBuilder.IsDeletedPropertyFalse();        
+        modelBuilder.IsDeletedPropertyFalse();
 
         modelBuilder.Entity<Order>()
                     .HasOne(e => e.StartStation)
@@ -45,7 +40,7 @@ public class VeryVeryImportantContext : DbContext
         modelBuilder.Entity<Route>()
                     .HasOne(e => e.EndStation)
                     .WithMany(e => e.RoutesWithEndStation);
-        
+
         modelBuilder.Entity<Transit>()
                     .HasOne(e => e.StartStation)
                     .WithMany(e => e.TransitsWithStartStation);
@@ -66,7 +61,7 @@ public class VeryVeryImportantContext : DbContext
 
     public DbSet<Carriage> Carriages { get; set; }
     public DbSet<CarriageType> CarriageTypes { get; set; }
-    public DbSet<NotWorkPlatform> NotWorkPlatforms { get; set; }
+    public DbSet<PlatformMaintenance> PlatformMaintenances { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Person> Persons { get; set; }
     public DbSet<Platform> Platforms { get; set; }
