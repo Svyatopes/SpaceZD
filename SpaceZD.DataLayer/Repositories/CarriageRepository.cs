@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 
@@ -35,13 +34,13 @@ public class CarriageRepository
         var entity = GetEntity(carriage.Id);
         if (entity is null)
             return false;
-        
-        entity.Number    = carriage.Number;
-        entity.Tickets   = carriage.Tickets;
-        entity.Train     = carriage.Train;
-        entity.Type      = carriage.Type;
-        
+
+        entity.Number = carriage.Number;
+        entity.Train = carriage.Train;
+        entity.Type = carriage.Type;
+
         _context.SaveChanges();
+
         return true;
     }
 }

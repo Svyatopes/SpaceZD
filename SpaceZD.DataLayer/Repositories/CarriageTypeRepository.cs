@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 
@@ -37,8 +36,7 @@ public class CarriageTypeRepository
         if (entity is null)
             return false;
 
-        entity.Name          = carriageType.Name;
-        entity.Carriages     = carriageType.Carriages;
+        entity.Name = carriageType.Name;
         entity.NumberOfSeats = carriageType.NumberOfSeats;
 
         _context.SaveChanges();

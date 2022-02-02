@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 
@@ -36,11 +35,12 @@ public class PlatformMaintenanceRepository
         if (entity is null)
             return false;
 
-        entity.Platform  = platformMaintenance.Platform;
+        entity.Platform = platformMaintenance.Platform;
         entity.StartTime = platformMaintenance.StartTime;
-        entity.EndTime   = platformMaintenance.EndTime;
+        entity.EndTime = platformMaintenance.EndTime;
 
         _context.SaveChanges();
+        
         return true;
     }
 }
