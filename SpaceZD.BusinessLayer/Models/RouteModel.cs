@@ -6,9 +6,9 @@
         public string Code { get; set; }
         public List<RouteTransitModel> Transits { get; set; }
         public DateTime StartTime { get; set; }
-        //public virtual Station StartStation { get; set; }
-        // public virtual Station EndStation { get; set; }
+        public StationModel StartStation { get; set; }
+        public StationModel EndStation { get; set; }
         public bool IsDeleted { get; set; }
-        // public virtual ICollection<Trip> Trips { get; set; }
+        // public ICollection<Trip> Trips { get; set; }
     }
 }

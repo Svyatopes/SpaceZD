@@ -8,7 +8,7 @@ namespace SpaceZD.DataLayer.Repositories
         public RouteTransit GetRouteTransitById(int id)
         {
             var context = VeryVeryImportantContext.GetInstance();
-            var routetransit = context.RouteTransits.FirstOrDefault(r => r.Id == id);
+            var routetransit = context.RouteTransits.FirstOrDefault(rt => rt.Id == id);
 
             return routetransit;
         }
@@ -48,7 +48,7 @@ namespace SpaceZD.DataLayer.Repositories
             routetransitDB.Transit = routetransit.Transit;
             routetransitDB.DepartingTime = routetransit.DepartingTime;
             routetransitDB.ArrivalTime = routetransit.ArrivalTime;
-            routetransit.IsDeleted = routetransit.IsDeleted;
+            routetransitDB.IsDeleted = routetransit.IsDeleted;
             routetransitDB.Route = routetransit.Route;
 
             context.SaveChanges();
