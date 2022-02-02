@@ -5,7 +5,7 @@ namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TrainController : ControllerBase
+public class TrainsController : ControllerBase
 {
     [HttpGet]
     public ActionResult<List<TrainModel>> GetTickets()
