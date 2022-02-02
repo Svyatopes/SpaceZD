@@ -16,7 +16,7 @@ public class CarriageTypeRepository
 
     public CarriageType? GetEntity(int id) => _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<CarriageType> GetListEntity() => _context.CarriageTypes.Where(t => !t.IsDeleted).ToList();
+    public IEnumerable<CarriageType> GetListEntity(bool includeAll = false) => _context.CarriageTypes.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public bool Update(int id, bool isDeleted)
     {

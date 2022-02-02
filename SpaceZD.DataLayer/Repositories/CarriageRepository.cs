@@ -16,7 +16,7 @@ public class CarriageRepository
 
     public Carriage? GetEntity(int id) => _context.Carriages.FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<Carriage> GetListEntity() => _context.Carriages.Where(t => !t.IsDeleted).ToList();
+    public IEnumerable<Carriage> GetListEntity(bool includeAll = false) => _context.Carriages.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public bool Update(int id, bool isDeleted)
     {
