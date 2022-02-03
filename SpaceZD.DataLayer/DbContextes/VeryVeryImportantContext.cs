@@ -8,6 +8,7 @@ public class VeryVeryImportantContext : DbContext
 {
     private const string _localDbStepa = "Data Source=Stepa-PC;Initial Catalog=SpaseZD;User ID=Stepa195;Password=195";
     private const string _devEduDb = "Data Source=80.78.240.16;Initial Catalog=SpaseZD;User ID=student;Password=qwe!23";
+    private const string _localDbSasha = "Server=(local);Database=SpaseZD;Integrated Security=true;";
 
     private static VeryVeryImportantContext _instance;
 
@@ -21,7 +22,7 @@ public class VeryVeryImportantContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-            optionsBuilder.UseSqlServer(_localDbStepa);
+            optionsBuilder.UseSqlServer(_localDbSasha);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
