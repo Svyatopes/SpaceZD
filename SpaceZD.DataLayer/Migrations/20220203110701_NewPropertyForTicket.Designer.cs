@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpaceZD.DataLayer.DbContextes;
 
@@ -11,9 +12,10 @@ using SpaceZD.DataLayer.DbContextes;
 namespace SpaceZD.DataLayer.Migrations
 {
     [DbContext(typeof(VeryVeryImportantContext))]
-    partial class VeryVeryImportantContextModelSnapshot : ModelSnapshot
+    [Migration("20220203110701_NewPropertyForTicket")]
+    partial class NewPropertyForTicket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

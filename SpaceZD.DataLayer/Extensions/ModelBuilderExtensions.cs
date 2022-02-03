@@ -30,8 +30,8 @@ public static class ModelBuilderExtensions
     public static void DisableCascadeDelete(this ModelBuilder modelBuilder)
     {
         foreach (IMutableForeignKey foreignKey in modelBuilder.Model
-                                                          .GetEntityTypes()
-                                                          .SelectMany(t => t.GetForeignKeys()))
+                                                              .GetEntityTypes()
+                                                              .SelectMany(t => t.GetForeignKeys()))
         {
             foreignKey.DeleteBehavior = DeleteBehavior.NoAction;
         }
