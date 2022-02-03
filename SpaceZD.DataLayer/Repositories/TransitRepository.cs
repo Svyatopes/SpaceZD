@@ -16,7 +16,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public Transit? GetById(int id) => _context.Transits.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<Transit> GetAll() => _context.Transits.Where(t => !t.IsDeleted).ToList();
+        public IEnumerable<Transit> GetAll(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
 
         public bool Update(int id, bool isDeleted)
         {

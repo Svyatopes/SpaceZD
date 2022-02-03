@@ -17,7 +17,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public Trip? GetById(int id) => _context.Trips.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<Trip> GetAll() => _context.Trips.Where(t => !t.IsDeleted).ToList();
+        public IEnumerable<Trip> GetAll(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
 
         public bool Update(int id, bool isDeleted)
         {
