@@ -3,7 +3,7 @@
     public interface IRepository<T>
     {
         public void Add(T model);
-        public T? GetEntity(int id);
+        public T? GetById(int id);
         public bool Update(T model);
     }
 }

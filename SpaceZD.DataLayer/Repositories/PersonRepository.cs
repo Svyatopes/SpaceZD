@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SpaceZD.DataLayer.DbContextes;
-using SpaceZD.DataLayer.Entities;
+﻿using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories
 {
     public class PersonRepository : BaseRepository, IRepository<Person>, ISoftDelete<Person>
     {
-        public Person GetEntity(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
+        public Person GetById(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
 
         public List<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
 
@@ -19,7 +17,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public bool Update(Person person)
         {
-            var personInDB = GetEntity(person.Id);
+            var personInDB = GetById(person.Id);
 
             if (personInDB == null)
                 return false;
@@ -35,7 +33,7 @@ namespace SpaceZD.DataLayer.Repositories
 
         public bool Update(int id, bool isDeleted)
         {
-            var personInDB = GetEntity(id);
+            var personInDB = GetById(id);
 
             if (personInDB == null)
                 return false;

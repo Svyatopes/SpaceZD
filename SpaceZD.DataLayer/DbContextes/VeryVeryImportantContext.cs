@@ -23,14 +23,14 @@ public class VeryVeryImportantContext : DbContext
         if (!optionsBuilder.IsConfigured)
             optionsBuilder.UseSqlServer(_localDbStepa);
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.RemovePluralizingTableNameConvention();
 
         modelBuilder.MaxLengthOfAllStringsInTables(100);
 
-        modelBuilder.IsDeletedPropertyFalse();        
+        modelBuilder.IsDeletedPropertyFalse();
 
         modelBuilder.Entity<Order>()
                     .HasOne(e => e.StartStation)
@@ -45,7 +45,7 @@ public class VeryVeryImportantContext : DbContext
         modelBuilder.Entity<Route>()
                     .HasOne(e => e.EndStation)
                     .WithMany(e => e.RoutesWithEndStation);
-        
+
         modelBuilder.Entity<Transit>()
                     .HasOne(e => e.StartStation)
                     .WithMany(e => e.TransitsWithStartStation);
