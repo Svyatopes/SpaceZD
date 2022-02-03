@@ -3,12 +3,12 @@
     public class TripStationOutputModel
     {
         public int Id { get; set; }
-        public StationModel Station { get; set; }
-        public PlatformModel Platform { get; set; }
+        public StationOutputModel Station { get; set; }
+        public PlatformOutputModel Platform { get; set; }
         public DateTime ArrivalTime { get; set; }
         public DateTime DepartingTime { get; set; }
-        public TripModel Trip { get; set; }
-        public ICollection<OrderModel> OrdersWithStartStation { get; set; }
-        public ICollection<OrderModel> OrdersWithEndStation { get; set; }
+        public TripOutputModel Trip { get; set; }
+        public ICollection<OrderOutputModel> OrdersWithStartStation { get; set; }
+        public ICollection<OrderOutputModel> OrdersWithEndStation { get; set; }
     }
 }
