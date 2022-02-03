@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using SpaceZD.API.Models;
+using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Configuration
 {
@@ -15,7 +17,14 @@ namespace SpaceZD.API.Configuration
 
         private static void InitializeInstance()
         {
+            _instance = new Mapper(new MapperConfiguration(cfg =>
+            {
 
+                cfg.AddProfile<TicketMappingProfile>();
+                cfg.AddProfile<TrainMappingProfile>();
+                cfg.AddProfile<UserMappingProfile>();
+
+            }));
         }
     }
 }

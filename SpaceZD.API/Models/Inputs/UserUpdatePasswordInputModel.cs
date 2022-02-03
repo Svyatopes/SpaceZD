@@ -2,7 +2,7 @@
 {
     public class UserUpdatePasswordInputModel
     {
-        public string OldPassword { get; set; }
-        public string NewPassword { get; set; }
+        public string PasswordOld { get; set; }
+        public string PasswordNew { get; set; }
     }
 }
