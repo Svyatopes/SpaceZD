@@ -28,8 +28,6 @@ namespace SpaceZD.DataLayer.Repositories
 
             platformInDB.Number = platform.Number;
 
-            platformInDB.Station = platform.Station;
-
             _context.SaveChanges();
             return true;
         }

@@ -27,7 +27,6 @@ namespace SpaceZD.DataLayer.Repositories
             orderInDB.Trip = order.Trip;
             orderInDB.StartStation = order.StartStation;
             orderInDB.EndStation = order.EndStation;
-            orderInDB.User = order.User;
 
             _context.SaveChanges();
 
