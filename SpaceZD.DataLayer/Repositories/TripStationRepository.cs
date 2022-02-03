@@ -11,12 +11,12 @@ namespace SpaceZD.DataLayer.Repositories
         public void Add(TripStation tripStation)
         {
             _context.TripStations.Add(tripStation);
-            Save();
+            _context.SaveChanges();
         }
 
         public TripStation? GetById(int id) => _context.TripStations.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<TripStation> GetAll() => _context.TripStations.ToList();
+        public IEnumerable<TripStation> GetList() => _context.TripStations.ToList();
 
         public bool Update(TripStation tripStation)
         {
@@ -27,10 +27,8 @@ namespace SpaceZD.DataLayer.Repositories
             entity.ArrivalTime = tripStation.ArrivalTime;
             entity.DepartingTime = tripStation.DepartingTime;
 
-            Save();
+            _context.SaveChanges();
             return true;
         }
-
-        private void Save() => _context.SaveChanges();
     }
 }

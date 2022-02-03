@@ -11,12 +11,12 @@ namespace SpaceZD.DataLayer.Repositories
         public void Add(Transit transit)
         {
             _context.Transits.Add(transit);
-            Save();
+            _context.SaveChanges();
         }
 
         public Transit? GetById(int id) => _context.Transits.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<Transit> GetAll(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
+        public IEnumerable<Transit> GetList(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
 
         public bool Update(int id, bool isDeleted)
         {
@@ -25,7 +25,7 @@ namespace SpaceZD.DataLayer.Repositories
 
             entity.IsDeleted = isDeleted;
 
-            Save();
+            _context.SaveChanges();
             return true;
         }
 
@@ -39,10 +39,8 @@ namespace SpaceZD.DataLayer.Repositories
             entity.Price = transit.Price;
             entity.RouteTransit = transit.RouteTransit;
 
-            Save();
+            _context.SaveChanges();
             return true;
         }
-
-        private void Save() => _context.SaveChanges();
     }
 }

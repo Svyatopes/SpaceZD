@@ -12,12 +12,12 @@ namespace SpaceZD.DataLayer.Repositories
         public void Add(Trip trip)
         {
             _context.Trips.Add(trip);
-            Save();
+            _context.SaveChanges();
         }
 
         public Trip? GetById(int id) => _context.Trips.FirstOrDefault(c => c.Id == id);
 
-        public IEnumerable<Trip> GetAll(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
+        public IEnumerable<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
 
         public bool Update(int id, bool isDeleted)
         {
@@ -26,7 +26,7 @@ namespace SpaceZD.DataLayer.Repositories
 
             entity.IsDeleted = isDeleted;
 
-            Save();
+            _context.SaveChanges();
             return true;
         }
 
@@ -40,10 +40,8 @@ namespace SpaceZD.DataLayer.Repositories
             entity.Stations = trip.Stations;
             entity.StartTime = trip.StartTime;
 
-            Save();
+            _context.SaveChanges();
             return true;
         }
-
-        private void Save() => _context.SaveChanges();
     }
 }
