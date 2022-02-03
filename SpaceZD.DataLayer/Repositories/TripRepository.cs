@@ -3,7 +3,7 @@ using SpaceZD.DataLayer.Entities;
 
 namespace SpaceZD.DataLayer.Repositories
 {
-    internal class TripRepository
+    public class TripRepository
     {
 
         private readonly VeryVeryImportantContext _context;

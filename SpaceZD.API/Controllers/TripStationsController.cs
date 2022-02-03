@@ -5,7 +5,7 @@ namespace SpaceZD.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TripStationController : ControllerBase
+    public class TripStationsController : ControllerBase
     {
     }
 }
