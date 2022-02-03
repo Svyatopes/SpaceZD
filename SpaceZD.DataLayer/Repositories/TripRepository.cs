@@ -39,7 +39,6 @@ namespace SpaceZD.DataLayer.Repositories
             entity.Route = trip.Route;
             entity.Stations = trip.Stations;
             entity.StartTime = trip.StartTime;
-            entity.Orders = trip.Orders;
 
             Save();
             return true;

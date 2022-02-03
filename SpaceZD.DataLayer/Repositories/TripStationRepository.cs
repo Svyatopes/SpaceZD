@@ -23,13 +23,9 @@ namespace SpaceZD.DataLayer.Repositories
             var entity = GetById(tripStation.Id);
             if (entity == null) return false;
 
-            entity.Station = tripStation.Station;
             entity.Platform = tripStation.Platform;
             entity.ArrivalTime = tripStation.ArrivalTime;
             entity.DepartingTime = tripStation.DepartingTime;
-            entity.Trip = tripStation.Trip;
-            entity.OrdersWithStartStation = tripStation.OrdersWithStartStation;
-            entity.OrdersWithEndStation = tripStation.OrdersWithEndStation;
 
             Save();
             return true;
