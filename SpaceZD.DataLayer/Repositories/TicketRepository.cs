@@ -37,8 +37,20 @@ namespace SpaceZD.DataLayer.Repositories
 
             _context.SaveChanges();
             return true;
-        }           
-        
+        }
+        public bool UpdateTicket(int id, bool isDeleted)
+        {
+            var ticket = GetTicketById(id);
+            if (ticket is null)
+                return false;
+
+            ticket.isDeleted = isDeleted;
+            _context.SaveChanges();
+
+            return true;
+
+        }
+
     }
 }
 
