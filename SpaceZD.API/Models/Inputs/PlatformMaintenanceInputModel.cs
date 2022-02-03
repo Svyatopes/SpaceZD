@@ -1,6 +1,6 @@
 namespace SpaceZD.API.Models;
 
-public class PlatformMaintenanceInsertInputModel
+public class PlatformMaintenanceInputModel
 {
     public int PlatformId { get; set; }
     public DateTime StartTime { get; set; }
