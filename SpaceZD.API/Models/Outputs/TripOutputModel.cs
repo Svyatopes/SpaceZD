@@ -1,4 +1,4 @@
-﻿namespace SpaceZD.API.Models.Outputs
+﻿namespace SpaceZD.API.Models
 {
     public class TripOutputModel
     {

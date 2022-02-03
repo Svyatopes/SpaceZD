@@ -1,4 +1,4 @@
-﻿namespace SpaceZD.API.Models.Inputs
+﻿namespace SpaceZD.API.Models
 {
     public class TransitInputModel
     {
