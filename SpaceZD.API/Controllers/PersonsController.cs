@@ -5,7 +5,7 @@ namespace SpaceZD.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PersonController : ControllerBase
+    public class PersonsController : ControllerBase
     {
         [HttpGet]
         public ActionResult<List<PersonModel>> GetPersons()

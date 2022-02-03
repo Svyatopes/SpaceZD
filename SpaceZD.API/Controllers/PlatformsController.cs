@@ -5,7 +5,7 @@ namespace SpaceZD.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PlatformController : ControllerBase
+    public class PlatformsController : ControllerBase
     {
         [HttpGet]
         public ActionResult<List<PlatformModel>> GetPlatforms()
