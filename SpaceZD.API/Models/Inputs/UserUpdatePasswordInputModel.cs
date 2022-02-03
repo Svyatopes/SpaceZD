@@ -1,4 +1,4 @@
-﻿namespace SpaceZD.BusinessLayer.Models.Inputs
+﻿namespace SpaceZD.API.Models
 {
     public class UserUpdatePasswordInputModel
     {

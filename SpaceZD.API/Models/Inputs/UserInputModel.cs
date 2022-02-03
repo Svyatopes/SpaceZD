@@ -1,4 +1,4 @@
-﻿namespace SpaceZD.BusinessLayer.Models
+﻿namespace SpaceZD.API.Models
 {
     public class UserInputModel
     {
