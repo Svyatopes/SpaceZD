@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SpaceZD.BusinessLayer.Models.Outputs
+﻿namespace SpaceZD.BusinessLayer.Models
 {
     public class UserShortOutputModel
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string Login { get; set; }
     }
 }
