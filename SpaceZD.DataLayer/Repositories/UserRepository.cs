@@ -6,73 +6,48 @@ namespace SpaceZD.DataLayer.Repositories
 {
     public class UserRepository
     {
+        private readonly VeryVeryImportantContext _context;
 
-        public List<User> GetUsers()
-        {
-            var includeAll = false;
-            var context = VeryVeryImportantContext.GetInstance();
-            var users = context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
-            return users;
-        }
-        
-        public User GetUserById(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var user = context.Users.FirstOrDefault(t => t.Id == id);
-            return user;
-        }
+        public UserRepository() => _context = VeryVeryImportantContext.GetInstance();
 
-        public User GetUserByLogin(string login)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var user = context.Users.FirstOrDefault(t => t.Login == login);
-            return user;
-        }
+        public List<User> GetUsers(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
+            
+        public User GetUserById(int id) => _context.Users.FirstOrDefault(t => t.Id == id);
+            
+        public User GetUserByLogin(string login) => _context.Users.FirstOrDefault(t => t.Login == login);
+            
 
         public void AddUser(User user)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            context.Users.Add(user);
-            context.SaveChanges();
+            _context.Users.Add(user);
+            _context.SaveChanges();
 
         }       
 
         public bool UpdateUser(User user)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-
             var userInDb = GetUserById(user.Id);
 
             if (userInDb == null)
                 return false;
 
-            if (userInDb.Name != user.Name)
-                userInDb.Name = user.Name;
+            userInDb.Name = user.Name;
+            userInDb.Login = user.Login;
+            userInDb.PasswordHash = user.PasswordHash;                      
 
-            if (userInDb.Login != user.Login)
-                userInDb.Login = user.Login;
-
-            if (userInDb.PasswordHash != user.PasswordHash)
-                userInDb.PasswordHash = user.PasswordHash;
-
-            if (userInDb.Orders != null && userInDb.Orders != user.Orders)
-                userInDb.Orders = user.Orders;            
-
-            context.SaveChanges();
+            _context.SaveChanges();
             return true;
         }
 
         public bool UpdateUser(int id, bool isDeleted)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-
             var user = GetUserById(id);
             if (user is null)
                 return false;
 
             user.IsDeleted = isDeleted;
 
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return true;
 

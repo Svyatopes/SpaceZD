@@ -7,55 +7,37 @@ namespace SpaceZD.DataLayer.Repositories
     public class TicketRepository
     {
 
-        public List<Ticket> GetTickets()
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var tickets = context.Tickets.ToList();
-            return tickets;
-        }
+        private readonly VeryVeryImportantContext _context;
 
-        public Ticket GetTicketById(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var ticket = context.Tickets.FirstOrDefault(t => t.Id == id);
-            return ticket;
-        }
+        public TicketRepository() => _context = VeryVeryImportantContext.GetInstance();
+
+
+        public List<Ticket> GetTickets() => _context.Tickets.ToList();
+
+        public Ticket GetTicketById(int id) => _context.Tickets.FirstOrDefault(t => t.Id == id);
 
         public void AddTicket(Ticket ticket)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-            context.Tickets.Add(ticket);
-            context.SaveChanges();
+            _context.Tickets.Add(ticket);
+            _context.SaveChanges();
 
         }        
 
         public bool UpdateTicket(Ticket ticket)
         {
-            var context = VeryVeryImportantContext.GetInstance();
-
-            var ticketInDb = GetTicketById(ticket.Id);
+           var ticketInDb = GetTicketById(ticket.Id);
 
             if (ticketInDb == null)
                 return false;
 
-            if (ticketInDb.Order != null && ticketInDb.Order.Id != ticket.Order.Id)
-                ticketInDb.Order = ticket.Order;
-            
-            if (ticketInDb.Carriage != null && ticketInDb.Carriage.Id != ticket.Carriage.Id)
-                ticketInDb.Carriage = ticket.Carriage;
+            ticketInDb.Carriage = ticket.Carriage;
+            ticketInDb.SeatNumber = ticket.SeatNumber;
+            ticketInDb.Price = ticket.Price;
+            ticketInDb.Person = ticket.Person;
 
-            if (ticketInDb.SeatNumber != ticket.SeatNumber)
-                ticketInDb.SeatNumber = ticket.SeatNumber;
-
-            if (ticketInDb.Price != ticket.Price)
-                ticketInDb.Price = ticket.Price;
-
-            if (ticketInDb.Person != null && ticketInDb.Person.Id != ticket.Person.Id)
-                ticketInDb.Person = ticket.Person;
-
-            context.SaveChanges();
+            _context.SaveChanges();
             return true;
-        }      
+        }           
         
     }
 }
