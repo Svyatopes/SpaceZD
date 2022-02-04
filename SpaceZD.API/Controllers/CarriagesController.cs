@@ -28,13 +28,13 @@ public class CarriagesController : ControllerBase
     }*/
 
     [HttpPost]
-    public ActionResult AddCarriage(CarriageInsertInputModel carriage)
+    public ActionResult AddCarriage(CarriageInputModel carriage)
     {
         return StatusCode(StatusCodes.Status201Created, carriage);
     }
 
     [HttpPut("{id}")]
-    public ActionResult EditCarriage(int id, CarriageUpdateInputModel carriage)
+    public ActionResult EditCarriage(int id, CarriageInputModel carriage)
     {
         return BadRequest();
     }
