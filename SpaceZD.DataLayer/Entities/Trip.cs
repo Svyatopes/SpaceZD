@@ -8,4 +8,5 @@ public class Trip
     public virtual ICollection<TripStation> Stations { get; set; }
     public DateTime StartTime { get; set; }
     public virtual ICollection<Order> Orders { get; set; }
+    public bool IsDeleted { get; set; }
 }

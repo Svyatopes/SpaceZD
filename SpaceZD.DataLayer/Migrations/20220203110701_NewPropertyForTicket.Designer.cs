@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpaceZD.DataLayer.DbContextes;
 
@@ -11,9 +12,10 @@ using SpaceZD.DataLayer.DbContextes;
 namespace SpaceZD.DataLayer.Migrations
 {
     [DbContext(typeof(VeryVeryImportantContext))]
-    partial class VeryVeryImportantContextModelSnapshot : ModelSnapshot
+    [Migration("20220203110701_NewPropertyForTicket")]
+    partial class NewPropertyForTicket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,6 +79,35 @@ namespace SpaceZD.DataLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CarriageType");
+                });
+
+            modelBuilder.Entity("SpaceZD.DataLayer.Entities.NotWorkPlatform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("PlatformId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformId");
+
+                    b.ToTable("NotWorkPlatform");
                 });
 
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.Order", b =>
@@ -179,35 +210,6 @@ namespace SpaceZD.DataLayer.Migrations
                     b.HasIndex("StationId");
 
                     b.ToTable("Platform");
-                });
-
-            modelBuilder.Entity("SpaceZD.DataLayer.Entities.PlatformMaintenance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("PlatformId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformId");
-
-                    b.ToTable("PlatformMaintenance");
                 });
 
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.Route", b =>
@@ -314,11 +316,6 @@ namespace SpaceZD.DataLayer.Migrations
                     b.Property<int>("CarriageId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<bool>("IsPetPlaceIncluded")
                         .HasColumnType("bit");
 
@@ -337,6 +334,9 @@ namespace SpaceZD.DataLayer.Migrations
 
                     b.Property<int>("SeatNumber")
                         .HasColumnType("int");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -406,11 +406,6 @@ namespace SpaceZD.DataLayer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
 
                     b.Property<int>("RouteId")
                         .HasColumnType("int");
@@ -519,6 +514,17 @@ namespace SpaceZD.DataLayer.Migrations
                     b.Navigation("Type");
                 });
 
+            modelBuilder.Entity("SpaceZD.DataLayer.Entities.NotWorkPlatform", b =>
+                {
+                    b.HasOne("SpaceZD.DataLayer.Entities.Platform", "Platform")
+                        .WithMany("NotWorkPlatforms")
+                        .HasForeignKey("PlatformId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Platform");
+                });
+
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.Order", b =>
                 {
                     b.HasOne("SpaceZD.DataLayer.Entities.TripStation", "EndStation")
@@ -563,17 +569,6 @@ namespace SpaceZD.DataLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Station");
-                });
-
-            modelBuilder.Entity("SpaceZD.DataLayer.Entities.PlatformMaintenance", b =>
-                {
-                    b.HasOne("SpaceZD.DataLayer.Entities.Platform", "Platform")
-                        .WithMany("PlatformMaintenances")
-                        .HasForeignKey("PlatformId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Platform");
                 });
 
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.Route", b =>
@@ -728,7 +723,7 @@ namespace SpaceZD.DataLayer.Migrations
 
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.Platform", b =>
                 {
-                    b.Navigation("PlatformMaintenances");
+                    b.Navigation("NotWorkPlatforms");
 
                     b.Navigation("TripStations");
                 });

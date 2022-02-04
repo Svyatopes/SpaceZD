@@ -1,9 +1,9 @@
-﻿namespace SpaceZD.DataLayer.Entities;
+namespace SpaceZD.BusinessLayer.Models;
 
-public class NotWorkPlatform
+public class PlatformMaintenanceModel
 {
     public int Id { get; set; }
-    public virtual Platform Platform { get; set; }
+    //public PlatformModel Platform { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public bool IsDeleted { get; set; }
