@@ -12,7 +12,7 @@ namespace SpaceZD.DataLayer.Repositories
         public TicketRepository() => _context = VeryVeryImportantContext.GetInstance();
 
 
-        public List<Ticket> GetTickets(bool includeAll = false) => _context.Tickets.Where(t => !t.isDeleted || includeAll).ToList();
+        public List<Ticket> GetTickets(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 
         public Ticket GetTicketById(int id) => _context.Tickets.FirstOrDefault(t => t.Id == id);
 
@@ -45,7 +45,7 @@ namespace SpaceZD.DataLayer.Repositories
             if (ticket is null)
                 return false;
 
-            ticket.isDeleted = isDeleted;
+            ticket.IsDeleted = isDeleted;
             _context.SaveChanges();
 
             return true;
