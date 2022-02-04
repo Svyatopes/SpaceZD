@@ -10,5 +10,5 @@ public class Ticket
     public bool IsPetPlaceIncluded { get; set; }
     public virtual Person Person { get; set; }
     public decimal Price { get; set; }
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 }
