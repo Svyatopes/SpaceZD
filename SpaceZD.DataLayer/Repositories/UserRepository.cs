@@ -1,57 +1,48 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SpaceZD.DataLayer.DbContextes;
+﻿using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
 {
-    public class UserRepository
+    public UserRepository(VeryVeryImportantContext context) : base(context) { }
+    
+    public User? GetById(int id) => _context.Users.FirstOrDefault(t => t.Id == id);
+
+    public IEnumerable<User> GetList(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
+
+    public void Add(User user)
     {
-        private readonly VeryVeryImportantContext _context;
+        _context.Users.Add(user);
+        _context.SaveChanges();
+    }
 
-        public UserRepository() => _context = VeryVeryImportantContext.GetInstance();
+    public bool Update(User user)
+    {
+        var userInDb = GetById(user.Id);
 
-        public List<User> GetUsers(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
-            
-        public User GetUserById(int id) => _context.Users.FirstOrDefault(t => t.Id == id);
-            
-        public User GetUserByLogin(string login) => _context.Users.FirstOrDefault(t => t.Login == login);
-            
+        if (userInDb == null)
+            return false;
 
-        public void AddUser(User user)
-        {
-            _context.Users.Add(user);
-            _context.SaveChanges();
+        userInDb.Name = user.Name;
+        userInDb.Login = user.Login;
+        userInDb.PasswordHash = user.PasswordHash;                      
 
-        }       
+        _context.SaveChanges();
+        return true;
+    }
 
-        public bool UpdateUser(User user)
-        {
-            var userInDb = GetUserById(user.Id);
+    public bool Update(int id, bool isDeleted)
+    {
+        var user = GetById(id);
+        if (user is null)
+            return false;
 
-            if (userInDb == null)
-                return false;
+        user.IsDeleted = isDeleted;
 
-            userInDb.Name = user.Name;
-            userInDb.Login = user.Login;
-            userInDb.PasswordHash = user.PasswordHash;                      
+        _context.SaveChanges();
 
-            _context.SaveChanges();
-            return true;
-        }
-
-        public bool UpdateUser(int id, bool isDeleted)
-        {
-            var user = GetUserById(id);
-            if (user is null)
-                return false;
-
-            user.IsDeleted = isDeleted;
-
-            _context.SaveChanges();
-
-            return true;
-
-        }
-
+        return true;
     }
 }

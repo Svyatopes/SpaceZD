@@ -1,49 +1,50 @@
-﻿using SpaceZD.DataLayer.Entities;
+﻿using SpaceZD.DataLayer.DbContextes;
+using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
 {
-    public class OrderRepository : BaseRepository, IRepository<Order>, ISoftDelete<Order>
+    public OrderRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public Order? GetById(int id) => _context.Orders.FirstOrDefault(o => o.Id == id);
+
+    public IEnumerable<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
+
+    public void Add(Order order)
     {
-        public Order GetById(int id) => _context.Orders.FirstOrDefault(o => o.Id == id);
+        _context.Orders.Add(order);
+        _context.SaveChanges();
+    }
 
-        public List<Order> GetList(bool includeAll) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
+    public bool Update(Order order)
+    {
+        var orderInDb = GetById(order.Id);
 
-        public void Add(Order order)
-        {
-            _context.Orders.Add(order);
-            _context.SaveChanges();
-        }
+        if (orderInDb == null)
+            return false;
 
-        public bool Update(Order order)
-        {
-            var orderInDB = GetById(order.Id);
+        orderInDb.Trip = order.Trip;
+        orderInDb.StartStation = order.StartStation;
+        orderInDb.EndStation = order.EndStation;
 
-            if (orderInDB == null)
-                return false;
+        _context.SaveChanges();
 
-            orderInDB.Trip = order.Trip;
-            orderInDB.StartStation = order.StartStation;
-            orderInDB.EndStation = order.EndStation;
+        return true;
+    }
 
-            _context.SaveChanges();
+    public bool Update(int id, bool isDeleted)
+    {
+        var orderInDb = GetById(id);
 
-            return true;
-        }
+        if (orderInDb == null)
+            return false;
 
-        public bool Update(int id, bool isDeleted)
-        {
-            var orderInDB = GetById(id);
+        orderInDb.IsDeleted = isDeleted;
 
-            if (orderInDB == null)
-                return false;
+        _context.SaveChanges();
 
-            orderInDB.IsDeleted = isDeleted;
-
-            _context.SaveChanges();
-
-            return true;
-        }
-
+        return true;
     }
 }

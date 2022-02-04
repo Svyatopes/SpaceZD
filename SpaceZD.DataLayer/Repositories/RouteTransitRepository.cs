@@ -1,45 +1,46 @@
 ﻿using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class RouteTransitRepository : BaseRepository, IRepositorySoftDelete<RouteTransit>
 {
-    public class RouteTransitRepository
+    public RouteTransitRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public RouteTransit? GetById(int id) => _context.RouteTransits.FirstOrDefault(rt => rt.Id == id);
+
+    public IEnumerable<RouteTransit> GetList(bool includeAll = false) => _context.RouteTransits.Where(r => !r.IsDeleted || includeAll).ToList();
+
+    public void Add(RouteTransit routeTransit)
     {
-        private readonly VeryVeryImportantContext _context;
-        public RouteTransitRepository() => _context = new VeryVeryImportantContext();
-        public RouteTransit? GetEntity(int id) => _context.RouteTransits.FirstOrDefault(rt => rt.Id == id);
+        _context.RouteTransits.Add(routeTransit);
+        _context.SaveChanges();
+    }
 
-        public void Add(RouteTransit routetransit)
-        {
-            _context.RouteTransits.Add(routetransit);
-            _context.SaveChanges();
-        }
+    public bool Update(RouteTransit routeTransit)
+    {
+        var entity = GetById(routeTransit.Id);
+        if (entity is null)
+            return false;
 
-        public IEnumerable<RouteTransit> GetListEntity() => _context.RouteTransits.Where(rt => !rt.IsDeleted).ToList();
+        entity.Transit = routeTransit.Transit;
+        entity.DepartingTime = routeTransit.DepartingTime;
+        entity.ArrivalTime = routeTransit.ArrivalTime;
+        entity.Route = routeTransit.Route;
 
-        public bool UpdateRouteTransit(int id, bool isDeleted)
-        {
-            var entity = GetEntity(id);
-            if (entity is null)
-                return false;
+        _context.SaveChanges();
+        return true;
+    }
 
-            entity.IsDeleted = true;
-            _context.SaveChanges();
-            return true;
-        }
+    public bool Update(int id, bool isDeleted)
+    {
+        var entity = GetById(id);
+        if (entity is null)
+            return false;
 
-        public bool UpdateRouteTransit(RouteTransit routetransit)
-        {
-            var entity = GetEntity(routetransit.Id);
-            if (entity is null)
-                return false;
-            entity.Transit = routetransit.Transit;
-            entity.DepartingTime = routetransit.DepartingTime;
-            entity.ArrivalTime = routetransit.ArrivalTime;
-            entity.Route = routetransit.Route;
-
-            _context.SaveChanges();
-            return true;
-        }
+        entity.IsDeleted = isDeleted;
+        _context.SaveChanges();
+        return true;
     }
 }

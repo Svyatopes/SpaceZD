@@ -1,42 +1,43 @@
 ﻿using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class StationRepository : BaseRepository, IRepositorySoftDelete<Station>
 {
-    public class StationRepository
+    public StationRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public Station? GetById(int id) => _context.Stations.FirstOrDefault(s => s.Id == id);
+
+    public IEnumerable<Station> GetList(bool includeAll = false) => _context.Stations.Where(s => !s.IsDeleted || includeAll).ToList();
+
+    public void Add(Station station)
     {
-        private readonly VeryVeryImportantContext _context;
-        public StationRepository() => _context = new VeryVeryImportantContext();
-        public Station? GetEntity(int id) => _context.Stations.FirstOrDefault(s => s.Id == id);
+        _context.Stations.Add(station);
+        _context.SaveChanges();
+    }
 
-        public void Add(Station station)
-        {
-            _context.Stations.Add(station);
-            _context.SaveChanges();
-        }
+    public bool Update(Station station)
+    {
+        var entity = GetById(station.Id);
+        if (entity is null)
+            return false;
 
-        public IEnumerable<Station> GetListEntity() => _context.Stations.Where(s => !s.IsDeleted).ToList();
+        entity.Name = station.Name;
 
-        public bool UpdateRouteTransit(int id, bool isDeleted)
-        {
-            var entity = GetEntity(id);
-            if (entity is null)
-                return false;
+        _context.SaveChanges();
+        return true;
+    }
 
-            entity.IsDeleted = true;
-            _context.SaveChanges();
-            return true;
-        }
+    public bool Update(int id, bool isDeleted)
+    {
+        var entity = GetById(id);
+        if (entity is null)
+            return false;
 
-        public bool UpdateRouteTransit(Station station)
-        {
-            var entity = GetEntity(station.Id);
-            if (entity is null)
-                return false;
-            entity.Name = station.Name;
-
-            _context.SaveChanges();
-            return true;
-        }
+        entity.IsDeleted = isDeleted;
+        _context.SaveChanges();
+        return true;
     }
 }
