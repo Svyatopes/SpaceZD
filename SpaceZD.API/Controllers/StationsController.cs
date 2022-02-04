@@ -5,7 +5,7 @@ namespace SpaceZD.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StationController : ControllerBase
+    public class StationsController : ControllerBase
     {
         [HttpGet("{id}")]
         public ActionResult<StationModel> GetStationById(int id)
