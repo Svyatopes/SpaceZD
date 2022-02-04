@@ -1,49 +1,50 @@
-﻿using SpaceZD.DataLayer.Entities;
+﻿using SpaceZD.DataLayer.DbContextes;
+using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class PersonRepository : BaseRepository, IRepositorySoftDelete<Person>
 {
-    public class PersonRepository : BaseRepository, IRepository<Person>, ISoftDelete<Person>
+    public PersonRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public Person? GetById(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
+
+    public IEnumerable<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
+
+    public void Add(Person person)
     {
-        public Person GetById(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
+        _context.Persons.Add(person);
+        _context.SaveChanges();
+    }
 
-        public List<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
+    public bool Update(Person person)
+    {
+        var personInDb = GetById(person.Id);
 
-        public void Add(Person person)
-        {
-            _context.Persons.Add(person);
-            _context.SaveChanges();
-        }
+        if (personInDb == null)
+            return false;
 
-        public bool Update(Person person)
-        {
-            var personInDB = GetById(person.Id);
+        personInDb.FirstName = person.FirstName;
+        personInDb.LastName = person.LastName;
+        personInDb.Patronymic = person.Patronymic;
+        personInDb.Passport = person.Passport;
 
-            if (personInDB == null)
-                return false;
+        _context.SaveChanges();
+        return true;
+    }
 
-            personInDB.FirstName = person.FirstName;
-            personInDB.LastName = person.LastName;
-            personInDB.Patronymic = person.Patronymic;
-            personInDB.Passport = person.Passport;
+    public bool Update(int id, bool isDeleted)
+    {
+        var personInDb = GetById(id);
 
-            _context.SaveChanges();
-            return true;
-        }
+        if (personInDb == null)
+            return false;
 
-        public bool Update(int id, bool isDeleted)
-        {
-            var personInDB = GetById(id);
+        personInDb.IsDeleted = isDeleted;
 
-            if (personInDB == null)
-                return false;
+        _context.SaveChanges();
 
-            personInDB.IsDeleted = isDeleted;
-
-            _context.SaveChanges();
-
-            return true;
-
-        }
+        return true;
     }
 }

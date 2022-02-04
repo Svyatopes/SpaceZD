@@ -1,57 +1,46 @@
 ﻿using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
 {
-    public class TrainRepository
+    public TrainRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public Train? GetById(int id) => _context.Trains.FirstOrDefault(t => t.Id == id);
+
+    public IEnumerable<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
+
+    public void Add(Train train)
     {
-        private readonly VeryVeryImportantContext _context;        
+        _context.Trains.Add(train);
+        _context.SaveChanges();
+    }
 
-        public TrainRepository() => _context = VeryVeryImportantContext.GetInstance();
-       
-        public List<Train> GetTrains(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
-           
-        public Train GetTrainById(int id) => _context.Trains.FirstOrDefault(t => t.Id == id);
-            
+    public bool Update(Train train)
+    {
+        var trainInDb = GetById(train.Id);
 
-        public void AddTrain(Train train)
-        {
-            _context.Trains.Add(train);
-            _context.SaveChanges();
-
-        }
-
-        public bool UpdateTrain(Train train)
-        {
-            var trainInDb = GetTrainById(train.Id);
-
-            if (trainInDb == null)
-                return false;
-
-            if (trainInDb.Carriages != null && trainInDb.Carriages != train.Carriages)
-                trainInDb.Carriages = train.Carriages;
-
-            _context.SaveChanges();
+        if (trainInDb == null)
             return false;
-        }
 
-        public bool UpdateTrain(int id, bool isDeleted)
-        {
-            var train = GetTrainById(id);
-            if (train is null)
-                return false;
+        if (trainInDb.Carriages != null && trainInDb.Carriages != train.Carriages)
+            trainInDb.Carriages = train.Carriages;
 
-            train.IsDeleted = isDeleted;
-            _context.SaveChanges();
+        _context.SaveChanges();
+        return false;
+    }
 
-            return true;
+    public bool Update(int id, bool isDeleted)
+    {
+        var train = GetById(id);
+        if (train is null)
+            return false;
 
-        }
+        train.IsDeleted = isDeleted;
+        _context.SaveChanges();
 
+        return true;
     }
 }
-
-
-
-
-

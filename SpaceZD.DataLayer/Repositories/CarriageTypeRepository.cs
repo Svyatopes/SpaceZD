@@ -1,12 +1,16 @@
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class CarriageTypeRepository
+public class CarriageTypeRepository : BaseRepository, IRepositorySoftDelete<CarriageType>
 {
-    private readonly VeryVeryImportantContext _context;
-    public CarriageTypeRepository() => _context = VeryVeryImportantContext.GetInstance();
+    public CarriageTypeRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public CarriageType? GetById(int id) => _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
+
+    public IEnumerable<CarriageType> GetList(bool includeAll = false) => _context.CarriageTypes.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public void Add(CarriageType carriageType)
     {
@@ -14,31 +18,27 @@ public class CarriageTypeRepository
         _context.SaveChanges();
     }
 
-    public CarriageType? GetEntity(int id) => _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
-
-    public IEnumerable<CarriageType> GetListEntity(bool includeAll = false) => _context.CarriageTypes.Where(c => !c.IsDeleted || includeAll).ToList();
-
-    public bool Update(int id, bool isDeleted)
+    public bool Update(CarriageType carriageType)
     {
-        var entity = GetEntity(id);
+        var entity = GetById(carriageType.Id);
         if (entity is null)
             return false;
 
-        entity.IsDeleted = isDeleted;
+        entity.Name = carriageType.Name;
+        entity.NumberOfSeats = carriageType.NumberOfSeats;
 
         _context.SaveChanges();
 
         return true;
     }
 
-    public bool Update(CarriageType carriageType)
+    public bool Update(int id, bool isDeleted)
     {
-        var entity = GetEntity(carriageType.Id);
+        var entity = GetById(id);
         if (entity is null)
             return false;
 
-        entity.Name = carriageType.Name;
-        entity.NumberOfSeats = carriageType.NumberOfSeats;
+        entity.IsDeleted = isDeleted;
 
         _context.SaveChanges();
 

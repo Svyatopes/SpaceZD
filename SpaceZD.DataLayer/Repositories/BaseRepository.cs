@@ -1,10 +1,12 @@
 ﻿using SpaceZD.DataLayer.DbContextes;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public abstract class BaseRepository
 {
-    public class BaseRepository
+    protected readonly VeryVeryImportantContext _context;
+    protected BaseRepository(VeryVeryImportantContext context)
     {
-        protected readonly VeryVeryImportantContext _context;
-        public BaseRepository() => _context = VeryVeryImportantContext.GetInstance();
+        _context = context;
     }
 }
