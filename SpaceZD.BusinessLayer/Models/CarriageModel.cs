@@ -6,6 +6,4 @@ public class CarriageModel
     public int Number { get; set; }
     public CarriageTypeModel Type { get; set; }
     public bool IsDeleted { get; set; }
-    //public TrainModel Train { get; set; }
-    //public List<TicketModel> Tickets { get; set; }
 }
