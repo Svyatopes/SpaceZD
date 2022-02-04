@@ -25,7 +25,7 @@ namespace SpaceZD.API.Controllers
             return StatusCode(StatusCodes.Status201Created, station);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult DeleteStation(int id)
         {
             return Accepted();
@@ -35,6 +35,12 @@ namespace SpaceZD.API.Controllers
         public ActionResult EditStation(int id, StationModel station)
         {
             return BadRequest();
+        }
+
+        [HttpPatch("{id}")]
+        public ActionResult RestoreStation(int id)
+        {
+            return Accepted();
         }
     }
 }

@@ -5,56 +5,38 @@ namespace SpaceZD.DataLayer.Repositories
 {
     public class StationRepository
     {
-        public Station GetStationById(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var station = context.Stations.FirstOrDefault(s => s.Id == id);
+        private readonly VeryVeryImportantContext _context;
+        public StationRepository() => _context = new VeryVeryImportantContext();
+        public Station? GetEntity(int id) => _context.Stations.FirstOrDefault(s => s.Id == id);
 
-            return station;
+        public void Add(Station station)
+        {
+            _context.Stations.Add(station);
+            _context.SaveChanges();
         }
 
-        public List<Station> GetStations()
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var stations = context.Stations.ToList();
+        public IEnumerable<Station> GetListEntity() => _context.Stations.Where(s => !s.IsDeleted).ToList();
 
-            return stations;
+        public bool UpdateRouteTransit(int id, bool isDeleted)
+        {
+            var entity = GetEntity(id);
+            if (entity is null)
+                return false;
+
+            entity.IsDeleted = true;
+            _context.SaveChanges();
+            return true;
         }
 
-        public void AddStation(Station station)
+        public bool UpdateRouteTransit(Station station)
         {
-            var context = VeryVeryImportantContext.GetInstance();
+            var entity = GetEntity(station.Id);
+            if (entity is null)
+                return false;
+            entity.Name = station.Name;
 
-            context.Stations.Add(station);
-
-            context.SaveChanges();
-        }
-
-        public void DeleteStation(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var station = context.Stations.FirstOrDefault(s => s.Id == id);
-
-            station.IsDeleted = true;
-
-            context.SaveChanges();
-        }
-
-        public void UpdateStation(Station station)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var stationDB = GetStationById(station.Id);
-
-            stationDB.Name = station.Name;
-            stationDB.Platforms = station.Platforms;
-            stationDB.IsDeleted=station.IsDeleted;
-            stationDB.RoutesWithStartStation = station.RoutesWithStartStation;
-            stationDB.RoutesWithEndStation = station.RoutesWithEndStation;
-            stationDB.TransitsWithStartStation = station.TransitsWithStartStation;
-            stationDB.TransitsWithEndStation=station.TransitsWithEndStation;
-            stationDB.TripStations = station.TripStations;
-
-            context.SaveChanges();
+            _context.SaveChanges();
+            return true;
         }
     }
 }

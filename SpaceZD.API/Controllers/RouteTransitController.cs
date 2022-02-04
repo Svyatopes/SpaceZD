@@ -25,7 +25,7 @@ namespace SpaceZD.API.Controllers
             return StatusCode(StatusCodes.Status201Created, routetransit);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult DeleteRouteTransit(int id)
         {
             return Accepted();
@@ -35,6 +35,12 @@ namespace SpaceZD.API.Controllers
         public ActionResult EditRouteTransit(int id, RouteTransitModel routetransit)
         {
             return BadRequest();
+        }
+
+        [HttpPatch("{id}")]
+        public ActionResult RestoreRouteTransit(int id)
+        {
+            return Accepted();
         }
     }
 }

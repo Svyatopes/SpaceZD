@@ -5,55 +5,43 @@ namespace SpaceZD.DataLayer.Repositories
 {
     public class RouteRepository
     {
-        public Route GetRouteById(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var route = context.Routes.FirstOrDefault(r => r.Id == id);
+        private readonly VeryVeryImportantContext _context;
+        public RouteRepository() => _context = new VeryVeryImportantContext();
+        public Route? GetEntity(int id) => _context.Routes.FirstOrDefault(r => r.Id == id);
 
-            return route;
+        public void Add(Route route)
+        {
+            _context.Routes.Add(route);
+            _context.SaveChanges();
         }
 
-        public List<Route> GetRoutes()
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var routes = context.Routes.ToList();
+        public IEnumerable<Route> GetListEntity() => _context.Routes.Where(r => !r.IsDeleted).ToList();
 
-            return routes;
+
+        public bool UpdateRouteTransit(int id, bool isDeleted)
+        {
+            var entity = GetEntity(id);
+            if (entity is null)
+                return false;
+
+            entity.IsDeleted = true;
+            _context.SaveChanges();
+            return true;
         }
 
-        public void AddRoute(Route route)
+        public bool UpdateRouteTransit(Route route)
         {
-            var context = VeryVeryImportantContext.GetInstance();
+            var entity = GetEntity(route.Id);
+            if (entity is null)
+                return false;
+            entity.Code = route.Code;
+            entity.StartTime = route.StartTime;
+            entity.StartStation = route.StartStation;
+            entity.EndStation = route.EndStation;
 
-            context.Routes.Add(route);
-
-            context.SaveChanges();
+            _context.SaveChanges();
+            return true;
         }
 
-        public void DeleteRoute(int id)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var route = context.Routes.FirstOrDefault(r => r.Id == id);
-
-            route.IsDeleted = true;
-
-            context.SaveChanges();
-        }
-
-        public void UpdateRoute(Route route)
-        {
-            var context = VeryVeryImportantContext.GetInstance();
-            var routeDB = GetRouteById(route.Id);
-
-            routeDB.Code = route.Code;
-            routeDB.Transits = route.Transits;
-            routeDB.StartTime = route.StartTime;
-            routeDB.StartStation = route.StartStation;
-            routeDB.EndStation = route.EndStation;
-            routeDB.IsDeleted = route.IsDeleted;
-            routeDB.Trips = route.Trips;
-
-            context.SaveChanges();
-        }
     }
 }

@@ -24,8 +24,7 @@ namespace SpaceZD.API.Controllers
         {
             return StatusCode(StatusCodes.Status201Created, route);
         }
-
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult DeleteRoute(int id)
         {
             return Accepted();
@@ -35,6 +34,12 @@ namespace SpaceZD.API.Controllers
         public ActionResult EditRoute(int id, RouteModel route)
         {
             return BadRequest();
+        }
+
+        [HttpPatch("{id}")]
+        public ActionResult RestoreRoute(int id)
+        {
+            return Accepted();
         }
     }
 }
