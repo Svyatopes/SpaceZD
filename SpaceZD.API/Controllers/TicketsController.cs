@@ -26,7 +26,7 @@ public class TicketsController : ControllerBase
     public ActionResult AddTicket(TicketInputModel ticket)
     {
 
-        var ticketModel = APIMapper.GetInstance().Map<TicketModel>(ticket);
+        var ticketModel = ApiMapper.GetInstance().Map<TicketModel>(ticket);
 
 
         return StatusCode(StatusCodes.Status201Created, ticket);

@@ -4,7 +4,7 @@ using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Configuration
 {
-    public static class APIMapper
+    public static class ApiMapper
     {
         private static Mapper _instance;
 
