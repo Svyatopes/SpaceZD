@@ -2,7 +2,7 @@
 {
     public class TripUpdateInputModel
     {
-        public int Train { get; set; }
+        public int TrainId { get; set; }
         public DateTime StartTime { get; set; }
     }
 }
