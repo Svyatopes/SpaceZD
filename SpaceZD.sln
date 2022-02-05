@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceZD.BusinessLayer", "Sp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceZD.DataLayer", "SpaceZD.DataLayer\SpaceZD.DataLayer.csproj", "{47650722-F6E6-4406-8ADD-5CDAF1C340BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceZD.DataLayer.Tests", "SpaceZD.DataLayer.Tests\SpaceZD.DataLayer.Tests.csproj", "{08FFE095-592F-474E-83F8-483A7209A429}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{47650722-F6E6-4406-8ADD-5CDAF1C340BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47650722-F6E6-4406-8ADD-5CDAF1C340BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47650722-F6E6-4406-8ADD-5CDAF1C340BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08FFE095-592F-474E-83F8-483A7209A429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08FFE095-592F-474E-83F8-483A7209A429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08FFE095-592F-474E-83F8-483A7209A429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08FFE095-592F-474E-83F8-483A7209A429}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
