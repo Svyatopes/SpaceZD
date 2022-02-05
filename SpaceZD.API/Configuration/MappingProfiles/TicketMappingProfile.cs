@@ -8,12 +8,11 @@ namespace SpaceZD.API.Configuration
     {
         public TicketMappingProfile()
         {
-            CreateMap<TicketInputModel, TicketModel>().AfterMap((tim, tm) =>
-                    {
-                        tm.Carriage = new CarriageModel() { Id = tim.CarriageId };
-                        tm.Order = new OrderModel() { Id = tim.OrderId };
-                        tm.Person = new PersonModel() { Id = tim.PersonId };
-                    });
+            CreateMap<TicketInputModel, TicketModel>()
+                        .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new TicketModel() { Id = tim.CarriageId }))
+                        .ForMember(tm => tm.Order, opt => opt.MapFrom(tim => new OrderModel() { Id = tim.OrderId }))
+                        .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel() { Id = tim.PersonId }));
+
 
             CreateMap<TicketModel, TicketOutputModel>()
                         .ForMember(tom => tom.CarriageId, opt => opt.MapFrom(tm => tm.Carriage.Id))
