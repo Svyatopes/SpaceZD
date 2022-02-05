@@ -17,7 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
-builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseSqlServer(connectionString));
+builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IRepositorySoftDelete<User>,UserRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
