@@ -1,4 +1,6 @@
-﻿namespace SpaceZD.BusinessLayer.Models
+﻿using SpaceZD.DataLayer.Enums;
+
+namespace SpaceZD.BusinessLayer.Models
 {
     public class UserModel
     {
