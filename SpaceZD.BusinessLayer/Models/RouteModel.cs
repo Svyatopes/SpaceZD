@@ -9,6 +9,5 @@
         public StationModel StartStation { get; set; }
         public StationModel EndStation { get; set; }
         public bool IsDeleted { get; set; }
-        // public ICollection<Trip> Trips { get; set; }
     }
 }

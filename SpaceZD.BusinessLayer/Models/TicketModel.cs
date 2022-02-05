@@ -10,5 +10,6 @@
         public bool IsPetPlaceIncluded { get; set; }
         public PersonModel Person { get; set; }
         public decimal Price { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

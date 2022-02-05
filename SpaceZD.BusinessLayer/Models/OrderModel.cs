@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
         public UserModel User { get; set; }
-        //public Trip Trip { get; set; }
-        //public TripStation StartStation { get; set; }
-        //public TripStation EndStation { get; set; }
+        public TripModel Trip { get; set; }
+        public TripStationModel StartStation { get; set; }
+        public TripStationModel EndStation { get; set; }
         public List<TicketModel> Tickets { get; set; }
         public bool IsDeleted { get; set; }
     }
