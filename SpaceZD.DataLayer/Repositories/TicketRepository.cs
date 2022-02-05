@@ -1,60 +1,49 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SpaceZD.DataLayer.DbContextes;
+﻿using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Interfaces;
 
-namespace SpaceZD.DataLayer.Repositories
+namespace SpaceZD.DataLayer.Repositories;
+
+public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
 {
-    public class TicketRepository
+    public TicketRepository(VeryVeryImportantContext context) : base(context) { }
+
+    public Ticket? GetById(int id) => _context.Tickets.FirstOrDefault(t => t.Id == id);
+    
+    public IEnumerable<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
+
+    public void Add(Ticket ticket)
     {
+        _context.Tickets.Add(ticket);
+        _context.SaveChanges();
+    }
 
-        private readonly VeryVeryImportantContext _context;
+    public bool Update(Ticket ticket)
+    {
+        var ticketInDb = GetById(ticket.Id);
 
-        public TicketRepository() => _context = VeryVeryImportantContext.GetInstance();
+        if (ticketInDb is null)
+            return false;
 
+        ticketInDb.Carriage = ticket.Carriage;
+        ticketInDb.SeatNumber = ticket.SeatNumber;
+        ticketInDb.Price = ticket.Price;
+        ticketInDb.Person = ticket.Person;
 
-        public List<Ticket> GetTickets(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
+        _context.SaveChanges();
+        return true;
+    }
+    
+    public bool Update(int id, bool isDeleted)
+    {
+        var ticket = GetById(id);
+        if (ticket is null)
+            return false;
 
-        public Ticket GetTicketById(int id) => _context.Tickets.FirstOrDefault(t => t.Id == id);
+        ticket.IsDeleted = isDeleted;
+        _context.SaveChanges();
 
-
-        public void AddTicket(Ticket ticket)
-        {
-            _context.Tickets.Add(ticket);
-            _context.SaveChanges();
-
-        }        
-
-        public bool UpdateTicket(Ticket ticket)
-        {
-           var ticketInDb = GetTicketById(ticket.Id);
-
-            if (ticketInDb == null)
-                return false;
-
-            ticketInDb.Carriage = ticket.Carriage;
-            ticketInDb.SeatNumber = ticket.SeatNumber;
-            ticketInDb.Price = ticket.Price;
-            ticketInDb.Person = ticket.Person;
-
-            _context.SaveChanges();
-            return true;
-        }
-        public bool UpdateTicket(int id, bool isDeleted)
-        {
-            var ticket = GetTicketById(id);
-            if (ticket is null)
-                return false;
-
-            ticket.IsDeleted = isDeleted;
-            _context.SaveChanges();
-
-            return true;
-
-        }
+        return true;
 
     }
 }
-
-
-
-
