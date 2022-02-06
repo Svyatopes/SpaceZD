@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Configuration;
+using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
+using SpaceZD.BusinessLayer.Services;
 
 namespace SpaceZD.API.Controllers;
 
@@ -7,6 +10,15 @@ namespace SpaceZD.API.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
+
+    private readonly IUserService _userService;
+    public UsersController(IUserService userService) 
+    {
+        _userService = userService;
+    }
+
+    
+    
     [HttpGet]
     public ActionResult<List<UserModel>> GetUsers()
     {
@@ -16,14 +28,21 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<UserModel> GetUserById(int id)
     {
-        return Ok(new UserModel());
+        var userModel = _userService.GetById(id);
+        var user = ApiMapper.GetInstance().Map<UserOutputModel>(userModel);
+        if (user != null)
+            return Ok(user);
+        else
+            return BadRequest("User doesn't exist");
     }
 
 
     [HttpPost]
-    public ActionResult AddUser(UserModel user)
+    public ActionResult AddUser(UserModel userModel)
     {
-        return StatusCode(StatusCodes.Status201Created, user);
+        var user = ApiMapper.GetInstance().Map<UserModel>(userModel);
+        var s = _userService.Add(user);
+        return StatusCode(StatusCodes.Status201Created, userModel);
     }
 
     [HttpPut("{id}")]
