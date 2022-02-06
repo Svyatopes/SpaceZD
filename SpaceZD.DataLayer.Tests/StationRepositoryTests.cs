@@ -63,9 +63,7 @@ public class StationRepositoryTests
         //act
         var list = (List<Station>)_repository.GetList();
 
-
         //assert
-
         Assert.IsNotNull(list);
         Assert.AreEqual(2, list.Count);
 
@@ -154,13 +152,12 @@ public class StationRepositoryTests
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
         //assert
-
-        var updatedOrder = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
+        var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        Assert.IsNotNull(updatedOrder);
-        Assert.AreEqual(isDeleted, updatedOrder!.IsDeleted);
-        AsserTestStation(updatedOrder);
+        Assert.IsNotNull(entityToUpdated);
+        Assert.AreEqual(isDeleted, entityToUpdated!.IsDeleted);
+        AsserTestStation(entityToUpdated);
     }
 
     private Station TestEntity => new()
