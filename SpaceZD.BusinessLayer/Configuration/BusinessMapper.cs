@@ -2,7 +2,7 @@
 
 namespace SpaceZD.BusinessLayer.Configuration
 {
-    public static class BussinessMapper
+    public static class BusinessMapper
     {
         private static Mapper _instance;
 

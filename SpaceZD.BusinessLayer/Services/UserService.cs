@@ -17,12 +17,12 @@ namespace SpaceZD.BusinessLayer.Services
         public UserModel GetById(int id)
         {
             var grade = _userRepository.GetById(id);
-            return BussinessMapper.GetInstance().Map<UserModel>(grade);
+            return BusinessMapper.GetInstance().Map<UserModel>(grade);
         }
 
         public bool Add(UserModel user)
         {
-            var newGrade = BussinessMapper.GetInstance().Map<User>(user);
+            var newGrade = BusinessMapper.GetInstance().Map<User>(user);
             
             _userRepository.Add(newGrade);
             return true;
