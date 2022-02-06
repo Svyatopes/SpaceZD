@@ -12,10 +12,11 @@ public class TripStationRepository : BaseRepository, IRepository<TripStation>
 
     public IEnumerable<TripStation> GetList() => _context.TripStations.ToList();
 
-    public void Add(TripStation tripStation)
+    public int Add(TripStation tripStation)
     {
         _context.TripStations.Add(tripStation);
         _context.SaveChanges();
+        return tripStation.Id;
     }
 
     public bool Update(TripStation tripStation)

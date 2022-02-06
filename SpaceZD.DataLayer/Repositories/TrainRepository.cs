@@ -12,10 +12,11 @@ public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
 
     public IEnumerable<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
 
-    public void Add(Train train)
+    public int Add(Train train)
     {
         _context.Trains.Add(train);
         _context.SaveChanges();
+        return train.Id; 
     }
 
     public bool Update(Train train)

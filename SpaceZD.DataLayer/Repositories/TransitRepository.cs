@@ -12,10 +12,11 @@ public class TransitRepository : BaseRepository, IRepositorySoftDelete<Transit>
 
     public IEnumerable<Transit> GetList(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
 
-    public void Add(Transit transit)
+    public int Add(Transit transit)
     {
         _context.Transits.Add(transit);
         _context.SaveChanges();
+        return transit.Id;
     }
 
     public bool Update(Transit transit)

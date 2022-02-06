@@ -12,10 +12,11 @@ public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDele
 
     public IEnumerable<PlatformMaintenance> GetList(bool includeAll = false) => _context.PlatformMaintenances.Where(p => !p.IsDeleted || includeAll).ToList();
 
-    public void Add(PlatformMaintenance platformMaintenance)
+    public int Add(PlatformMaintenance platformMaintenance)
     {
         _context.PlatformMaintenances.Add(platformMaintenance);
         _context.SaveChanges();
+        return platformMaintenance.Id;
     }
 
     public bool Update(PlatformMaintenance platformMaintenance)

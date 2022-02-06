@@ -12,10 +12,11 @@ public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
     
     public IEnumerable<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 
-    public void Add(Ticket ticket)
+    public int Add(Ticket ticket)
     {
         _context.Tickets.Add(ticket);
         _context.SaveChanges();
+        return ticket.Id;
     }
 
     public bool Update(Ticket ticket)

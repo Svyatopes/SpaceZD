@@ -12,10 +12,11 @@ public class CarriageRepository : BaseRepository, IRepositorySoftDelete<Carriage
 
     public IEnumerable<Carriage> GetList(bool includeAll = false) => _context.Carriages.Where(c => !c.IsDeleted || includeAll).ToList();
 
-    public void Add(Carriage carriage)
+    public int Add(Carriage carriage)
     {
         _context.Carriages.Add(carriage);
         _context.SaveChanges();
+        return carriage.Id;
     }
     
     public bool Update(Carriage carriage)
