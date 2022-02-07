@@ -14,4 +14,8 @@
     <ProjectReference Include="..\SpaceZD.DataLayer\SpaceZD.DataLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Interfaces" />
+  </ItemGroup>
+
 </Project>
