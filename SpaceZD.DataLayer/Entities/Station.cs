@@ -12,13 +12,16 @@ public class Station
     public virtual ICollection<Transit> TransitsWithEndStation { get; set; }
     public virtual ICollection<TripStation> TripStations { get; set; }
 
+    private bool Equals(Station other)
+    {
+        return Name == other.Name && Platforms.SequenceEqual(other.Platforms) && IsDeleted == other.IsDeleted;
+    }
     public override bool Equals(object? obj)
     {
-        if (obj is Station station)
-            return Name == station.Name &&
-                IsDeleted == station.IsDeleted &&
-                Platforms.SequenceEqual(station.Platforms);
-
-        return false;
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        return obj.GetType() == GetType() && Equals((Station)obj);
     }
 }
