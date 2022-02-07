@@ -11,4 +11,14 @@ public class Station
     public virtual ICollection<Transit> TransitsWithStartStation { get; set; }
     public virtual ICollection<Transit> TransitsWithEndStation { get; set; }
     public virtual ICollection<TripStation> TripStations { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Station station)
+            return Name == station.Name &&
+                IsDeleted == station.IsDeleted &&
+                Platforms.SequenceEqual(station.Platforms);
+
+        return false;
+    }
 }
