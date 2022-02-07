@@ -10,4 +10,17 @@ public class Route
     public virtual Station EndStation { get; set; }
     public bool IsDeleted { get; set; }
     public virtual ICollection<Trip> Trips { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Route route)
+            return Code == route.Code &&
+                   StartTime.Equals(route.StartTime) &&
+                   StartStation == route.StartStation &&
+                   EndStation == route.EndStation &&
+                   IsDeleted == route.IsDeleted &&
+                   Transits.SequenceEqual(route.Transits);
+        
+        return false;
+    }
 }
