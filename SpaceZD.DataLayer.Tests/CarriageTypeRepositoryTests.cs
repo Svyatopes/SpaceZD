@@ -43,7 +43,7 @@ public class CarriageTypeRepositoryTests
         //assert
         Assert.IsNotNull(receivedEntity);
         Assert.IsFalse(receivedEntity!.IsDeleted);
-        AsserTestCarriageType(receivedEntity);
+        AssertTestCarriageType(receivedEntity);
     }
 
     [Test]
@@ -70,7 +70,7 @@ public class CarriageTypeRepositoryTests
         var entityToCheck = list[0];
         Assert.IsNotNull(entityToCheck);
         Assert.IsFalse(entityToCheck.IsDeleted);
-        AsserTestCarriageType(entityToCheck);
+        AssertTestCarriageType(entityToCheck);
     }
 
 
@@ -98,7 +98,7 @@ public class CarriageTypeRepositoryTests
         var entityToCheck = list[2];
         Assert.IsNotNull(entityToCheck);
         Assert.IsTrue(entityToCheck.IsDeleted);
-        AsserTestCarriageType(entityToCheck);
+        AssertTestCarriageType(entityToCheck);
     }
 
     [Test]
@@ -113,7 +113,7 @@ public class CarriageTypeRepositoryTests
         //assert
         var createdEntity = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
 
-        AsserTestCarriageType(createdEntity!);
+        AssertTestCarriageType(createdEntity!);
     }
 
     [Test]
@@ -136,7 +136,7 @@ public class CarriageTypeRepositoryTests
         var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        AsserTestCarriageType(entityToUpdated!, entityToEdit.Name, entityToEdit.NumberOfSeats);
+        AssertTestCarriageType(entityToUpdated!, entityToEdit.Name, entityToEdit.NumberOfSeats);
     }
 
     [TestCase(true)]
@@ -158,16 +158,16 @@ public class CarriageTypeRepositoryTests
         Assert.IsTrue(edited);
         Assert.IsNotNull(entityToUpdated);
         Assert.AreEqual(isDeleted, entityToUpdated!.IsDeleted);
-        AsserTestCarriageType(entityToUpdated);
+        AssertTestCarriageType(entityToUpdated);
     }
 
     private CarriageType TestEntity => new()
-                                       {
-                                           Name = "Купе",
-                                           NumberOfSeats = 4
-                                       };
+    {
+        Name = "Купе",
+        NumberOfSeats = 4
+    };
 
-    private void AsserTestCarriageType(CarriageType carriageType, string name = "Купе", int numberOfSeats = 4)
+    private void AssertTestCarriageType(CarriageType carriageType, string name = "Купе", int numberOfSeats = 4)
     {
         Assert.IsNotNull(carriageType);
         Assert.AreEqual(name, carriageType.Name);
