@@ -11,16 +11,23 @@ public class Route
     public bool IsDeleted { get; set; }
     public virtual ICollection<Trip> Trips { get; set; }
 
+
+    private bool Equals(Route other)
+    {
+        return Code == other.Code &&
+            Transits.Equals(other.Transits) &&
+            StartTime.Equals(other.StartTime) &&
+            StartStation.Equals(other.StartStation) &&
+            EndStation.Equals(other.EndStation) &&
+            IsDeleted == other.IsDeleted;
+    }
+    
     public override bool Equals(object? obj)
     {
-        if (obj is Route route)
-            return Code == route.Code &&
-                   StartTime.Equals(route.StartTime) &&
-                   StartStation == route.StartStation &&
-                   EndStation == route.EndStation &&
-                   IsDeleted == route.IsDeleted &&
-                   Transits.SequenceEqual(route.Transits);
-        
-        return false;
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        return obj.GetType() == GetType() && Equals((Route)obj);
     }
 }
