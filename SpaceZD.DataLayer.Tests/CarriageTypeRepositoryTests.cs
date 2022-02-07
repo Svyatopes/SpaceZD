@@ -30,17 +30,17 @@ public class CarriageTypeRepositoryTests
     [Test]
     public void GetByIdTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
 
         _context.CarriageTypes.Add(entityToAdd);
         _context.SaveChanges();
         var idAdded = entityToAdd.Id;
 
-        //act
+        // when
         var receivedEntity = _repository.GetById(idAdded);
 
-        //assert
+        // then
         Assert.IsNotNull(receivedEntity);
         Assert.IsFalse(receivedEntity!.IsDeleted);
         AssertTestCarriageType(receivedEntity);
@@ -49,7 +49,7 @@ public class CarriageTypeRepositoryTests
     [Test]
     public void GetListTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         var secondEntityToAdd = TestEntity;
         var thirdEntityToAdd = TestEntity;
@@ -60,10 +60,10 @@ public class CarriageTypeRepositoryTests
         _context.CarriageTypes.Add(thirdEntityToAdd);
         _context.SaveChanges();
 
-        //act
+        // when
         var list = (List<CarriageType>)_repository.GetList();
 
-        //assert
+        // then
         Assert.IsNotNull(list);
         Assert.AreEqual(2, list.Count);
 
@@ -77,7 +77,7 @@ public class CarriageTypeRepositoryTests
     [Test]
     public void GetListAllIncludedTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         var secondEntityToAdd = TestEntity;
         var thirdEntityToAdd = TestEntity;
@@ -88,10 +88,10 @@ public class CarriageTypeRepositoryTests
         _context.CarriageTypes.Add(thirdEntityToAdd);
         _context.SaveChanges();
 
-        //act
+        // when
         var list = (List<CarriageType>)_repository.GetList(true);
 
-        //assert
+        // then
         Assert.IsNotNull(list);
         Assert.AreEqual(3, list.Count);
 
@@ -104,13 +104,13 @@ public class CarriageTypeRepositoryTests
     [Test]
     public void AddTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
 
-        //act 
+        // when 
         int id = _repository.Add(entityToAdd);
 
-        //assert
+        // then
         var createdEntity = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
 
         AssertTestCarriageType(createdEntity!);
@@ -119,7 +119,7 @@ public class CarriageTypeRepositoryTests
     [Test]
     public void UpdateEntityTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         _context.CarriageTypes.Add(entityToAdd);
         _context.SaveChanges();
@@ -129,10 +129,10 @@ public class CarriageTypeRepositoryTests
         entityToEdit.Name = "qwertyuiop";
         entityToEdit.NumberOfSeats = 9;
 
-        //act 
+        // when 
         bool edited = _repository.Update(entityToEdit);
 
-        //assert
+        // then
         var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
@@ -143,16 +143,16 @@ public class CarriageTypeRepositoryTests
     [TestCase(false)]
     public void UpdateIsDeletedTest(bool isDeleted)
     {
-        //arrange
+        // given
         var entityToEdit = TestEntity;
         entityToEdit.IsDeleted = !isDeleted;
         _context.CarriageTypes.Add(entityToEdit);
         _context.SaveChanges();
 
-        //act 
+        // when 
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
-        //assert
+        // then
         var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
