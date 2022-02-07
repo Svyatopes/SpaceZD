@@ -21,11 +21,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
-builder.Services.AddAutoMapper(
-    typeof(BusinessLayerMapper),
-    typeof(TicketApiMappingProfile),
-    typeof(TrainApiMappingProfile),
-    typeof(UserApiMappingProfile));
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(BusinessLayerMapper).Assembly);
 
 builder.Services.AddScoped<IRepositorySoftDelete<User>,UserRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();

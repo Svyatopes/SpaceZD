@@ -2,13 +2,12 @@
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 
-namespace SpaceZD.API.Configuration
+namespace SpaceZD.API.Configuration;
+
+public class TrainApiMappingProfile : Profile
 {
-    public class TrainApiMappingProfile : Profile
+    public TrainApiMappingProfile()
     {
-        public TrainApiMappingProfile()
-        {
-            CreateMap<TrainModel, TrainOutputModel>();
-        }
+        CreateMap<TrainModel, TrainOutputModel>();
     }
 }
