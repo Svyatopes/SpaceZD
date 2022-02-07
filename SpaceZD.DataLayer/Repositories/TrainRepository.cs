@@ -1,4 +1,5 @@
-﻿using SpaceZD.DataLayer.DbContextes;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -8,7 +9,10 @@ public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
 {
     public TrainRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Train? GetById(int id) => _context.Trains.FirstOrDefault(t => t.Id == id);
+    public Train? GetById(int id) =>
+        _context.Trains
+                .Include(t => t.Carriages)
+                .FirstOrDefault(t => t.Id == id);
 
     public IEnumerable<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
 
@@ -16,7 +20,7 @@ public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
     {
         _context.Trains.Add(train);
         _context.SaveChanges();
-        return train.Id; 
+        return train.Id;
     }
 
     public bool Update(Train train)

@@ -9,7 +9,7 @@ public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
 {
     public OrderRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Order? GetById(int id) => 
+    public Order? GetById(int id) =>
         _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.Trip)
@@ -18,9 +18,7 @@ public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
                 .Include(o => o.Tickets)
                 .FirstOrDefault(o => o.Id == id);
 
-    public IEnumerable<Order> GetList(bool includeAll = false) => 
-        _context.Orders
-                .Where(p => !p.IsDeleted || includeAll).ToList();
+    public IEnumerable<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
 
     public int Add(Order order)
     {
