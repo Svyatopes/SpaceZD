@@ -25,80 +25,66 @@ public class StationRepositoryTests
         _repository = new StationRepository(_context);
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
+
+        // seed
+        var stations = new Station[]
+        {
+            new()
+            {
+                Name = "Челябинск",
+                Platforms = new List<Platform>
+                {
+                    new() { Number = 1 },
+                    new() { Number = 2 }
+                }
+            },
+            new()
+            {
+                Name = "41 км",
+                IsDeleted = true
+            },
+            new()
+            {
+                Name = "Таганрог",
+                Platforms = new List<Platform>
+                {
+                    new() { Number = 2 },
+                    new() { Number = 3 }
+                }
+            }
+        };
+        _context.Stations.AddRange(stations);
+        _context.SaveChanges();
     }
 
-    [Test]
-    public void GetByIdTest()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    public void GetByIdTest(int id)
     {
         // given
-        var entityToAdd = TestEntity;
-
-        _context.Stations.Add(entityToAdd);
-        _context.SaveChanges();
-        var idAdded = entityToAdd.Id;
+        var expectedEntity = _context.Stations.Find(id);
 
         // when
-        var receivedEntity = _repository.GetById(idAdded);
+        var receivedEntity = _repository.GetById(id);
 
         // then
-        Assert.IsNotNull(receivedEntity);
-        Assert.IsFalse(receivedEntity!.IsDeleted);
-        AssertTestStation(receivedEntity);
+        Assert.AreEqual(expectedEntity, receivedEntity);
     }
 
-    [Test]
-    public void GetListTest()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void GetListTest(bool includeAll)
     {
         // given
-        var entityToAdd = TestEntity;
-        var secondEntityToAdd = TestEntity;
-        var thirdEntityToAdd = TestEntity;
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.Stations.Add(entityToAdd);
-        _context.Stations.Add(secondEntityToAdd);
-        _context.Stations.Add(thirdEntityToAdd);
-        _context.SaveChanges();
+        var expected = _context.Stations.Where(t => !t.IsDeleted || includeAll).ToList();
 
         // when
-        var list = (List<Station>)_repository.GetList();
+        var list = _repository.GetList(includeAll);
 
         // then
-        Assert.IsNotNull(list);
-        Assert.AreEqual(2, list.Count);
-
-        var entityToCheck = list[0];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsFalse(entityToCheck.IsDeleted);
-        AssertTestStation(entityToCheck);
-    }
-
-
-    [Test]
-    public void GetListAllIncludedTest()
-    {
-        // given
-        var entityToAdd = TestEntity;
-        var secondEntityToAdd = TestEntity;
-        var thirdEntityToAdd = TestEntity;
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.Stations.Add(entityToAdd);
-        _context.Stations.Add(secondEntityToAdd);
-        _context.Stations.Add(thirdEntityToAdd);
-        _context.SaveChanges();
-
-        // when
-        var list = (List<Station>)_repository.GetList(true);
-
-        // then
-        Assert.IsNotNull(list);
-        Assert.AreEqual(3, list.Count);
-
-        var entityToCheck = list[2];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsTrue(entityToCheck.IsDeleted);
-        AssertTestStation(entityToCheck);
+        CollectionAssert.AreEqual(expected, list);
     }
 
     [Test]
@@ -111,22 +97,19 @@ public class StationRepositoryTests
         int id = _repository.Add(entityToAdd);
 
         // then
-        var createdEntity = _context.Stations.FirstOrDefault(o => o.Id == id);
+        var entityOnCreate = _context.Stations.FirstOrDefault(o => o.Id == id);
 
-        AssertTestStation(createdEntity!);
+        Assert.AreEqual(entityOnCreate, entityToAdd);
     }
 
-    [Test]
-    public void UpdateEntityTest()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void UpdateEntityTest(int id)
     {
         // given
-        var entityToAdd = TestEntity;
-        _context.Stations.Add(entityToAdd);
-        _context.SaveChanges();
-
-        var entityToEdit = TestEntity;
-        entityToEdit.Id = entityToAdd.Id;
-        entityToEdit.Name = "qwertyuiop";
+        var entityToEdit = _context.Stations.FirstOrDefault(o => o.Id == id);
+        entityToEdit!.Name = "qwertyuiop";
 
         // when 
         bool edited = _repository.Update(entityToEdit);
@@ -135,7 +118,7 @@ public class StationRepositoryTests
         var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        AssertTestStation(entityToUpdated!, "qwertyuiop");
+        Assert.AreEqual(entityToEdit, entityToUpdated);
     }
 
     [TestCase(true)]
@@ -155,14 +138,12 @@ public class StationRepositoryTests
         var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        Assert.IsNotNull(entityToUpdated);
-        Assert.AreEqual(isDeleted, entityToUpdated!.IsDeleted);
-        AssertTestStation(entityToUpdated);
+        Assert.AreEqual(entityToEdit, entityToUpdated);
     }
 
     private Station TestEntity => new()
     {
-        Name = "Челябинск",
+        Name = "Москва",
         Platforms = new List<Platform>
         {
             new() { Number = 1 },
@@ -170,14 +151,4 @@ public class StationRepositoryTests
             new() { Number = 3 }
         }
     };
-
-    private void AssertTestStation(Station station, string name = "Челябинск", int countPlatform = 3)
-    {
-        Assert.IsNotNull(station);
-        Assert.IsNotNull(station.Platforms);
-        Assert.AreEqual(countPlatform, station.Platforms.Count);
-        Assert.AreEqual(name, station.Name);
-        Assert.AreEqual(station.Platforms.First().Number, 1);
-        Assert.AreEqual(station.Platforms.First().Station, station);
-    }
 }
