@@ -34,17 +34,17 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetByIdTest()
         {
-            //arrange
+            // given
             var tripStationToAdd = GetTestTripStation();
 
             _context.TripStations.Add(tripStationToAdd);
             _context.SaveChanges();
             var idAddedTripStation = tripStationToAdd.Id;
 
-            //act
+            // when
             var receivedTripStation = _repository.GetById(idAddedTripStation);
 
-            //assert
+            // then
             Assert.IsNotNull(receivedTripStation);
             AssertTestTripStation(receivedTripStation);
         }
@@ -54,7 +54,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetListTest()
         {
-            //arrange
+            // given
             var tripStationToAdd = GetTestTripStation();
             var secondTripStationToAdd = GetTestTripStation();
             var thirdTripStationToAdd = GetTestTripStation();
@@ -64,10 +64,10 @@ namespace SpaceZD.DataLayer.Tests
             _context.TripStations.Add(thirdTripStationToAdd);
             _context.SaveChanges();
 
-            //act
+            // when
             var tripStations = (List<TripStation>)_repository.GetList();
 
-            //assert
+            // then
 
             Assert.IsNotNull(tripStations);
             Assert.AreEqual(2, tripStations.Count);
@@ -80,13 +80,13 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void AddTest()
         {
-            //arrange
+            // given
             var tripStationToAdd = GetTestTripStation();
 
-            //act 
+            // when 
             int id = _repository.Add(tripStationToAdd);
 
-            //assert
+            // then
             var createdTripStation = _context.TripStations.FirstOrDefault(o => o.Id == id);
 
             AssertTestTripStation(createdTripStation!);
@@ -95,7 +95,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void UpdateEntityTest()
         {
-            //arrange
+            // given
             var tripStationToAdd = GetTestTripStation();
             _context.TripStations.Add(tripStationToAdd);
             _context.SaveChanges();
@@ -107,10 +107,10 @@ namespace SpaceZD.DataLayer.Tests
             //tripToEdit.EndStation = new Station() { Name = "Mariupol" };
             //tripToEdit.Price = (decimal?)24.4;
 
-            //act 
+            // when 
             bool edited = _repository.Update(tripStationToEdit);
 
-            //assert
+            // then
             var updatedTripStation = _context.TripStations.FirstOrDefault(o => o.Id == tripStationToEdit.Id);
 
             Assert.IsTrue(edited);
