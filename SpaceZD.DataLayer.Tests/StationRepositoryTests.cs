@@ -30,17 +30,17 @@ public class StationRepositoryTests
     [Test]
     public void GetByIdTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
 
         _context.Stations.Add(entityToAdd);
         _context.SaveChanges();
         var idAdded = entityToAdd.Id;
 
-        //act
+        // when
         var receivedEntity = _repository.GetById(idAdded);
 
-        //assert
+        // then
         Assert.IsNotNull(receivedEntity);
         Assert.IsFalse(receivedEntity!.IsDeleted);
         AssertTestStation(receivedEntity);
@@ -49,7 +49,7 @@ public class StationRepositoryTests
     [Test]
     public void GetListTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         var secondEntityToAdd = TestEntity;
         var thirdEntityToAdd = TestEntity;
@@ -60,10 +60,10 @@ public class StationRepositoryTests
         _context.Stations.Add(thirdEntityToAdd);
         _context.SaveChanges();
 
-        //act
+        // when
         var list = (List<Station>)_repository.GetList();
 
-        //assert
+        // then
         Assert.IsNotNull(list);
         Assert.AreEqual(2, list.Count);
 
@@ -77,7 +77,7 @@ public class StationRepositoryTests
     [Test]
     public void GetListAllIncludedTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         var secondEntityToAdd = TestEntity;
         var thirdEntityToAdd = TestEntity;
@@ -88,10 +88,10 @@ public class StationRepositoryTests
         _context.Stations.Add(thirdEntityToAdd);
         _context.SaveChanges();
 
-        //act
+        // when
         var list = (List<Station>)_repository.GetList(true);
 
-        //assert
+        // then
         Assert.IsNotNull(list);
         Assert.AreEqual(3, list.Count);
 
@@ -104,13 +104,13 @@ public class StationRepositoryTests
     [Test]
     public void AddTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
 
-        //act 
+        // when 
         int id = _repository.Add(entityToAdd);
 
-        //assert
+        // then
         var createdEntity = _context.Stations.FirstOrDefault(o => o.Id == id);
 
         AssertTestStation(createdEntity!);
@@ -119,7 +119,7 @@ public class StationRepositoryTests
     [Test]
     public void UpdateEntityTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         _context.Stations.Add(entityToAdd);
         _context.SaveChanges();
@@ -128,10 +128,10 @@ public class StationRepositoryTests
         entityToEdit.Id = entityToAdd.Id;
         entityToEdit.Name = "qwertyuiop";
 
-        //act 
+        // when 
         bool edited = _repository.Update(entityToEdit);
 
-        //assert
+        // then
         var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
@@ -142,16 +142,16 @@ public class StationRepositoryTests
     [TestCase(false)]
     public void UpdateIsDeletedTest(bool isDeleted)
     {
-        //arrange
+        // given
         var entityToEdit = TestEntity;
         entityToEdit.IsDeleted = !isDeleted;
         _context.Stations.Add(entityToEdit);
         _context.SaveChanges();
 
-        //act 
+        // when 
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
-        //assert
+        // then
         var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
