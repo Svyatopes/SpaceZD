@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace SpaceZD.BusinessLayer.Tests
 {
-    public class Tests
+    public class BsTest
     {
         [SetUp]
         public void Setup()
@@ -10,7 +10,7 @@ namespace SpaceZD.BusinessLayer.Tests
         }
 
         [Test]
-        public void Test1()
+        public void Test5551()
         {
             Assert.Pass();
         }
