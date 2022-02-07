@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -18,87 +17,66 @@ public class CarriageTypeRepositoryTests
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                      .UseInMemoryDatabase(databaseName: "Test")
+                      .UseInMemoryDatabase("Test")
                       .Options;
 
         _context = new VeryVeryImportantContext(options);
         _repository = new CarriageTypeRepository(_context);
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
+        
+        // seed
+        var carriageTypes = new CarriageType[]
+        {
+            new()
+            {
+                Name = "Плацкарт",
+                NumberOfSeats = 5
+            },
+            new()
+            {
+                Name = "Ласточка",
+                NumberOfSeats = 7,
+                IsDeleted = true
+            },
+            new()
+            {
+                Name = "Сапсан",
+                NumberOfSeats = 8
+            }
+        };
+        _context.CarriageTypes.AddRange(carriageTypes);
+        _context.SaveChanges();
     }
 
-    [Test]
-    public void GetByIdTest()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    public void GetByIdTest(int id)
     {
         // given
-        var entityToAdd = TestEntity;
-
-        _context.CarriageTypes.Add(entityToAdd);
-        _context.SaveChanges();
-        var idAdded = entityToAdd.Id;
+        var expectedEntity = _context.CarriageTypes.Find(id);
 
         // when
-        var receivedEntity = _repository.GetById(idAdded);
+        var receivedEntity = _repository.GetById(id);
 
         // then
-        Assert.IsNotNull(receivedEntity);
-        Assert.IsFalse(receivedEntity!.IsDeleted);
-        AssertTestCarriageType(receivedEntity);
+        Assert.AreEqual(expectedEntity, receivedEntity);
     }
 
-    [Test]
-    public void GetListTest()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void GetListTest(bool includeAll)
     {
         // given
-        var entityToAdd = TestEntity;
-        var secondEntityToAdd = TestEntity;
-        var thirdEntityToAdd = TestEntity;
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.CarriageTypes.Add(entityToAdd);
-        _context.CarriageTypes.Add(secondEntityToAdd);
-        _context.CarriageTypes.Add(thirdEntityToAdd);
-        _context.SaveChanges();
+        var expected = _context.CarriageTypes.Where(t => !t.IsDeleted || includeAll).ToList();
 
         // when
-        var list = (List<CarriageType>)_repository.GetList();
+        var list = _repository.GetList(includeAll);
 
         // then
-        Assert.IsNotNull(list);
-        Assert.AreEqual(2, list.Count);
-
-        var entityToCheck = list[0];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsFalse(entityToCheck.IsDeleted);
-        AssertTestCarriageType(entityToCheck);
-    }
-
-
-    [Test]
-    public void GetListAllIncludedTest()
-    {
-        // given
-        var entityToAdd = TestEntity;
-        var secondEntityToAdd = TestEntity;
-        var thirdEntityToAdd = TestEntity;
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.CarriageTypes.Add(entityToAdd);
-        _context.CarriageTypes.Add(secondEntityToAdd);
-        _context.CarriageTypes.Add(thirdEntityToAdd);
-        _context.SaveChanges();
-
-        // when
-        var list = (List<CarriageType>)_repository.GetList(true);
-
-        // then
-        Assert.IsNotNull(list);
-        Assert.AreEqual(3, list.Count);
-
-        var entityToCheck = list[2];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsTrue(entityToCheck.IsDeleted);
-        AssertTestCarriageType(entityToCheck);
+        CollectionAssert.AreEqual(expected, list);
     }
 
     [Test]
@@ -111,23 +89,20 @@ public class CarriageTypeRepositoryTests
         int id = _repository.Add(entityToAdd);
 
         // then
-        var createdEntity = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
+        var entityOnCreate = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
 
-        AssertTestCarriageType(createdEntity!);
+        Assert.AreEqual(entityOnCreate, entityToAdd);
     }
 
-    [Test]
-    public void UpdateEntityTest()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void UpdateEntityTest(int id)
     {
         // given
-        var entityToAdd = TestEntity;
-        _context.CarriageTypes.Add(entityToAdd);
-        _context.SaveChanges();
-
-        var entityToEdit = TestEntity;
-        entityToEdit.Id = entityToAdd.Id;
-        entityToEdit.Name = "qwertyuiop";
-        entityToEdit.NumberOfSeats = 9;
+        var entityToEdit = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
+        entityToEdit!.Name = "qwertyuiop";
+        entityToEdit.NumberOfSeats = 3;
 
         // when 
         bool edited = _repository.Update(entityToEdit);
@@ -136,7 +111,7 @@ public class CarriageTypeRepositoryTests
         var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        AssertTestCarriageType(entityToUpdated!, entityToEdit.Name, entityToEdit.NumberOfSeats);
+        Assert.AreEqual(entityToEdit, entityToUpdated);
     }
 
     [TestCase(true)]
@@ -156,9 +131,7 @@ public class CarriageTypeRepositoryTests
         var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        Assert.IsNotNull(entityToUpdated);
-        Assert.AreEqual(isDeleted, entityToUpdated!.IsDeleted);
-        AssertTestCarriageType(entityToUpdated);
+        Assert.AreEqual(entityToEdit, entityToUpdated);
     }
 
     private CarriageType TestEntity => new()
@@ -166,11 +139,4 @@ public class CarriageTypeRepositoryTests
         Name = "Купе",
         NumberOfSeats = 4
     };
-
-    private void AssertTestCarriageType(CarriageType carriageType, string name = "Купе", int numberOfSeats = 4)
-    {
-        Assert.IsNotNull(carriageType);
-        Assert.AreEqual(name, carriageType.Name);
-        Assert.AreEqual(numberOfSeats, carriageType.NumberOfSeats);
-    }
 }
