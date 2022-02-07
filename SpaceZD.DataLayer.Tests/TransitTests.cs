@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
-using SpaceZD.DataLayer.Repositories;
-using System.Text;
-using System.Threading.Tasks;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceZD.DataLayer.Tests
 {
@@ -181,7 +178,7 @@ namespace SpaceZD.DataLayer.Tests
         private Transit GetTestTransit() => new Transit()
         {
             StartStation = new Station() { Name = "Novosibirsk" },
-            EndStation = new Station() { Name = "Sheregesh" },       
+            EndStation = new Station() { Name = "Sheregesh" },
             Price = (decimal?)23.4
         };
 
