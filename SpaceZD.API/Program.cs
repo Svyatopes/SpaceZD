@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using SpaceZD.API.Configuration;
 using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using System.Reflection;
 using Route = SpaceZD.DataLayer.Entities.Route;
 
 const string connectionEnvironmentVariableName = "CONNECTIONS_STRING";
@@ -21,24 +21,23 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
-builder.Services.AddAutoMapper(typeof(BusinessLayerMapper));
-builder.Services.AddAutoMapper(new Assembly[] { Assembly.GetExecutingAssembly() });
+builder.Services.AddAutoMapper(typeof(BusinessLayerMapper), typeof(ApiMapper));
 
-builder.Services.AddScoped<IRepositorySoftDelete<User>, UserRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Trip>, TripRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Transit>, TransitRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Train>, TrainRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Ticket>, TicketRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Station>, StationRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<RouteTransit>, RouteTransitRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Route>, RouteRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Platform>, PlatformRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>, PlatformMaintenanceRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Person>, PersonRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Order>, OrderRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<CarriageType>, CarriageTypeRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Carriage>, CarriageRepository>();
-builder.Services.AddScoped<IRepository<TripStation>, TripStationRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<User>,UserRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Transit>,TransitRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Train>,TrainRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Ticket>,TicketRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Station>,StationRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<RouteTransit>,RouteTransitRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Route>,RouteRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Platform>,PlatformRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>,PlatformMaintenanceRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Person>,PersonRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Order>,OrderRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<CarriageType>,CarriageTypeRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Carriage>,CarriageRepository>();
+builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
 
 var app = builder.Build();
 
