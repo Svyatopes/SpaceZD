@@ -43,7 +43,7 @@ public class StationRepositoryTests
         //assert
         Assert.IsNotNull(receivedEntity);
         Assert.IsFalse(receivedEntity!.IsDeleted);
-        AsserTestStation(receivedEntity);
+        AssertTestStation(receivedEntity);
     }
 
     [Test]
@@ -70,7 +70,7 @@ public class StationRepositoryTests
         var entityToCheck = list[0];
         Assert.IsNotNull(entityToCheck);
         Assert.IsFalse(entityToCheck.IsDeleted);
-        AsserTestStation(entityToCheck);
+        AssertTestStation(entityToCheck);
     }
 
 
@@ -98,7 +98,7 @@ public class StationRepositoryTests
         var entityToCheck = list[2];
         Assert.IsNotNull(entityToCheck);
         Assert.IsTrue(entityToCheck.IsDeleted);
-        AsserTestStation(entityToCheck);
+        AssertTestStation(entityToCheck);
     }
 
     [Test]
@@ -113,7 +113,7 @@ public class StationRepositoryTests
         //assert
         var createdEntity = _context.Stations.FirstOrDefault(o => o.Id == id);
 
-        AsserTestStation(createdEntity!);
+        AssertTestStation(createdEntity!);
     }
 
     [Test]
@@ -135,7 +135,7 @@ public class StationRepositoryTests
         var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        AsserTestStation(entityToUpdated!, "qwertyuiop");
+        AssertTestStation(entityToUpdated!, "qwertyuiop");
     }
 
     [TestCase(true)]
@@ -157,16 +157,21 @@ public class StationRepositoryTests
         Assert.IsTrue(edited);
         Assert.IsNotNull(entityToUpdated);
         Assert.AreEqual(isDeleted, entityToUpdated!.IsDeleted);
-        AsserTestStation(entityToUpdated);
+        AssertTestStation(entityToUpdated);
     }
 
     private Station TestEntity => new()
-                                  {
-                                      Name = "Челябенск",
-                                      Platforms = new List<Platform> { new() { Number = 1 }, new() { Number = 2 }, new() { Number = 3 } }
-                                  };
+    {
+        Name = "Челябинск",
+        Platforms = new List<Platform>
+        {
+            new() { Number = 1 },
+            new() { Number = 2 },
+            new() { Number = 3 }
+        }
+    };
 
-    private void AsserTestStation(Station station, string name = "Челябенск", int countPlatform = 3)
+    private void AssertTestStation(Station station, string name = "Челябинск", int countPlatform = 3)
     {
         Assert.IsNotNull(station);
         Assert.IsNotNull(station.Platforms);
