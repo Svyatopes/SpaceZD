@@ -34,17 +34,17 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetByIdTest()
         {
-            //arrange
+            // given
             var tripToAdd = GetTestTrip();
 
             _context.Trips.Add(tripToAdd);
             _context.SaveChanges();
             var idAddedTrip = tripToAdd.Id;
 
-            //act
+            // when
             var receivedTrip = _repository.GetById(idAddedTrip);
 
-            //assert
+            // then
             Assert.IsNotNull(receivedTrip);
             Assert.IsFalse(receivedTrip!.IsDeleted);
             AssertTestTrip(receivedTrip);
@@ -55,7 +55,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetListTest()
         {
-            //arrange
+            // given
             var tripToAdd = GetTestTrip();
             var secondTripToAdd = GetTestTrip();
             var thirdTripToAdd = GetTestTrip();
@@ -66,10 +66,10 @@ namespace SpaceZD.DataLayer.Tests
             _context.Trips.Add(thirdTripToAdd);
             _context.SaveChanges();
 
-            //act
+            // when
             var trips = (List<Trip>)_repository.GetList();
 
-            //assert
+            // then
 
             Assert.IsNotNull(trips);
             Assert.AreEqual(2, trips.Count);
@@ -84,7 +84,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetListAllIncludedTest()
         {
-            //arrange
+            // given
             var tripToAdd = GetTestTrip();
             var secondTripToAdd = GetTestTrip();
             var thirdTripToAdd = GetTestTrip();
@@ -95,11 +95,11 @@ namespace SpaceZD.DataLayer.Tests
             _context.Trips.Add(thirdTripToAdd);
             _context.SaveChanges();
 
-            //act
+            // when
             var trips = (List<Trip>)_repository.GetList(true);
 
 
-            //assert
+            // then
             Assert.IsNotNull(trips);
             Assert.AreEqual(3, trips.Count);
 
@@ -112,13 +112,13 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void AddTest()
         {
-            //arrange
+            // given
             var tripToAdd = GetTestTrip();
 
-            //act 
+            // when 
             int id = _repository.Add(tripToAdd);
 
-            //assert
+            // then
             var createdTrip = _context.Trips.FirstOrDefault(o => o.Id == id);
 
             AssertTestTrip(createdTrip!);
@@ -127,7 +127,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void UpdateEntityTest()
         {
-            //arrange
+            // given
             var tripToAdd = GetTestTrip();
             _context.Trips.Add(tripToAdd);
             _context.SaveChanges();
@@ -139,10 +139,10 @@ namespace SpaceZD.DataLayer.Tests
             //tripToEdit.EndStation = new Station() { Name = "Mariupol" };
             //tripToEdit.Price = (decimal?)24.4;
 
-            //act 
+            // when 
             bool edited = _repository.Update(tripToEdit);
 
-            //assert
+            // then
             var updatedTrip = _context.Trips.FirstOrDefault(o => o.Id == tripToEdit.Id);
 
             Assert.IsTrue(edited);
@@ -159,16 +159,16 @@ namespace SpaceZD.DataLayer.Tests
         [TestCase(false)]
         public void UpdateIsDeletedTest(bool isDeleted)
         {
-            //arrange
+            // given
             var tripToEdit = GetTestTrip();
             tripToEdit.IsDeleted = !isDeleted;
             _context.Trips.Add(tripToEdit);
             _context.SaveChanges();
 
-            //act 
+            // when 
             bool edited = _repository.Update(tripToEdit.Id, isDeleted);
 
-            //assert
+            // then
             var updatedTrip = _context.Trips.FirstOrDefault(o => o.Id == tripToEdit.Id);
 
             Assert.IsTrue(edited);
