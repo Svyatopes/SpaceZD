@@ -20,8 +20,8 @@ public class TicketRepositoryTests
             FirstName = "Vasya",
             Patronymic = "Vasilevich",
             LastName = "Vasilev",
-            Passport = "55585885999"            
-        }, 
+            Passport = "55585885999"
+        },
         SeatNumber = 56,
         Carriage = new Carriage()
         {
@@ -35,25 +35,75 @@ public class TicketRepositoryTests
         Price = 345
     };
 
-    private void AsserTestEntity(Ticket entity)
+    private List<Ticket> GetListTestEntities() => new List<Ticket>()
     {
-        Assert.IsNotNull(entity);
-        Assert.IsNotNull(entity.Person);
-        Assert.IsNotNull(entity.Person.LastName);
-        Assert.IsNotNull(entity.Price);
-        Assert.IsNotNull(entity.SeatNumber);
-        Assert.IsNotNull(entity.Carriage);
-        Assert.IsNotNull(entity.Carriage.Type);
-        Assert.IsNotNull(entity.Carriage.Type.NumberOfSeats);
-        Assert.AreEqual("Vasilev", entity.Person.LastName);
-        Assert.AreEqual(345, entity.Price);
-        Assert.AreEqual(56, entity.SeatNumber);
-        Assert.AreEqual(67, entity.Carriage.Type.NumberOfSeats);
-        Assert.IsFalse(entity.IsPetPlaceIncluded);
-        Assert.IsFalse(entity.IsTeaIncluded);
+        new()
+        {
+            Person = new Person()
+            {
+                FirstName = "Vasya",
+                Patronymic = "Vasilevich",
+                LastName = "Vasilev",
+                Passport = "55585885999"
+            },
+            SeatNumber = 56,
+            Carriage = new Carriage()
+            {
+                Number = 5,
+                Type = new CarriageType()
+                {
+                    Name = "Econom",
+                    NumberOfSeats = 67
+                }
+            },
+            Price = 345
+
+        },
+        new()
+        {
+            Person = new Person()
+            {
+                FirstName = "Masha",
+                Patronymic = "Mashevna",
+                LastName = "Mashech",
+                Passport = "5784930"
+            },
+            SeatNumber = 6,
+            Carriage = new Carriage()
+            {
+                Number = 5,
+                Type = new CarriageType()
+                {
+                    Name = "Platskart",
+                    NumberOfSeats = 50
+                }
+            },
+            Price = 300
+        },
+        new()
+        {
+            Person = new Person()
+            {
+                FirstName = "Dima",
+                Patronymic = "Dmitrievich",
+                LastName = "Dmitr",
+                Passport = "6583939585"
+            },
+            SeatNumber = 3,
+            Carriage = new Carriage()
+            {
+                Number = 9,
+                Type = new CarriageType()
+                {
+                    Name = "Bisuness",
+                    NumberOfSeats = 20
+                }
+            },
+            Price = 555
+        }
+    };
 
 
-    }
 
     [SetUp]
     public void Setup()
@@ -71,108 +121,99 @@ public class TicketRepositoryTests
 
 
 
-
     [Test]
     public void GetByIdTest()
     {
-        //arrange
+        //given
         var entityToAdd = GetTestEntity();
 
         _context.Tickets.Add(entityToAdd);
         _context.SaveChanges();
         var idAdded = entityToAdd.Id;
 
-        //act
+        //when
         var received = _repository.GetById(idAdded);
 
-        //assert
+        //then
         Assert.IsNotNull(received);
         Assert.IsFalse(received!.IsDeleted);
-        AsserTestEntity(received);
+        Assert.IsNotNull(received);
+        Assert.IsNotNull(received.Person);
+        Assert.IsNotNull(received.Person.LastName);
+        Assert.IsNotNull(received.Price);
+        Assert.IsNotNull(received.SeatNumber);
+        Assert.IsNotNull(received.Carriage);
+        Assert.IsNotNull(received.Carriage.Type);
+        Assert.IsNotNull(received.Carriage.Type.NumberOfSeats);
+        Assert.AreEqual("Vasilev", received.Person.LastName);
+        Assert.AreEqual(345, received.Price);
+        Assert.AreEqual(56, received.SeatNumber);
+        Assert.AreEqual(67, received.Carriage.Type.NumberOfSeats);
+        Assert.IsFalse(received.IsPetPlaceIncluded);
+        Assert.IsFalse(received.IsTeaIncluded);
     }
 
 
 
-    [Test]
-    public void GetListTest()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void GetListTest(bool includeAll)
     {
-        //arrange
-        var entityToAdd = GetTestEntity();
-        var secondEntityToAdd = GetTestEntity();
-        var thirdEntityToAdd = GetTestEntity();
-        thirdEntityToAdd.IsDeleted = true;
+        //given
+        var entitiesToAdd = GetListTestEntities();
+        entitiesToAdd.Last().IsDeleted = true;
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Tickets.Add(item);
+            _context.SaveChanges();
+        }
+        var expected = _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 
-        _context.Tickets.Add(entityToAdd);
-        _context.Tickets.Add(secondEntityToAdd);
-        _context.Tickets.Add(thirdEntityToAdd);
-        _context.SaveChanges();
+        //when
+        var entities = (List<Ticket>)_repository.GetList(includeAll);
 
-        //act
-        var entities = (List<Ticket>)_repository.GetList();
-
-
-        //assert
-
+        //then
         Assert.IsNotNull(entities);
-        Assert.AreEqual(2, entities.Count);
-
-        var userToCheck = entities[0];
-        Assert.IsNotNull(userToCheck);
-        Assert.IsFalse(userToCheck.IsDeleted);
-        AsserTestEntity(userToCheck);
+        Assert.AreEqual(expected.Count, entities.Count);
+        CollectionAssert.AreEqual(expected, entities);
 
     }
 
-
-    [Test]
-    public void GetListAllIncludedTest()
-    {
-        //arrange
-        var entityToAdd = GetTestEntity();
-        var secondEntityToAdd = GetTestEntity();
-        var thirdTEntityToAdd = GetTestEntity();
-        thirdTEntityToAdd.IsDeleted = true;
-
-        _context.Tickets.Add(entityToAdd);
-        _context.Tickets.Add(secondEntityToAdd);
-        _context.Tickets.Add(thirdTEntityToAdd);
-        _context.SaveChanges();
-
-        //act
-        var entities = (List<Ticket>)_repository.GetList(true);
-
-
-        //assert
-
-        Assert.IsNotNull(entities);
-        Assert.AreEqual(3, entities.Count);
-
-        var entityToCheck = entities[2];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsTrue(entityToCheck.IsDeleted);
-        AsserTestEntity(entityToCheck);
-
-    }
 
     [Test]
     public void AddTest()
     {
-        //arrange
+        //given
         var entityToAdd = GetTestEntity();
 
-        //act 
+        //when 
         int id = _repository.Add(entityToAdd);
 
-        //assert
+        //then
         var createdEntity = _context.Tickets.FirstOrDefault(o => o.Id == id);
 
-        AsserTestEntity(createdEntity);
+        Assert.IsNotNull(createdEntity);
+        Assert.IsFalse(createdEntity!.IsDeleted);
+        Assert.IsNotNull(createdEntity);
+        Assert.IsNotNull(createdEntity.Person);
+        Assert.IsNotNull(createdEntity.Person.LastName);
+        Assert.IsNotNull(createdEntity.Price);
+        Assert.IsNotNull(createdEntity.SeatNumber);
+        Assert.IsNotNull(createdEntity.Carriage);
+        Assert.IsNotNull(createdEntity.Carriage.Type);
+        Assert.IsNotNull(createdEntity.Carriage.Type.NumberOfSeats);
+        Assert.AreEqual("Vasilev", createdEntity.Person.LastName);
+        Assert.AreEqual(345, createdEntity.Price);
+        Assert.AreEqual(56, createdEntity.SeatNumber);
+        Assert.AreEqual(67, createdEntity.Carriage.Type.NumberOfSeats);
+        Assert.IsFalse(createdEntity.IsPetPlaceIncluded);
+        Assert.IsFalse(createdEntity.IsTeaIncluded);
     }
 
     [Test]
     public void UpdateEntityTest()
     {
-        //arrange
+        //given
         var entityToAdd = GetTestEntity();
         _context.Tickets.Add(entityToAdd);
         _context.SaveChanges();
@@ -184,15 +225,12 @@ public class TicketRepositoryTests
         entityToEdit.Price = 677;
         entityToEdit.SeatNumber = 2;
         entityToEdit.Carriage.Number = 7;
-        entityToEdit.Carriage.Type.Name = "Cafe";        
+        entityToEdit.Carriage.Type.Name = "Cafe";
 
-           
-
-
-        //act 
+        //when 
         bool edited = _repository.Update(entityToEdit);
 
-        //assert
+        //then
         var updatedEntity = _context.Tickets.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsNotNull(updatedEntity);
@@ -216,23 +254,34 @@ public class TicketRepositoryTests
     [TestCase(false)]
     public void UpdateIsDeletedTest(bool isDeleted)
     {
-        //arrange
+        //given
         var entityToEdit = GetTestEntity();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Tickets.Add(entityToEdit);
         _context.SaveChanges();
 
-        //act 
+        //when 
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
-        //assert
-
+        //then
         var updatedEntity = _context.Tickets.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
         Assert.IsNotNull(updatedEntity);
         Assert.AreEqual(isDeleted, updatedEntity!.IsDeleted);
-        AsserTestEntity(entityToEdit);
+        Assert.IsNotNull(updatedEntity.Person);
+        Assert.IsNotNull(updatedEntity.Person.LastName);
+        Assert.IsNotNull(updatedEntity.Price);
+        Assert.IsNotNull(updatedEntity.SeatNumber);
+        Assert.IsNotNull(updatedEntity.Carriage);
+        Assert.IsNotNull(updatedEntity.Carriage.Type);
+        Assert.IsNotNull(updatedEntity.Carriage.Type.NumberOfSeats);
+        Assert.AreEqual("Vasilev", updatedEntity.Person.LastName);
+        Assert.AreEqual(345, updatedEntity.Price);
+        Assert.AreEqual(56, updatedEntity.SeatNumber);
+        Assert.AreEqual(67, updatedEntity.Carriage.Type.NumberOfSeats);
+        Assert.IsFalse(updatedEntity.IsPetPlaceIncluded);
+        Assert.IsFalse(updatedEntity.IsTeaIncluded);
     }
 
 

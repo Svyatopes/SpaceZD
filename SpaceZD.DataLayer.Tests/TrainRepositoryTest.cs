@@ -17,7 +17,7 @@ public class TrainRepositoryTests
     {
         Carriages = new List<Carriage>()
         {
-            new() 
+            new()
             {
                 Number = 5,
                 Type = new CarriageType()
@@ -30,9 +30,9 @@ public class TrainRepositoryTests
                     new() { Price = 147 },
                     new() { Price = 100 },
                     new() { Price = 124 }
-                } 
+                }
             },
-            new() 
+            new()
             {
                 Number = 45,
                 Type = new CarriageType()
@@ -45,26 +45,127 @@ public class TrainRepositoryTests
                     new() { Price = 547 },
                     new() { Price = 500 },
                     new() { Price = 524 }
-                } 
+                }
             }
 
         }
     };
 
-    private void AsserTestEntity(Train entity)
+    private List<Train> GetListTestEntities() => new List<Train>()
     {
-        Assert.IsNotNull(entity);
-        Assert.IsNotNull(entity.Carriages);
-        Assert.IsNotNull(entity.Carriages.First().Number);
-        Assert.IsNotNull(entity.Carriages.First().Type);
-        Assert.IsNotNull(entity.Carriages.First().Tickets);
-        Assert.AreEqual(5, entity.Carriages.First().Number);
-        Assert.AreEqual("Econom", entity.Carriages.First().Type.Name);
-        Assert.AreEqual(67, entity.Carriages.First().Type.NumberOfSeats);
-        Assert.AreEqual(147, entity.Carriages.First().Tickets.First().Price);
-        
+        new()
+        {
+            Carriages = new List<Carriage>()
+            {
+                new()
+                {
+                    Number = 5,
+                    Type = new CarriageType()
+                    {
+                        Name = "Econom",
+                        NumberOfSeats = 67
+                    },
+                    Tickets = new List<Ticket>
+                    {
+                        new() { Price = 147 },
+                        new() { Price = 100 },
+                        new() { Price = 124 }
+                    }
+                },
+                new()
+                {
+                    Number = 45,
+                    Type = new CarriageType()
+                    {
+                        Name = "Premium",
+                        NumberOfSeats = 4
+                    },
+                    Tickets = new List<Ticket>
+                    {
+                        new() { Price = 547 },
+                        new() { Price = 500 },
+                        new() { Price = 524 }
+                    }
+                }
 
-    }
+            }
+        },new()
+        {
+            Carriages = new List<Carriage>()
+            {
+                new()
+                {
+                    Number = 45,
+                    Type = new CarriageType()
+                    {
+                        Name = "Econom",
+                        NumberOfSeats = 67
+                    },
+                    Tickets = new List<Ticket>
+                    {
+                        new() { Price = 147 },
+                        new() { Price = 100 },
+                        new() { Price = 124 }
+                    }
+                },
+                new()
+                {
+                    Number = 45,
+                    Type = new CarriageType()
+                    {
+                        Name = "Premium",
+                        NumberOfSeats = 4
+                    },
+                    Tickets = new List<Ticket>
+                    {
+                        new() { Price = 547 },
+                        new() { Price = 500 },
+                        new() { Price = 524 }
+                    }
+                }
+
+            }
+        },
+        new()
+        {
+            Carriages = new List<Carriage>()
+            {
+                new()
+                {
+                    Number = 7,
+                    Type = new CarriageType()
+                    {
+                        Name = "Cafe",
+                        NumberOfSeats = 5
+                    },
+                    Tickets = new List<Ticket>
+                    {
+                        new() { Price = 555 },
+                        new() { Price = 678 },
+                        new() { Price = 222 }
+                    }
+                },
+                new()
+                {
+                    Number = 59,
+                    Type = new CarriageType()
+                    {
+                        Name = "Econom",
+                        NumberOfSeats = 78
+                    },
+                    Tickets = new List<Ticket>
+                    {
+                        new() { Price = 678 },
+                        new() { Price = 345 },
+                        new() { Price = 134 }
+                    }
+                }
+
+            }
+        }
+    };
+
+
 
     [SetUp]
     public void Setup()
@@ -82,108 +183,88 @@ public class TrainRepositoryTests
 
 
 
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
 
-    [Test]
-    public void GetByIdTest()
+    public void GetByIdTest(int id)
     {
-        //arrange
-        var entityToAdd = GetTestEntity();
+        //given
+        var entityToAdd = GetListTestEntities();
+        foreach (var item in entityToAdd)
+        {
+            _context.Trains.Add(item);
+            _context.SaveChanges();
+        }
+        var idAdded = _context.Trains.Find(id);
 
-        _context.Trains.Add(entityToAdd);
-        _context.SaveChanges();
-        var idAdded = entityToAdd.Id;
+        //when
+        var received = _repository.GetById(id);
 
-        //act
-        var received = _repository.GetById(idAdded);
-
-        //assert
+        //then
         Assert.IsNotNull(received);
         Assert.IsFalse(received!.IsDeleted);
-        AsserTestEntity(received);
+        Assert.AreEqual(idAdded.Carriages.First().Number, received.Carriages.First().Number);
+        Assert.AreEqual(received, idAdded);
+
     }
 
 
 
-    [Test]
-    public void GetListTest()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void GetListTest(bool includeAll)
     {
-        //arrange
-        var entityToAdd = GetTestEntity();
-        var secondEntityToAdd = GetTestEntity();
-        var thirdEntityToAdd = GetTestEntity();
-        thirdEntityToAdd.IsDeleted = true;
+        //given
+        var entitiesToAdd = GetListTestEntities();
+        entitiesToAdd.Last().IsDeleted = true;
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Trains.Add(item);
+            _context.SaveChanges();
 
-        _context.Trains.Add(entityToAdd);
-        _context.Trains.Add(secondEntityToAdd);
-        _context.Trains.Add(thirdEntityToAdd);
-        _context.SaveChanges();
+        }
+        var expected = _context.Trains.Where(t => !t.IsDeleted || includeAll).ToList();
 
-        //act
-        var entities = (List<Train>)_repository.GetList();
+        //when
+        var entities = (List<Train>)_repository.GetList(includeAll);
 
-
-        //assert
-
+        //then
         Assert.IsNotNull(entities);
-        Assert.AreEqual(2, entities.Count);
-
-        var userToCheck = entities[0];
-        Assert.IsNotNull(userToCheck);
-        Assert.IsFalse(userToCheck.IsDeleted);
-        AsserTestEntity(userToCheck);
+        Assert.AreEqual(expected.Count, entities.Count);
+        CollectionAssert.AreEqual(expected, entities);
 
     }
 
 
-    [Test]
-    public void GetListAllIncludedTest()
-    {
-        //arrange
-        var entityToAdd = GetTestEntity();
-        var secondEntityToAdd = GetTestEntity();
-        var thirdEntityToAdd = GetTestEntity();
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.Trains.Add(entityToAdd);
-        _context.Trains.Add(secondEntityToAdd);
-        _context.Trains.Add(thirdEntityToAdd);
-        _context.SaveChanges();
-
-        //act
-        var entities = (List<Train>)_repository.GetList(true);
-
-
-        //assert
-
-        Assert.IsNotNull(entities);
-        Assert.AreEqual(3, entities.Count);
-
-        var entityToCheck = entities[2];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsTrue(entityToCheck.IsDeleted);
-        AsserTestEntity(entityToCheck);
-
-    }
 
     [Test]
     public void AddTest()
     {
-        //arrange
+        //given
         var entityToAdd = GetTestEntity();
 
-        //act 
+        //when 
         int id = _repository.Add(entityToAdd);
 
-        //assert
+        //then
         var createdEntity = _context.Trains.FirstOrDefault(o => o.Id == id);
 
-        AsserTestEntity(createdEntity);
+        Assert.IsNotNull(createdEntity);
+        Assert.IsNotNull(createdEntity.Carriages);
+        Assert.IsNotNull(createdEntity.Carriages.First().Number);
+        Assert.IsNotNull(createdEntity.Carriages.First().Type);
+        Assert.IsNotNull(createdEntity.Carriages.First().Tickets);
+        Assert.AreEqual(5, createdEntity.Carriages.First().Number);
+        Assert.AreEqual("Econom", createdEntity.Carriages.First().Type.Name);
+        Assert.AreEqual(67, createdEntity.Carriages.First().Type.NumberOfSeats);
+        Assert.AreEqual(147, createdEntity.Carriages.First().Tickets.First().Price);
     }
 
     [Test]
     public void UpdateEntityTest()
     {
-        //arrange
+        //given
         var entityToAdd = GetTestEntity();
         _context.Trains.Add(entityToAdd);
         _context.SaveChanges();
@@ -194,14 +275,12 @@ public class TrainRepositoryTests
         entityToEdit.Carriages.First().Number = 111;
         entityToEdit.Carriages.First().Type.Name = "Cafe";
         entityToEdit.Carriages.First().Type.NumberOfSeats = 10;
-        entityToEdit.Carriages.First().Tickets.First().Price = 1;     
+        entityToEdit.Carriages.First().Tickets.First().Price = 1;
 
-
-
-        //act 
+        //when 
         bool edited = _repository.Update(entityToEdit);
 
-        //assert
+        //then
         var updatedTrain = _context.Trains.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsNotNull(updatedTrain);
@@ -219,23 +298,31 @@ public class TrainRepositoryTests
     [TestCase(false)]
     public void UpdateIsDeletedTest(bool isDeleted)
     {
-        //arrange
+        //given
         var entityToEdit = GetTestEntity();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Trains.Add(entityToEdit);
         _context.SaveChanges();
 
-        //act 
+        //when 
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
-        //assert
-
+        //then
         var updatedEntity = _context.Trains.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
         Assert.IsNotNull(updatedEntity);
         Assert.AreEqual(isDeleted, updatedEntity!.IsDeleted);
-        AsserTestEntity(entityToEdit);
+        Assert.IsNotNull(updatedEntity);
+        Assert.IsNotNull(updatedEntity.Carriages);
+        Assert.IsNotNull(updatedEntity.Carriages.First().Number);
+        Assert.IsNotNull(updatedEntity.Carriages.First().Type);
+        Assert.IsNotNull(updatedEntity.Carriages.First().Tickets);
+        Assert.AreEqual(5, updatedEntity.Carriages.First().Number);
+        Assert.AreEqual("Econom", updatedEntity.Carriages.First().Type.Name);
+        Assert.AreEqual(67, updatedEntity.Carriages.First().Type.NumberOfSeats);
+        Assert.AreEqual(147, updatedEntity.Carriages.First().Tickets.First().Price);
+
     }
 
 
