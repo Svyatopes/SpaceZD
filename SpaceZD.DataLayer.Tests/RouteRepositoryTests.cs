@@ -19,87 +19,108 @@ public class RouteRepositoryTests
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                      .UseInMemoryDatabase(databaseName: "Test")
+                      .UseInMemoryDatabase("Test")
                       .Options;
 
         _context = new VeryVeryImportantContext(options);
         _repository = new RouteRepository(_context);
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
+
+        // seed
+        var routes = new Route[]
+        {
+            new()
+            {
+                Code = "F789",
+                Transits = new List<RouteTransit>
+                {
+                    new()
+                    {
+                        Transit = new Transit
+                        {
+                            StartStation = new Station { Name = "С-Пб" },
+                            EndStation = new Station { Name = "Выборг" }
+                        },
+                        DepartingTime = new TimeSpan(0, 0, 1),
+                        ArrivalTime = new TimeSpan(2, 30, 0)
+                    }
+                },
+                StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
+                StartStation = new Station { Name = "С-Пб" },
+                EndStation = new Station { Name = "Выборг" }
+            },
+            new()
+            {
+                Code = "Test",
+                StartTime = new DateTime(1999, 10, 1),
+                StartStation = new Station { Name = "Москва" },
+                EndStation = new Station { Name = "Новгород" },
+                IsDeleted = true
+            },
+            new()
+            {
+                Code = "G589",
+                Transits = new List<RouteTransit>
+                {
+                    new()
+                    {
+                        Transit = new Transit
+                        {
+                            StartStation = new Station { Name = "Петрозаводск" },
+                            EndStation = new Station { Name = "Омск" }
+                        },
+                        DepartingTime = new TimeSpan(0, 0, 0),
+                        ArrivalTime = new TimeSpan(4, 0, 0)
+                    },
+                    new()
+                    {
+                        Transit = new Transit
+                        {
+                            StartStation = new Station { Name = "Омск" },
+                            EndStation = new Station { Name = "Сочи" }
+                        },
+                        DepartingTime = new TimeSpan(4, 30, 0),
+                        ArrivalTime = new TimeSpan(10, 0, 0)
+                    }
+                },
+                StartTime = new DateTime(1970, 1, 1, 12, 30, 0),
+                StartStation = new Station { Name = "Петрозаводск" },
+                EndStation = new Station { Name = "Сочи" }
+            }
+        };
+        _context.Routes.AddRange(routes);
+        _context.SaveChanges();
     }
 
-    [Test]
-    public void GetByIdTest()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    public void GetByIdTest(int id)
     {
         // given
-        var entityToAdd = TestEntity;
-
-        _context.Routes.Add(entityToAdd);
-        _context.SaveChanges();
-        var idAdded = entityToAdd.Id;
+        var expectedEntity = _context.Routes.Find(id);
 
         // when
-        var receivedEntity = _repository.GetById(idAdded);
+        var receivedEntity = _repository.GetById(id);
 
         // then
-        Assert.IsNotNull(receivedEntity);
-        Assert.IsFalse(receivedEntity!.IsDeleted);
-        Assert.IsTrue(receivedEntity.Equals(entityToAdd));
+        Assert.AreEqual(expectedEntity, receivedEntity);
     }
 
-    [Test]
-    public void GetListTest()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void GetListTest(bool includeAll)
     {
         // given
-        var entityToAdd = TestEntity;
-        var secondEntityToAdd = TestEntity;
-        var thirdEntityToAdd = TestEntity;
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.Routes.Add(entityToAdd);
-        _context.Routes.Add(secondEntityToAdd);
-        _context.Routes.Add(thirdEntityToAdd);
-        _context.SaveChanges();
+        var expected = _context.Routes.Where(t => !t.IsDeleted || includeAll).ToList();
 
         // when
-        var list = (List<Route>)_repository.GetList();
+        var list = _repository.GetList(includeAll);
 
         // then
-        Assert.IsNotNull(list);
-        Assert.AreEqual(2, list.Count);
-
-        var entityToCheck = list[^1];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsFalse(entityToCheck.IsDeleted);
-        Assert.IsTrue(entityToCheck.Equals(secondEntityToAdd));
-    }
-
-
-    [Test]
-    public void GetListAllIncludedTest()
-    {
-        // given
-        var entityToAdd = TestEntity;
-        var secondEntityToAdd = TestEntity;
-        var thirdEntityToAdd = TestEntity;
-        thirdEntityToAdd.IsDeleted = true;
-
-        _context.Routes.Add(entityToAdd);
-        _context.Routes.Add(secondEntityToAdd);
-        _context.Routes.Add(thirdEntityToAdd);
-        _context.SaveChanges();
-
-        // when
-        var list = (List<Route>)_repository.GetList(true);
-
-        // then
-        Assert.IsNotNull(list);
-        Assert.AreEqual(3, list.Count);
-
-        var entityToCheck = list[^1];
-        Assert.IsNotNull(entityToCheck);
-        Assert.IsTrue(entityToCheck.IsDeleted);
-        Assert.IsTrue(entityToCheck.Equals(thirdEntityToAdd));
+        CollectionAssert.AreEqual(expected, list);
     }
 
     [Test]
@@ -112,20 +133,18 @@ public class RouteRepositoryTests
         int id = _repository.Add(entityToAdd);
 
         // then
-        var createdEntity = _context.Routes.FirstOrDefault(o => o.Id == id);
+        var entityOnCreate = _context.Routes.FirstOrDefault(o => o.Id == id);
 
-        Assert.IsTrue(createdEntity!.Equals(entityToAdd));
+        Assert.AreEqual(entityOnCreate, entityToAdd);
     }
 
-    [Test]
-    public void UpdateEntityTest()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void UpdateEntityTest(int id)
     {
         // given
-        var entityToAdd = TestEntity;
-        _context.Routes.Add(entityToAdd);
-        _context.SaveChanges();
-
-        var entityToEdit = _context.Routes.FirstOrDefault(o => o.Id == entityToAdd.Id);
+        var entityToEdit = _context.Routes.FirstOrDefault(o => o.Id == id);
         entityToEdit!.Code = "h589";
         entityToEdit.StartStation = new Station { Name = "start" };
         entityToEdit.EndStation = new Station { Name = "end" };
@@ -150,7 +169,6 @@ public class RouteRepositoryTests
         entityToEdit.IsDeleted = !isDeleted;
         _context.Routes.Add(entityToEdit);
         _context.SaveChanges();
-        entityToEdit.IsDeleted = isDeleted;
 
         // when 
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
@@ -159,9 +177,7 @@ public class RouteRepositoryTests
         var entityToUpdated = _context.Routes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
-        Assert.IsNotNull(entityToUpdated);
-        Assert.AreEqual(isDeleted, entityToUpdated!.IsDeleted);
-        Assert.IsTrue(entityToUpdated.Equals(entityToEdit));
+        Assert.AreEqual(entityToEdit, entityToUpdated);
     }
 
     private Route TestEntity => new()
