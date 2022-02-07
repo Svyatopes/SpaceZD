@@ -12,10 +12,11 @@ public class PlatformRepository : BaseRepository, IRepositorySoftDelete<Platform
 
     public IEnumerable<Platform> GetList(bool includeAll = false) => _context.Platforms.Where(p => !p.IsDeleted || includeAll).ToList();
 
-    public void Add(Platform platform)
+    public int Add(Platform platform)
     {
         _context.Platforms.Add(platform);
         _context.SaveChanges();
+        return platform.Id;
     }
 
     public bool Update(Platform platform)

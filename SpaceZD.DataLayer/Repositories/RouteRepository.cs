@@ -12,10 +12,11 @@ public class RouteRepository : BaseRepository, IRepositorySoftDelete<Route>
 
     public IEnumerable<Route> GetList(bool includeAll = false) => _context.Routes.Where(r => !r.IsDeleted || includeAll).ToList();
 
-    public void Add(Route route)
+    public int Add(Route route)
     {
         _context.Routes.Add(route);
         _context.SaveChanges();
+        return route.Id;
     }
 
     public bool Update(Route route)

@@ -1,4 +1,5 @@
-﻿using SpaceZD.DataLayer.DbContextes;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -8,14 +9,24 @@ public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
 {
     public OrderRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Order? GetById(int id) => _context.Orders.FirstOrDefault(o => o.Id == id);
+    public Order? GetById(int id) => 
+        _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.Trip)
+                .Include(o => o.StartStation)
+                .Include(o => o.EndStation)
+                .Include(o => o.Tickets)
+                .FirstOrDefault(o => o.Id == id);
 
-    public IEnumerable<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
+    public IEnumerable<Order> GetList(bool includeAll = false) => 
+        _context.Orders
+                .Where(p => !p.IsDeleted || includeAll).ToList();
 
-    public void Add(Order order)
+    public int Add(Order order)
     {
         _context.Orders.Add(order);
         _context.SaveChanges();
+        return order.Id;
     }
 
     public bool Update(Order order)

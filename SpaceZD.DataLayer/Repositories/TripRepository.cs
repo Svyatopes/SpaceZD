@@ -12,10 +12,11 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
     
     public IEnumerable<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
 
-    public void Add(Trip trip)
+    public int Add(Trip trip)
     {
         _context.Trips.Add(trip);
         _context.SaveChanges();
+        return trip.Id;
     }
 
     public bool Update(Trip trip)
