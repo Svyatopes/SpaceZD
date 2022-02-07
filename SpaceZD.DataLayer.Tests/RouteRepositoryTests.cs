@@ -31,17 +31,17 @@ public class RouteRepositoryTests
     [Test]
     public void GetByIdTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
 
         _context.Routes.Add(entityToAdd);
         _context.SaveChanges();
         var idAdded = entityToAdd.Id;
 
-        //act
+        // when
         var receivedEntity = _repository.GetById(idAdded);
 
-        //assert
+        // then
         Assert.IsNotNull(receivedEntity);
         Assert.IsFalse(receivedEntity!.IsDeleted);
         Assert.IsTrue(receivedEntity.Equals(entityToAdd));
@@ -50,7 +50,7 @@ public class RouteRepositoryTests
     [Test]
     public void GetListTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         var secondEntityToAdd = TestEntity;
         var thirdEntityToAdd = TestEntity;
@@ -61,10 +61,10 @@ public class RouteRepositoryTests
         _context.Routes.Add(thirdEntityToAdd);
         _context.SaveChanges();
 
-        //act
+        // when
         var list = (List<Route>)_repository.GetList();
 
-        //assert
+        // then
         Assert.IsNotNull(list);
         Assert.AreEqual(2, list.Count);
 
@@ -78,7 +78,7 @@ public class RouteRepositoryTests
     [Test]
     public void GetListAllIncludedTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         var secondEntityToAdd = TestEntity;
         var thirdEntityToAdd = TestEntity;
@@ -89,10 +89,10 @@ public class RouteRepositoryTests
         _context.Routes.Add(thirdEntityToAdd);
         _context.SaveChanges();
 
-        //act
+        // when
         var list = (List<Route>)_repository.GetList(true);
 
-        //assert
+        // then
         Assert.IsNotNull(list);
         Assert.AreEqual(3, list.Count);
 
@@ -105,13 +105,13 @@ public class RouteRepositoryTests
     [Test]
     public void AddTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
 
-        //act 
+        // when 
         int id = _repository.Add(entityToAdd);
 
-        //assert
+        // then
         var createdEntity = _context.Routes.FirstOrDefault(o => o.Id == id);
 
         Assert.IsTrue(createdEntity!.Equals(entityToAdd));
@@ -120,7 +120,7 @@ public class RouteRepositoryTests
     [Test]
     public void UpdateEntityTest()
     {
-        //arrange
+        // given
         var entityToAdd = TestEntity;
         _context.Routes.Add(entityToAdd);
         _context.SaveChanges();
@@ -131,10 +131,10 @@ public class RouteRepositoryTests
         entityToEdit.EndStation = new Station { Name = "end" };
         entityToEdit.StartTime = DateTime.Now;
 
-        //act 
+        // when 
         bool edited = _repository.Update(entityToEdit);
 
-        //assert
+        // then
         var entityToUpdated = _context.Routes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
@@ -145,17 +145,17 @@ public class RouteRepositoryTests
     [TestCase(false)]
     public void UpdateIsDeletedTest(bool isDeleted)
     {
-        //arrange
+        // given
         var entityToEdit = TestEntity;
         entityToEdit.IsDeleted = !isDeleted;
         _context.Routes.Add(entityToEdit);
         _context.SaveChanges();
         entityToEdit.IsDeleted = isDeleted;
 
-        //act 
+        // when 
         bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
-        //assert
+        // then
         var entityToUpdated = _context.Routes.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
         Assert.IsTrue(edited);
