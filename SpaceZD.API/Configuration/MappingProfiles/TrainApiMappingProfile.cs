@@ -4,9 +4,9 @@ using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Configuration
 {
-    public class TrainMappingProfile : Profile
+    public class TrainApiMappingProfile : Profile
     {
-        public TrainMappingProfile()
+        public TrainApiMappingProfile()
         {
             CreateMap<TrainModel, TrainOutputModel>();
         }

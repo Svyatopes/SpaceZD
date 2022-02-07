@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using SpaceZD.API.Configuration;
+using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -18,6 +20,12 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingProxies().UseSqlServer(connectionString));
+
+builder.Services.AddAutoMapper(
+    typeof(BusinessLayerMapper),
+    typeof(TicketApiMappingProfile),
+    typeof(TrainApiMappingProfile),
+    typeof(UserApiMappingProfile));
 
 builder.Services.AddScoped<IRepositorySoftDelete<User>,UserRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();

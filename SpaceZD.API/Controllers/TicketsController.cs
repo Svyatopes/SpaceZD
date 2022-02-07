@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SpaceZD.API.Configuration;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 
@@ -25,10 +24,6 @@ public class TicketsController : ControllerBase
     [HttpPost]
     public ActionResult AddTicket(TicketInputModel ticket)
     {
-
-        var ticketModel = ApiMapper.GetInstance().Map<TicketModel>(ticket);
-
-
         return StatusCode(StatusCodes.Status201Created, ticket);
     }
 

@@ -4,9 +4,9 @@ using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Configuration
 {
-    public class TicketMappingProfile : Profile
+    public class TicketApiMappingProfile : Profile
     {
-        public TicketMappingProfile()
+        public TicketApiMappingProfile()
         {
             CreateMap<TicketInputModel, TicketModel>()
                         .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new TicketModel() { Id = tim.CarriageId }))

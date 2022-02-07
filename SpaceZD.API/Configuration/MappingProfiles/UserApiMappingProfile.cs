@@ -4,9 +4,9 @@ using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Configuration
 {
-    public class UserMappingProfile : Profile
+    public class UserApiMappingProfile : Profile
     {
-        public UserMappingProfile()
+        public UserApiMappingProfile()
         {
             CreateMap<UserRegisterInputModel, UserModel>();
             CreateMap<UserUpdateInputModel, UserModel>();
