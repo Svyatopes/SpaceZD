@@ -9,7 +9,7 @@ public class TicketApiMappingProfile : Profile
     public TicketApiMappingProfile()
     {
         CreateMap<TicketInputModel, TicketModel>()
-            .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new TicketModel() { Id = tim.CarriageId }))
+            .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new CarriageModel() { Id = tim.CarriageId }))
             .ForMember(tm => tm.Order, opt => opt.MapFrom(tim => new OrderModel() { Id = tim.OrderId }))
             .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel() { Id = tim.PersonId }));
 
