@@ -31,17 +31,17 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetByIdTest()
         {
-            //arrange
+            // given
             var transitToAdd = GetTestTransit();
 
             _context.Transits.Add(transitToAdd);
             _context.SaveChanges();
             var idAddedTransit = transitToAdd.Id;
 
-            //act
+            // when
             var receivedTransit = _repository.GetById(idAddedTransit);
 
-            //assert
+            // then
             Assert.IsNotNull(receivedTransit);
             Assert.IsFalse(receivedTransit!.IsDeleted);
             AssertTestTransit(receivedTransit);
@@ -52,7 +52,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetListTest()
         {
-            //arrange
+            // given
             var transitToAdd = GetTestTransit();
             var secondTransitToAdd = GetTestTransit();
             var thirdTransitToAdd = GetTestTransit();
@@ -63,10 +63,10 @@ namespace SpaceZD.DataLayer.Tests
             _context.Transits.Add(thirdTransitToAdd);
             _context.SaveChanges();
 
-            //act
+            // when
             var transits = (List<Transit>)_repository.GetList();
 
-            //assert
+            // then
 
             Assert.IsNotNull(transits);
             Assert.AreEqual(2, transits.Count);
@@ -81,7 +81,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void GetListAllIncludedTest()
         {
-            //arrange
+            // given
             var transitToAdd = GetTestTransit();
             var secondTransitToAdd = GetTestTransit();
             var thirdTransitToAdd = GetTestTransit();
@@ -92,11 +92,11 @@ namespace SpaceZD.DataLayer.Tests
             _context.Transits.Add(thirdTransitToAdd);
             _context.SaveChanges();
 
-            //act
+            // when
             var transits = (List<Transit>)_repository.GetList(true);
 
 
-            //assert
+            // then
 
             Assert.IsNotNull(transits);
             Assert.AreEqual(3, transits.Count);
@@ -110,13 +110,13 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void AddTest()
         {
-            //arrange
+            // given
             var transitToAdd = GetTestTransit();
 
-            //act 
+            // when 
             int id = _repository.Add(transitToAdd);
 
-            //assert
+            // then
             var createdTransit = _context.Transits.FirstOrDefault(o => o.Id == id);
 
             AssertTestTransit(createdTransit!);
@@ -125,7 +125,7 @@ namespace SpaceZD.DataLayer.Tests
         [Test]
         public void UpdateEntityTest()
         {
-            //arrange
+            // given
             var transitToAdd = GetTestTransit();
             _context.Transits.Add(transitToAdd);
             _context.SaveChanges();
@@ -137,10 +137,10 @@ namespace SpaceZD.DataLayer.Tests
             transitToEdit.EndStation = new Station() { Name = "Mariupol" };
             transitToEdit.Price = (decimal?)24.4;
 
-            //act 
+            // when 
             bool edited = _repository.Update(transitToEdit);
 
-            //assert
+            // then
             var updatedTransit = _context.Transits.FirstOrDefault(o => o.Id == transitToEdit.Id);
 
             Assert.IsTrue(edited);
@@ -157,16 +157,16 @@ namespace SpaceZD.DataLayer.Tests
         [TestCase(false)]
         public void UpdateIsDeletedTest(bool isDeleted)
         {
-            //arrange
+            // given
             var transitToEdit = GetTestTransit();
             transitToEdit.IsDeleted = !isDeleted;
             _context.Transits.Add(transitToEdit);
             _context.SaveChanges();
 
-            //act 
+            // when 
             bool edited = _repository.Update(transitToEdit.Id, isDeleted);
 
-            //assert
+            // then
             var updatedTransit = _context.Transits.FirstOrDefault(o => o.Id == transitToEdit.Id);
 
             Assert.IsTrue(edited);
