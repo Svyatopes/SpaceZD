@@ -45,7 +45,7 @@ public class OrderRepositoryTests
         //assert
         Assert.IsNotNull(receivedOrder);
         Assert.IsFalse(receivedOrder!.IsDeleted);
-        AsserTestOrder(receivedOrder);
+        AssertTestOrder(receivedOrder);
     }
 
 
@@ -76,7 +76,7 @@ public class OrderRepositoryTests
         var orderToCheck = orders[0];
         Assert.IsNotNull(orderToCheck);
         Assert.IsFalse(orderToCheck.IsDeleted);
-        AsserTestOrder(orderToCheck);
+        AssertTestOrder(orderToCheck);
 
     }
 
@@ -107,7 +107,7 @@ public class OrderRepositoryTests
         var orderToCheck = orders[2];
         Assert.IsNotNull(orderToCheck);
         Assert.IsTrue(orderToCheck.IsDeleted);
-        AsserTestOrder(orderToCheck);
+        AssertTestOrder(orderToCheck);
 
     }
 
@@ -123,7 +123,7 @@ public class OrderRepositoryTests
         //assert
         var createdOrder = _context.Orders.FirstOrDefault(o => o.Id == id);
 
-        AsserTestOrder(createdOrder);
+        AssertTestOrder(createdOrder);
     }
 
     [Test]
@@ -194,7 +194,7 @@ public class OrderRepositoryTests
         Assert.IsTrue(edited);
         Assert.IsNotNull(updatedOrder);
         Assert.AreEqual(isDeleted, updatedOrder!.IsDeleted);
-        AsserTestOrder(updatedOrder);
+        AssertTestOrder(updatedOrder);
     }
 
     private Order GetTestOrder() => new Order()
@@ -217,7 +217,7 @@ public class OrderRepositoryTests
         }
     };
 
-    private void AsserTestOrder(Order order)
+    private void AssertTestOrder(Order order)
     {
         Assert.IsNotNull(order);
         Assert.IsNotNull(order!.StartStation);
