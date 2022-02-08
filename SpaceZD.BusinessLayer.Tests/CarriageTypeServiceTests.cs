@@ -116,7 +116,7 @@ public class CarriageTypeServiceTests
         // given
         _carriageTypeRepositoryMock.Setup(x => x.GetList(true)).Returns(carriageTypes);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
-        var expected = carriageTypes.Select(carriageType => new CarriageTypeModel
+        var expected = carriageTypes.Where(t => t.IsDeleted).Select(carriageType => new CarriageTypeModel
                                     {
                                         Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted
                                     })
@@ -133,16 +133,19 @@ public class CarriageTypeServiceTests
         yield return new TestCaseData(new List<CarriageType>
         {
             new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true },
+            new() { Name = "Купе", NumberOfSeats = 3, IsDeleted = false },
+            new() { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = false },
             new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true }
         });
         yield return new TestCaseData(new List<CarriageType>
         {
+            new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = false },
             new() { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = true },
             new() { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = true },
         });
     }
-    
-    
+
+
     //Delete
     [Test]
     public void DeleteTest()
@@ -162,11 +165,11 @@ public class CarriageTypeServiceTests
     {
         _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(false);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
-        
+
         Assert.Throws<NotFoundException>(() => service.Delete(10));
     }
-    
-    
+
+
     //Restore
     [Test]
     public void RestoreTest()
@@ -186,11 +189,11 @@ public class CarriageTypeServiceTests
     {
         _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(false);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
-        
+
         Assert.Throws<NotFoundException>(() => service.Restore(10));
     }
-    
-    
+
+
     //Update
     [Test]
     public void UpdateTest()
@@ -210,7 +213,7 @@ public class CarriageTypeServiceTests
     {
         _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>())).Returns(false);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
-        
+
         Assert.Throws<NotFoundException>(() => service.Update(10, new CarriageTypeModel()));
     }
 }
