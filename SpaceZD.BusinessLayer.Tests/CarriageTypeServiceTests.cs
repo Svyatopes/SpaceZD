@@ -189,4 +189,28 @@ public class CarriageTypeServiceTests
         
         Assert.Throws<NotFoundException>(() => service.Restore(10));
     }
+    
+    
+    //Update
+    [Test]
+    public void UpdateTest()
+    {
+        // given
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>())).Returns(true);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+
+        // when
+        service.Update(45, new CarriageTypeModel());
+
+        // then
+        Assert.Pass();
+    }
+    [Test]
+    public void UpdateNegativeTest()
+    {
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>())).Returns(false);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+        
+        Assert.Throws<NotFoundException>(() => service.Update(10, new CarriageTypeModel()));
+    }
 }
