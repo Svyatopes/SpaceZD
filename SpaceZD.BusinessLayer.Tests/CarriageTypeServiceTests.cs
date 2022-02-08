@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
@@ -53,21 +53,10 @@ public class CarriageTypeServiceTests
         var actual = service.GetById(5);
 
         // then
-        Assert.AreEqual(new CarriageTypeModel { Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted }, actual);
+        Assert.AreEqual(
+            new CarriageTypeModel { Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted },
+            actual);
     }
-    [Test]
-    public void GetByIdNegativeTest()
-    {
-        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((CarriageType?)null);
-        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
-
-        Assert.Throws<NotFoundException>(() => service.GetById(10));
-    }
-    
-    // GetList
-    
-
-
     public static IEnumerable<TestCaseData> GetCarriageType()
     {
         yield return new TestCaseData(new CarriageType { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true });
@@ -77,5 +66,79 @@ public class CarriageTypeServiceTests
         yield return new TestCaseData(new CarriageType { Name = "Плацкарт", NumberOfSeats = 4, IsDeleted = false });
         yield return new TestCaseData(new CarriageType { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true });
     }
-    
+    [Test]
+    public void GetByIdNegativeTest()
+    {
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((CarriageType?)null);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+
+        Assert.Throws<NotFoundException>(() => service.GetById(10));
+    }
+
+
+    // GetList
+    [TestCaseSource(nameof(GetListCarriageTypeNotDeleted))]
+    public void GetListTest(List<CarriageType> carriageTypes)
+    {
+        // given
+        _carriageTypeRepositoryMock.Setup(x => x.GetList(false)).Returns(carriageTypes);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+        var expected = carriageTypes.Select(carriageType => new CarriageTypeModel
+                                    {
+                                        Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted
+                                    })
+                                    .ToList();
+
+        // when
+        var actual = service.GetList();
+
+        // then
+        CollectionAssert.AreEqual(expected, actual);
+    }
+    public static IEnumerable<TestCaseData> GetListCarriageTypeNotDeleted()
+    {
+        yield return new TestCaseData(new List<CarriageType>
+        {
+            new() { Name = "Купе", NumberOfSeats = 3, IsDeleted = false },
+            new() { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = false },
+            new() { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = false },
+            new() { Name = "Плацкарт", NumberOfSeats = 4, IsDeleted = false }
+        });
+        yield return new TestCaseData(new List<CarriageType>
+        {
+            new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = false },
+            new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = false }
+        });
+    }
+    [TestCaseSource(nameof(GetListCarriageTypeDeleted))]
+    public void GetListDeletedTest(List<CarriageType> carriageTypes)
+    {
+        // given
+        _carriageTypeRepositoryMock.Setup(x => x.GetList(true)).Returns(carriageTypes);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+        var expected = carriageTypes.Select(carriageType => new CarriageTypeModel
+                                    {
+                                        Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted
+                                    })
+                                    .ToList();
+
+        // when
+        var actual = service.GetListDeleted();
+
+        // then
+        CollectionAssert.AreEqual(expected, actual);
+    }
+    public static IEnumerable<TestCaseData> GetListCarriageTypeDeleted()
+    {
+        yield return new TestCaseData(new List<CarriageType>
+        {
+            new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true },
+            new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true }
+        });
+        yield return new TestCaseData(new List<CarriageType>
+        {
+            new() { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = true },
+            new() { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = true },
+        });
+    }
 }
