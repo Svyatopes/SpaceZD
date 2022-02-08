@@ -141,4 +141,52 @@ public class CarriageTypeServiceTests
             new() { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = true },
         });
     }
+    
+    
+    //Delete
+    [Test]
+    public void DeleteTest()
+    {
+        // given
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(true);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+
+        // when
+        service.Delete(45);
+
+        // then
+        Assert.Pass();
+    }
+    [Test]
+    public void DeleteNegativeTest()
+    {
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(false);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+        
+        Assert.Throws<NotFoundException>(() => service.Delete(10));
+    }
+    
+    
+    //Restore
+    [Test]
+    public void RestoreTest()
+    {
+        // given
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(true);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+
+        // when
+        service.Restore(45);
+
+        // then
+        Assert.Pass();
+    }
+    [Test]
+    public void RestoreNegativeTest()
+    {
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(false);
+        var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
+        
+        Assert.Throws<NotFoundException>(() => service.Restore(10));
+    }
 }
