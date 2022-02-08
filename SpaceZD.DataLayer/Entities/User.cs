@@ -11,4 +11,15 @@ public class User
     public virtual ICollection<Order> Orders { get; set; }
     public Role Role { get; set; }
     public bool IsDeleted { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is User user &&
+               Name == user.Name &&
+               Login == user.Login &&
+               PasswordHash == user.PasswordHash &&
+               Orders.Equals(user.Orders) &&
+               Role == user.Role &&
+               IsDeleted == user.IsDeleted;
+    }
 }
