@@ -4,6 +4,7 @@ using AutoMapper;
 using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Configuration;
+using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Entities;
@@ -60,7 +61,7 @@ public class CarriageTypeServiceTests
         _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((CarriageType?)null);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
-        Assert.Throws<Exception>(() => service.GetById(10));
+        Assert.Throws<NotFoundException>(() => service.GetById(10));
     }
     
     // GetList

@@ -1,4 +1,5 @@
 using AutoMapper;
+using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -47,5 +48,5 @@ public class CarriageTypeService : ICarriageTypeService
             NotFound(id);
     }
 
-    private static void NotFound(int id) => throw new Exception($"CarriageType c Id = {id} не найден");
+    private static void NotFound(int id) => throw new NotFoundException($"CarriageType c Id = {id} не найден");
 }
