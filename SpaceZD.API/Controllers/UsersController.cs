@@ -17,12 +17,16 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
-    
+    //**************    NOT WORK YET      *******************
     
     [HttpGet]
     public ActionResult<List<UserModel>> GetUsers()
     {
-        return Ok(new List<UserModel> { new UserModel() });
+        var userModel = _userService.GetList();
+        var user = ApiMapper.GetInstance().Map<List<UserOutputModel>>(userModel);
+        if (user != null)
+            return Ok(user);
+        return BadRequest("Oh.....");
     }
 
     [HttpGet("{id}")]
@@ -41,20 +45,29 @@ public class UsersController : ControllerBase
     public ActionResult AddUser(UserModel userModel)
     {
         var user = ApiMapper.GetInstance().Map<UserModel>(userModel);
-        var s = _userService.Add(user);
-        return StatusCode(StatusCodes.Status201Created, userModel);
+        var addEntity = _userService.Add(user);
+        if (addEntity != null)
+            return BadRequest("User doesn't add");
+        else
+            return StatusCode(StatusCodes.Status201Created, userModel);
     }
 
     [HttpPut("{id}")]
     public ActionResult EditUser(int id, UserModel user)
     {
-        return BadRequest();
+        var userModel = _userService.GetById(id);
+        var userForEdit = ApiMapper.GetInstance().Map<UserOutputModel>(userModel);
+        return Ok();
+        //var user = ApiMapper.GetInstance().Map<UserModel>(userModel);
+        //return BadRequest();
     }
 
     [HttpDelete("{id}")]
     public ActionResult DeleteUser(int id)
     {
-        return Accepted();
+        var userModel = _userService.GetById(id);
+        var userForEdit = ApiMapper.GetInstance().Map<UserOutputModel>(userModel);
+        return Ok();
     }
 
 }

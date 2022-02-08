@@ -2,7 +2,6 @@
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
-using SpaceZD.DataLayer.Repositories;
 
 namespace SpaceZD.BusinessLayer.Services
 {
@@ -14,19 +13,46 @@ namespace SpaceZD.BusinessLayer.Services
         {
             _userRepository = userRepository;
         }
+
         public UserModel GetById(int id)
         {
-            var grade = _userRepository.GetById(id);
-            return BusinessMapper.GetInstance().Map<UserModel>(grade);
+            var entity = _userRepository.GetById(id);
+            return BusinessMapper.GetInstance().Map<UserModel>(entity);
         }
 
-        public bool Add(UserModel user)
+        public List<UserModel> GetList(bool includeAll = false)
         {
-            var newGrade = BusinessMapper.GetInstance().Map<User>(user);
+            var entities = _userRepository.GetList(includeAll);
+            return BusinessMapper.GetInstance().Map<List<UserModel>>(entities);
+        }
+
+        public int Add(UserModel entity)
+        {
+            var addEntity = BusinessMapper.GetInstance().Map<User>(entity);
+
+            var idEntity = _userRepository.Add(addEntity);
+            return idEntity;
+        }
+
+        public bool Update(UserModel entity)
+        {
+            var addEntity = BusinessMapper.GetInstance().Map<User>(entity);
+            var entityInDb = GetById(addEntity.Id);
+
+            entityInDb.Name = addEntity.Name;
+            entityInDb.PasswordHash = addEntity.PasswordHash;
+            return true;
+
+        }
+
+        public bool Update(int id, bool isDeleted)
+        {
+            var user = GetById(id);
+            var entity = BusinessMapper.GetInstance().Map<User>(user);
+            var deleteEntity = _userRepository.Update(id, isDeleted);
             
-            _userRepository.Add(newGrade);
             return true;
         }
-        
+
     }
 }
