@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using SpaceZD.API.Configuration;
+using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
@@ -19,6 +21,8 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingProxies().UseSqlServer(connectionString));
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(BusinessLayerMapper).Assembly);
 
 builder.Services.AddScoped<IUserService, UserService>();
 
