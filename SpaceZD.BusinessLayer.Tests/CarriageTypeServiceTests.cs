@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
@@ -14,16 +15,14 @@ public class CarriageTypeServiceTests
 {
     private readonly Mock<IRepositorySoftDelete<CarriageType>> _carriageTypeRepositoryMock;
     private readonly IMapper _mapper;
-    
+
     public CarriageTypeServiceTests()
     {
         _carriageTypeRepositoryMock = new Mock<IRepositorySoftDelete<CarriageType>>();
         _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<BusinessLayerMapper>()));
     }
 
-    [SetUp]
-    public void Setup() {}
-
+    // Add
     [TestCase(1)]
     [TestCase(4)]
     [TestCase(28)]
@@ -35,30 +34,26 @@ public class CarriageTypeServiceTests
 
         // when
         int actual = service.Add(new CarriageTypeModel());
-        
+
         // then
         Assert.AreEqual(expected, actual);
     }
-    
-    [TestCase(6)]
-    public void GetByIdTest(int expected)
+
+
+    // GetById
+    [TestCaseSource(nameof(GetCarriageType))]
+    public void GetByIdTest(CarriageType carriageType)
     {
         // given
-        var gg = new CarriageType
-        {
-            Name = "Купе",
-            NumberOfSeats = 5
-        };
-        _carriageTypeRepositoryMock.Setup(x => x.GetById(expected)).Returns(gg);
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         // when
-        var actual = service.GetById(expected);
-        
+        var actual = service.GetById(5);
+
         // then
-        Assert.AreEqual(_mapper.Map<CarriageTypeModel>(gg), actual);
+        Assert.AreEqual(new CarriageTypeModel { Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted }, actual);
     }
-    
     [Test]
     public void GetByIdNegativeTest()
     {
@@ -67,4 +62,19 @@ public class CarriageTypeServiceTests
 
         Assert.Throws<Exception>(() => service.GetById(10));
     }
+    
+    // GetList
+    
+
+
+    public static IEnumerable<TestCaseData> GetCarriageType()
+    {
+        yield return new TestCaseData(new CarriageType { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true });
+        yield return new TestCaseData(new CarriageType { Name = "Купе", NumberOfSeats = 3, IsDeleted = false });
+        yield return new TestCaseData(new CarriageType { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = false });
+        yield return new TestCaseData(new CarriageType { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = false });
+        yield return new TestCaseData(new CarriageType { Name = "Плацкарт", NumberOfSeats = 4, IsDeleted = false });
+        yield return new TestCaseData(new CarriageType { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true });
+    }
+    
 }
