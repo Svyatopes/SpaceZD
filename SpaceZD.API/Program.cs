@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SpaceZD.API.Configuration;
+using SpaceZD.API.Middleware;
 using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
@@ -49,6 +50,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<SpaceZDMiddleware>();
 
 app.UseAuthorization();
 
