@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,22 +28,7 @@ namespace SpaceZD.DataLayer.Tests
             _repository = new TripStationRepository(_context);
 
             // seed
-            var tripStations = new TripStation[]
-            {
-                new()
-                {
-
-                },
-                new()
-                {
-
-                },
-                new()
-                {
-
-                },
-
-            };
+            var tripStations = TripStationRepositoryMocks.GetTripStations();
             _context.TripStations.AddRange(tripStations);
             _context.SaveChanges();
         }
