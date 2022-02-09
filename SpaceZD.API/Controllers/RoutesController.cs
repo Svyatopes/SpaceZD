@@ -17,7 +17,7 @@ namespace SpaceZD.API.Controllers
         [HttpGet]
         public ActionResult<List<RouteShortOutputModel>> GetRoutes()
         {
-            return Ok(new List<RouteModel> { new RouteModel() });
+            return Ok(new List<RouteShortOutputModel> { new RouteShortOutputModel() });
         }
 
         [HttpPost]
