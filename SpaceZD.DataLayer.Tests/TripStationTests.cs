@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
-using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
 using SpaceZD.DataLayer.Tests.TestCaseSources;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SpaceZD.DataLayer.Tests
@@ -67,7 +65,7 @@ namespace SpaceZD.DataLayer.Tests
         public void AddTest()
         {
             // given
-            var entityToAdd = TestEntity();
+            var entityToAdd = TripStationRepositoryMocks.GetTripStation();
 
             // when 
             int id = _repository.Add(entityToAdd);
@@ -97,10 +95,5 @@ namespace SpaceZD.DataLayer.Tests
             Assert.IsTrue(edited);
             Assert.AreEqual(entityToEdit, entityUpdated);
         }
-
-        private TripStation TestEntity() => new TripStation()
-        {
-
-        };
     }
 }
