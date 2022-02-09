@@ -41,6 +41,7 @@ builder.Services.AddScoped<IRepositorySoftDelete<Carriage>,CarriageRepository>()
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
 
 builder.Services.AddScoped<IRouteService, RouteService>();
+builder.Services.AddScoped<IStationService,StationService>();
 
 var app = builder.Build();
 
