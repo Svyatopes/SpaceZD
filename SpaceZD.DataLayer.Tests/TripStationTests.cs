@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
-using SpaceZD.DataLayer.Repositories;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceZD.DataLayer.Tests
 {
@@ -28,116 +25,96 @@ namespace SpaceZD.DataLayer.Tests
             _context.Database.EnsureCreated();
 
             _repository = new TripStationRepository(_context);
+
+            // seed
+            var tripStations = new TripStation[]
+            {
+                new()
+                {
+
+                },
+                new()
+                {
+
+                },
+                new()
+                {
+
+                },
+
+            };
+            _context.TripStations.AddRange(tripStations);
+            _context.SaveChanges();
         }
 
-
-        [Test]
-        public void GetByIdTest()
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetByIdTest(int id)
         {
             // given
-            var tripStationToAdd = GetTestTripStation();
-
-            _context.TripStations.Add(tripStationToAdd);
-            _context.SaveChanges();
-            var idAddedTripStation = tripStationToAdd.Id;
+            var expectedEntity = _context.TripStations.Find(id);
 
             // when
-            var receivedTripStation = _repository.GetById(idAddedTripStation);
+            var receivedEntity = _repository.GetById(id);
 
             // then
-            Assert.IsNotNull(receivedTripStation);
-            AssertTestTripStation(receivedTripStation);
+            Assert.AreEqual(expectedEntity, receivedEntity);
         }
-
 
 
         [Test]
         public void GetListTest()
         {
             // given
-            var tripStationToAdd = GetTestTripStation();
-            var secondTripStationToAdd = GetTestTripStation();
-            var thirdTripStationToAdd = GetTestTripStation();
-
-            _context.TripStations.Add(tripStationToAdd);
-            _context.TripStations.Add(secondTripStationToAdd);
-            _context.TripStations.Add(thirdTripStationToAdd);
-            _context.SaveChanges();
+            var expected = _context.TripStations.ToList();
 
             // when
-            var tripStations = (List<TripStation>)_repository.GetList();
+            var list = _repository.GetList();
 
             // then
-
-            Assert.IsNotNull(tripStations);
-            Assert.AreEqual(2, tripStations.Count);
-
-            var transitToCheck = tripStations[0];
-            Assert.IsNotNull(transitToCheck);
-            AssertTestTripStation(transitToCheck);
+            CollectionAssert.AreEqual(expected, list);
         }
+
 
         [Test]
         public void AddTest()
         {
             // given
-            var tripStationToAdd = GetTestTripStation();
+            var entityToAdd = TestEntity();
 
             // when 
-            int id = _repository.Add(tripStationToAdd);
+            int id = _repository.Add(entityToAdd);
 
             // then
-            var createdTripStation = _context.TripStations.FirstOrDefault(o => o.Id == id);
+            var entityOnCreate = _context.TripStations.FirstOrDefault(o => o.Id == id);
 
-            AssertTestTripStation(createdTripStation!);
+            Assert.AreEqual(entityOnCreate, entityToAdd);
         }
 
-        [Test]
-        public void UpdateEntityTest()
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void UpdateEntityTest(int id)
         {
             // given
-            var tripStationToAdd = GetTestTripStation();
-            _context.TripStations.Add(tripStationToAdd);
-            _context.SaveChanges();
-
-            var tripStationToEdit = GetTestTripStation();
-            tripStationToEdit.Id = tripStationToAdd.Id;
-
-            //tripToEdit.StartStation = new Station() { Name = "Sevastopol" };
-            //tripToEdit.EndStation = new Station() { Name = "Mariupol" };
-            //tripToEdit.Price = (decimal?)24.4;
+            var entityToEdit = _context.TripStations.FirstOrDefault(o => o.Id == id);
+            entityToEdit!.Station.Name = "Oredez";
 
             // when 
-            bool edited = _repository.Update(tripStationToEdit);
+            bool edited = _repository.Update(entityToEdit);
 
             // then
-            var updatedTripStation = _context.TripStations.FirstOrDefault(o => o.Id == tripStationToEdit.Id);
+            var entityUpdated = _context.TripStations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.IsTrue(edited);
-            Assert.IsNotNull(updatedTripStation);
-            //Assert.IsNotNull(updatedTrip!.StartStation);
-            //Assert.AreEqual("Sevastopol", updatedTrip.StartStation.Name);
-            //Assert.IsNotNull(updatedTrip.EndStation);
-            //Assert.AreEqual("Bolotnoe", updatedTrip.EndStation.Name);
-            //Assert.IsNotNull(updatedTrip.Price);
-            //Assert.AreEqual((decimal?)24.4, updatedTrip.Price);
+            Assert.AreEqual(entityToEdit, entityUpdated);
         }
 
-        private TripStation GetTestTripStation() => new TripStation()
+        private TripStation TestEntity() => new TripStation()
         {
-           
 
         };
-
-        private void AssertTestTripStation(TripStation tripStation)
-        {
-            Assert.IsNotNull(tripStation);
-            // Assert.IsNotNull(trip.StartStation);
-            // Assert.AreEqual("Novosibirsk", trip.StartStation.Name);
-            //   Assert.IsNotNull(trip.EndStation);
-            // Assert.AreEqual("Sheregesh", trip.EndStation.Name);
-            //  Assert.IsNotNull(trip.Price);
-            // Assert.AreEqual((decimal?)23.4, trip.Price);
-        }
     }
 }
