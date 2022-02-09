@@ -2,6 +2,6 @@
 {
     public class RouteFullOutputModel: RouteShortOutputModel
     {
-        public List<RouteTransitModel> Transits { get; set; }
+        public List<RouteTransitOutputModel> Transits { get; set; }
     }
 }
