@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace SpaceZD.DataLayer.Tests
 
             _repository = new TripRepository(_context);
 
+            var trips = TripRepositoryMocks.GetTrips();
             _context.Trips.AddRange(trips);
             _context.SaveChanges();
         }
@@ -65,7 +67,7 @@ namespace SpaceZD.DataLayer.Tests
         public void AddTest()
         {
             // given
-            var entityToAdd = TestEntity();
+            var entityToAdd = TripRepositoryMocks.GetTrip();
 
             // when 
             int id = _repository.Add(entityToAdd);
@@ -84,7 +86,7 @@ namespace SpaceZD.DataLayer.Tests
         {
             // given
             var entityToEdit = _context.Trips.FirstOrDefault(o => o.Id == id);
-            //entityToEdit!.Station . Name = "Oredez";
+            entityToEdit!.Route.Code = "Oredez345";
 
             // when 
             bool edited = _repository.Update(entityToEdit);
@@ -95,45 +97,5 @@ namespace SpaceZD.DataLayer.Tests
             Assert.IsTrue(edited);
             Assert.AreEqual(entityToEdit, entityUpdated);
         }
-
-
-        private Trip TestEntity() => new Trip()
-        {
-            Train = new Train { Id = 3 },
-            Route = new Route
-            {
-                Code = "M456",
-                Transits = new List<RouteTransit>
-                {
-                    new()
-                    {
-                        Transit = new Transit
-                        {
-                            StartStation = new Station { Name = "Москва" },
-                            EndStation = new Station { Name = "Псков" }
-                        },
-                        DepartingTime = new TimeSpan(1, 1, 0),
-                        ArrivalTime = new TimeSpan(1, 0, 0)
-                    },
-                    new()
-                    {
-                        Transit = new Transit
-                        {
-                            StartStation = new Station { Name = "Псков" },
-                            EndStation = new Station { Name = "Новгород" }
-                        },
-                        DepartingTime = new TimeSpan(2, 1, 0),
-                        ArrivalTime = new TimeSpan(2, 0, 0)
-                    }
-                },
-                StartTime = new DateTime(1999, 10, 1),
-                StartStation = new Station { Name = "Москва" },
-                EndStation = new Station { Name = "Новгород" }
-            },
-            Stations = new List<TripStation>()
-            {
-
-            }
-        };
     }
 }
