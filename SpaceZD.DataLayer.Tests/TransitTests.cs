@@ -25,172 +25,126 @@ namespace SpaceZD.DataLayer.Tests
             _context.Database.EnsureCreated();
 
             _repository = new TransitRepository(_context);
+
+            // seed
+            var transits = new Transit[]
+            {
+                new()
+                {
+                    StartStation = new Station() { Name = "Novosibirsk" },
+                    EndStation = new Station() { Name = "Sheregesh" },
+                    Price = (decimal?)23.4
+                },
+                new()
+                {
+                    StartStation = new Station() { Name = "Elisenvaara" },
+                    EndStation = new Station() { Name = "Sortavala" },
+                    Price = (decimal?)25.7
+                },
+                new()
+                {
+                    StartStation = new Station() { Name = "Vorkuta" },
+                    EndStation = new Station() { Name = "Yamal" },
+                    Price = (decimal?)24.6
+                },
+
+            };
+            _context.Transits.AddRange(transits);
+            _context.SaveChanges();
         }
 
-
-        [Test]
-        public void GetByIdTest()
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetByIdTest(int id)
         {
             // given
-            var transitToAdd = GetTestTransit();
-
-            _context.Transits.Add(transitToAdd);
-            _context.SaveChanges();
-            var idAddedTransit = transitToAdd.Id;
+            var expectedEntity = _context.Transits.Find(id);
 
             // when
-            var receivedTransit = _repository.GetById(idAddedTransit);
+            var receivedEntity = _repository.GetById(id);
 
             // then
-            Assert.IsNotNull(receivedTransit);
-            Assert.IsFalse(receivedTransit!.IsDeleted);
-            AssertTestTransit(receivedTransit);
+            Assert.AreEqual(expectedEntity, receivedEntity);
         }
 
 
-
-        [Test]
-        public void GetListTest()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void GetListTest(bool includeAll)
         {
             // given
-            var transitToAdd = GetTestTransit();
-            var secondTransitToAdd = GetTestTransit();
-            var thirdTransitToAdd = GetTestTransit();
-            thirdTransitToAdd.IsDeleted = true;
-
-            _context.Transits.Add(transitToAdd);
-            _context.Transits.Add(secondTransitToAdd);
-            _context.Transits.Add(thirdTransitToAdd);
-            _context.SaveChanges();
+            var expected = _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
 
             // when
-            var transits = (List<Transit>)_repository.GetList();
+            var list = _repository.GetList(includeAll);
 
             // then
-
-            Assert.IsNotNull(transits);
-            Assert.AreEqual(2, transits.Count);
-
-            var transitToCheck = transits[0];
-            Assert.IsNotNull(transitToCheck);
-            Assert.IsFalse(transitToCheck.IsDeleted);
-            AssertTestTransit(transitToCheck);
+            CollectionAssert.AreEqual(expected, list);
         }
 
-
-        [Test]
-        public void GetListAllIncludedTest()
-        {
-            // given
-            var transitToAdd = GetTestTransit();
-            var secondTransitToAdd = GetTestTransit();
-            var thirdTransitToAdd = GetTestTransit();
-            thirdTransitToAdd.IsDeleted = true;
-
-            _context.Transits.Add(transitToAdd);
-            _context.Transits.Add(secondTransitToAdd);
-            _context.Transits.Add(thirdTransitToAdd);
-            _context.SaveChanges();
-
-            // when
-            var transits = (List<Transit>)_repository.GetList(true);
-
-
-            // then
-
-            Assert.IsNotNull(transits);
-            Assert.AreEqual(3, transits.Count);
-
-            var orderToCheck = transits[2];
-            Assert.IsNotNull(orderToCheck);
-            Assert.IsTrue(orderToCheck.IsDeleted);
-            AssertTestTransit(orderToCheck);
-        }
 
         [Test]
         public void AddTest()
         {
             // given
-            var transitToAdd = GetTestTransit();
+            var entityToAdd = TestEntity();
 
             // when 
-            int id = _repository.Add(transitToAdd);
+            int id = _repository.Add(entityToAdd);
 
             // then
-            var createdTransit = _context.Transits.FirstOrDefault(o => o.Id == id);
+            var entityOnCreate = _context.Transits.FirstOrDefault(o => o.Id == id);
 
-            AssertTestTransit(createdTransit!);
+            Assert.AreEqual(entityOnCreate, entityToAdd);
         }
 
-        [Test]
-        public void UpdateEntityTest()
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void UpdateEntityTest(int id)
         {
             // given
-            var transitToAdd = GetTestTransit();
-            _context.Transits.Add(transitToAdd);
-            _context.SaveChanges();
-
-            var transitToEdit = GetTestTransit();
-            transitToEdit.Id = transitToAdd.Id;
-
-            transitToEdit.StartStation = new Station() { Name = "Sevastopol" };
-            transitToEdit.EndStation = new Station() { Name = "Mariupol" };
-            transitToEdit.Price = (decimal?)24.4;
+            var entityToEdit = _context.Transits.FirstOrDefault(o => o.Id == id);
+            entityToEdit!.StartStation.Name = "Oredez";
 
             // when 
-            bool edited = _repository.Update(transitToEdit);
+            bool edited = _repository.Update(entityToEdit);
 
             // then
-            var updatedTransit = _context.Transits.FirstOrDefault(o => o.Id == transitToEdit.Id);
+            var entityUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.IsTrue(edited);
-            Assert.IsNotNull(updatedTransit);
-            Assert.IsNotNull(updatedTransit!.StartStation);
-            Assert.AreEqual("Sevastopol", updatedTransit.StartStation.Name);
-            Assert.IsNotNull(updatedTransit.EndStation);
-            Assert.AreEqual("Bolotnoe", updatedTransit.EndStation.Name);
-            Assert.IsNotNull(updatedTransit.Price);
-            Assert.AreEqual((decimal?)24.4, updatedTransit.Price);
+            Assert.AreEqual(entityToEdit, entityUpdated);
         }
+
 
         [TestCase(true)]
         [TestCase(false)]
         public void UpdateIsDeletedTest(bool isDeleted)
         {
             // given
-            var transitToEdit = GetTestTransit();
-            transitToEdit.IsDeleted = !isDeleted;
-            _context.Transits.Add(transitToEdit);
+            var entityToEdit = TestEntity();
+            entityToEdit.IsDeleted = !isDeleted;
+            _context.Transits.Add(entityToEdit);
             _context.SaveChanges();
 
             // when 
-            bool edited = _repository.Update(transitToEdit.Id, isDeleted);
+            bool edited = _repository.Update(entityToEdit.Id, isDeleted);
 
             // then
-            var updatedTransit = _context.Transits.FirstOrDefault(o => o.Id == transitToEdit.Id);
+            var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.IsTrue(edited);
-            Assert.IsNotNull(updatedTransit);
-            Assert.AreEqual(isDeleted, updatedTransit!.IsDeleted);
-            AssertTestTransit(updatedTransit);
+            Assert.AreEqual(entityToEdit, entityToUpdated);
         }
 
-        private Transit GetTestTransit() => new Transit()
+        private Transit TestEntity() => new Transit()
         {
-            StartStation = new Station() { Name = "Novosibirsk" },
-            EndStation = new Station() { Name = "Sheregesh" },
+            StartStation = new Station() { Name = "Norilsk" },
+            EndStation = new Station() { Name = "Sweden" },
             Price = (decimal?)23.4
         };
-
-        private void AssertTestTransit(Transit transit)
-        {
-            Assert.IsNotNull(transit);
-            Assert.IsNotNull(transit.StartStation);
-            Assert.AreEqual("Novosibirsk", transit.StartStation.Name);
-            Assert.IsNotNull(transit.EndStation);
-            Assert.AreEqual("Sheregesh", transit.EndStation.Name);
-            Assert.IsNotNull(transit.Price);
-            Assert.AreEqual((decimal?)23.4, transit.Price);
-        }
     }
 }
