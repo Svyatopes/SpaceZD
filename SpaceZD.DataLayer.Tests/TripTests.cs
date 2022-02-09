@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceZD.DataLayer.Tests
 {
@@ -28,159 +26,99 @@ namespace SpaceZD.DataLayer.Tests
             _context.Database.EnsureCreated();
 
             _repository = new TripRepository(_context);
+
+            // seed
+            var trips = new Trip[]
+            {
+                new()
+                {
+
+                },
+                new()
+                {
+
+                },
+                new()
+                {
+
+                },
+
+            };
+            _context.Trips.AddRange(trips);
+            _context.SaveChanges();
         }
 
 
-        [Test]
-        public void GetByIdTest()
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetByIdTest(int id)
         {
             // given
-            var tripToAdd = GetTestTrip();
-
-            _context.Trips.Add(tripToAdd);
-            _context.SaveChanges();
-            var idAddedTrip = tripToAdd.Id;
+            var expectedEntity = _context.Trips.Find(id);
 
             // when
-            var receivedTrip = _repository.GetById(idAddedTrip);
+            var receivedEntity = _repository.GetById(id);
 
             // then
-            Assert.IsNotNull(receivedTrip);
-            Assert.IsFalse(receivedTrip!.IsDeleted);
-            AssertTestTrip(receivedTrip);
+            Assert.AreEqual(expectedEntity, receivedEntity);
         }
-
 
 
         [Test]
         public void GetListTest()
         {
             // given
-            var tripToAdd = GetTestTrip();
-            var secondTripToAdd = GetTestTrip();
-            var thirdTripToAdd = GetTestTrip();
-            thirdTripToAdd.IsDeleted = true;
-
-            _context.Trips.Add(tripToAdd);
-            _context.Trips.Add(secondTripToAdd);
-            _context.Trips.Add(thirdTripToAdd);
-            _context.SaveChanges();
+            var expected = _context.Trips.ToList();
 
             // when
-            var trips = (List<Trip>)_repository.GetList();
+            var list = _repository.GetList();
 
             // then
-
-            Assert.IsNotNull(trips);
-            Assert.AreEqual(2, trips.Count);
-
-            var transitToCheck = trips[0];
-            Assert.IsNotNull(transitToCheck);
-            Assert.IsFalse(transitToCheck.IsDeleted);
-            AssertTestTrip(transitToCheck);
+            CollectionAssert.AreEqual(expected, list);
         }
 
-
-        [Test]
-        public void GetListAllIncludedTest()
-        {
-            // given
-            var tripToAdd = GetTestTrip();
-            var secondTripToAdd = GetTestTrip();
-            var thirdTripToAdd = GetTestTrip();
-            thirdTripToAdd.IsDeleted = true;
-
-            _context.Trips.Add(tripToAdd);
-            _context.Trips.Add(secondTripToAdd);
-            _context.Trips.Add(thirdTripToAdd);
-            _context.SaveChanges();
-
-            // when
-            var trips = (List<Trip>)_repository.GetList(true);
-
-
-            // then
-            Assert.IsNotNull(trips);
-            Assert.AreEqual(3, trips.Count);
-
-            var tripToCheck = trips[2];
-            Assert.IsNotNull(tripToCheck);
-            Assert.IsTrue(tripToCheck.IsDeleted);
-            AssertTestTrip(tripToCheck);
-        }
 
         [Test]
         public void AddTest()
         {
             // given
-            var tripToAdd = GetTestTrip();
+            var entityToAdd = TestEntity();
 
             // when 
-            int id = _repository.Add(tripToAdd);
+            int id = _repository.Add(entityToAdd);
 
             // then
-            var createdTrip = _context.Trips.FirstOrDefault(o => o.Id == id);
+            var entityOnCreate = _context.Trips.FirstOrDefault(o => o.Id == id);
 
-            AssertTestTrip(createdTrip!);
+            Assert.AreEqual(entityOnCreate, entityToAdd);
         }
 
-        [Test]
-        public void UpdateEntityTest()
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void UpdateEntityTest(int id)
         {
             // given
-            var tripToAdd = GetTestTrip();
-            _context.Trips.Add(tripToAdd);
-            _context.SaveChanges();
-
-            var tripToEdit = GetTestTrip();
-            tripToEdit.Id = tripToAdd.Id;
-
-            //tripToEdit.StartStation = new Station() { Name = "Sevastopol" };
-            //tripToEdit.EndStation = new Station() { Name = "Mariupol" };
-            //tripToEdit.Price = (decimal?)24.4;
+            var entityToEdit = _context.Trips.FirstOrDefault(o => o.Id == id);
+            //entityToEdit!.Station . Name = "Oredez";
 
             // when 
-            bool edited = _repository.Update(tripToEdit);
+            bool edited = _repository.Update(entityToEdit);
 
             // then
-            var updatedTrip = _context.Trips.FirstOrDefault(o => o.Id == tripToEdit.Id);
+            var entityUpdated = _context.TripStations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.IsTrue(edited);
-            Assert.IsNotNull(updatedTrip);
-            //Assert.IsNotNull(updatedTrip!.StartStation);
-            //Assert.AreEqual("Sevastopol", updatedTrip.StartStation.Name);
-            //Assert.IsNotNull(updatedTrip.EndStation);
-            //Assert.AreEqual("Bolotnoe", updatedTrip.EndStation.Name);
-            //Assert.IsNotNull(updatedTrip.Price);
-            //Assert.AreEqual((decimal?)24.4, updatedTrip.Price);
+            Assert.AreEqual(entityToEdit, entityUpdated);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void UpdateIsDeletedTest(bool isDeleted)
-        {
-            // given
-            var tripToEdit = GetTestTrip();
-            tripToEdit.IsDeleted = !isDeleted;
-            _context.Trips.Add(tripToEdit);
-            _context.SaveChanges();
 
-            // when 
-            bool edited = _repository.Update(tripToEdit.Id, isDeleted);
-
-            // then
-            var updatedTrip = _context.Trips.FirstOrDefault(o => o.Id == tripToEdit.Id);
-
-            Assert.IsTrue(edited);
-            Assert.IsNotNull(updatedTrip);
-            Assert.AreEqual(isDeleted, updatedTrip!.IsDeleted);
-            AssertTestTrip(updatedTrip);
-        }
-
-        private Trip GetTestTrip() => new Trip()
+        private Trip TestEntity() => new Trip()
         {
             Train = new Train { Id = 3 },
-            Route = new Route 
+            Route = new Route
             {
                 Code = "M456",
                 Transits = new List<RouteTransit>
@@ -214,18 +152,6 @@ namespace SpaceZD.DataLayer.Tests
             {
 
             }
-
         };
-
-        private void AssertTestTrip(Trip trip)
-        {
-            Assert.IsNotNull(trip);
-           // Assert.IsNotNull(trip.StartStation);
-           // Assert.AreEqual("Novosibirsk", trip.StartStation.Name);
-         //   Assert.IsNotNull(trip.EndStation);
-           // Assert.AreEqual("Sheregesh", trip.EndStation.Name);
-          //  Assert.IsNotNull(trip.Price);
-           // Assert.AreEqual((decimal?)23.4, trip.Price);
-        }
     }
 }
