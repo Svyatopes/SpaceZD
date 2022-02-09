@@ -6,7 +6,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class RouteService
+public class RouteService : IRouteService
 {
     private readonly IMapper _mapper;
     private readonly IRepositorySoftDelete<Route> _routeRepository;

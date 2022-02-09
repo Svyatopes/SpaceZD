@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using SpaceZD.API.Configuration;
 using SpaceZD.API.Middleware;
 using SpaceZD.BusinessLayer.Configuration;
+using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -39,6 +39,8 @@ builder.Services.AddScoped<IRepositorySoftDelete<Order>,OrderRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<CarriageType>,CarriageTypeRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Carriage>,CarriageRepository>();
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
+
+builder.Services.AddScoped<IRouteService, RouteService>();
 
 var app = builder.Build();
 
