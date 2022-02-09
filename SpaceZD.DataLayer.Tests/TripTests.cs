@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
-using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
 using SpaceZD.DataLayer.Tests.TestCaseSources;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SpaceZD.DataLayer.Tests
