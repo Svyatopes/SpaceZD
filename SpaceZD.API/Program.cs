@@ -24,24 +24,28 @@ builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingP
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(BusinessLayerMapper).Assembly);
 
+//Repositories
 builder.Services.AddScoped<IRepositorySoftDelete<User>,UserRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Train>,TrainRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Ticket>,TicketRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Station>,StationRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Station>,StationRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<RouteTransit>,RouteTransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Route>,RouteRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Platform>,PlatformRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>,PlatformMaintenanceRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Person>,PersonRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Order>,OrderRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<CarriageType>,CarriageTypeRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<CarriageType>,CarriageTypeRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Carriage>,CarriageRepository>();
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
 
+//Services
+builder.Services.AddScoped<ICarriageTypeService, CarriageTypeService>();
+builder.Services.AddScoped<IStationService, StationService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
-builder.Services.AddScoped<IStationService,StationService>();
+
 
 var app = builder.Build();
 
