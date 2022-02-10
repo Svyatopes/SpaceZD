@@ -1,6 +1,6 @@
 ﻿namespace SpaceZD.API.Models
 {
-    public class TransitInputModel
+    public class TransitCreateInputModel
     {
         public  int StartStationId { get; set; }
         public  int EndStationId { get; set; }

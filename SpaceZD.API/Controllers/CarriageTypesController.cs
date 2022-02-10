@@ -20,9 +20,9 @@ public class CarriageTypesController : ControllerBase
     }
 
     [HttpGet("{id}/carriages")]
-    public ActionResult<CarriageFullOutputModel> GetCarriageTypeByIdWithCarriage(int id)
+    public ActionResult<CarriageTypeOutputModel> GetCarriageTypeByIdWithCarriage(int id)
     {
-        return Ok(new CarriageFullOutputModel());
+        return Ok(new CarriageTypeOutputModel());
     }
 
     [HttpPost]

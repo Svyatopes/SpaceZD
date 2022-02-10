@@ -8,15 +8,15 @@ namespace SpaceZD.API.Controllers;
 public class CarriagesController : ControllerBase
 {
     [HttpGet]
-    public ActionResult<List<CarriageFullOutputModel>> GetCarriages()
+    public ActionResult<List<CarriageOutputModel>> GetCarriages()
     {
-        return Ok(new List<CarriageFullOutputModel> { new CarriageFullOutputModel() });
+        return Ok(new List<CarriageOutputModel> { new CarriageOutputModel() });
     }
 
     [HttpGet("{id}")]
-    public ActionResult<CarriageFullOutputModel> GetCarriageById(int id)
+    public ActionResult<CarriageOutputModel> GetCarriageById(int id)
     {
-        return Ok(new CarriageFullOutputModel());
+        return Ok(new CarriageOutputModel());
     }
 
     /*

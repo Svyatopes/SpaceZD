@@ -9,19 +9,19 @@ namespace SpaceZD.API.Controllers
     public class RoutesController : ControllerBase
     {
         [HttpGet("{id}")]
-        public ActionResult<RouteFullOutputModel> GetRouteById(int id)
+        public ActionResult<RouteOutputModel> GetRouteById(int id)
         {
             return Ok(new RouteModel());
         }
 
         [HttpGet]
-        public ActionResult<List<RouteShortOutputModel>> GetRoutes()
+        public ActionResult<List<RouteOutputModel>> GetRoutes()
         {
-            return Ok(new List<RouteShortOutputModel> { new RouteShortOutputModel() });
+            return Ok(new List<RouteOutputModel> { new RouteOutputModel() });
         }
 
         [HttpPost]
-        public ActionResult AddRoute(RouteInsertInputModel route)
+        public ActionResult AddRoute(RouteInputModel route)
         {
             return StatusCode(StatusCodes.Status201Created, route);
         }
@@ -32,7 +32,7 @@ namespace SpaceZD.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult EditRoute(int id, RouteUpdateInputModel route)
+        public ActionResult EditRoute(int id, RouteInputModel route)
         {
             return BadRequest();
         }

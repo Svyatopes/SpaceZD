@@ -1,6 +1,6 @@
 ﻿namespace SpaceZD.API.Models
 {
-    public class RouteShortOutputModel
+    public class RouteOutputModel
     {
         public int Id { get; set; }
         public int Code { get; set; }
