@@ -15,8 +15,8 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class RouteServiceTests
 {
-    private Mock<IRepositorySoftDelete<Route>> _routeRepositoryMock;
-    private Mock<IRepositorySoftDelete<Station>> _stationRepositoryMock;
+    private Mock<IRepositorySoftDeleteNewUpdate<Route>> _routeRepositoryMock;
+    private Mock<IRepositorySoftDeleteNewUpdate<Station>> _stationRepositoryMock;
     private readonly IMapper _mapper;
 
     public RouteServiceTests()
@@ -27,15 +27,13 @@ public class RouteServiceTests
     [SetUp]
     public void SetUp()
     {
-        _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
-        _stationRepositoryMock = new Mock<IRepositorySoftDelete<Station>>();
+        _routeRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Route>>();
+        _stationRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Station>>();
     }
 
     
     //Add
-    [TestCase(1)]
-    [TestCase(4)]
-    [TestCase(28)]
+    [TestCase(45)]
     public void AddTest(int expected)
     {
         // given
@@ -47,7 +45,9 @@ public class RouteServiceTests
         int actual = service.Add(new RouteModel { StartStation = new StationModel { Id = 5 }, EndStation = new StationModel { Id = 6 } });
 
         // then
-        _stationRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Exactly(2));
+        _stationRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        _stationRepositoryMock.Verify(s => s.GetById(6), Times.Once);
+        _routeRepositoryMock.Verify(s => s.Add(It.IsAny<Route>()), Times.Once);
         Assert.AreEqual(expected, actual);
     }
 
@@ -192,20 +192,23 @@ public class RouteServiceTests
     public void DeleteTest()
     {
         // given
-        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(true);
+        var route = new Route();
+        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>(), true));
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(route);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         // when
         service.Delete(45);
 
         // then
-        _routeRepositoryMock.Verify(s => s.Update(It.IsAny<int>(), true), Times.Once());
-        Assert.Pass();
+        _routeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _routeRepositoryMock.Verify(s => s.Update(route, true), Times.Once);
     }
     [Test]
     public void DeleteNegativeTest()
     {
-        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(false);
+        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>(), true));
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Route?)null);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Delete(10));
@@ -217,20 +220,23 @@ public class RouteServiceTests
     public void RestoreTest()
     {
         // given
-        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(true);
+        var route = new Route();
+        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>(), false));
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(route);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         // when
         service.Restore(45);
 
         // then
-        _routeRepositoryMock.Verify(s => s.Update(It.IsAny<int>(), false), Times.Once());
-        Assert.Pass();
+        _routeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _routeRepositoryMock.Verify(s => s.Update(route, false), Times.Once);
     }
     [Test]
     public void RestoreNegativeTest()
     {
-        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(false);
+        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>(), false));
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Route?)null);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Restore(10));
@@ -242,20 +248,23 @@ public class RouteServiceTests
     public void UpdateTest()
     {
         // given
-        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>())).Returns(true);
+        var route = new Route();
+        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>(), It.IsAny<Route>()));
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(route);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         // when
         service.Update(45, new RouteModel());
 
         // then
-        _routeRepositoryMock.Verify(s => s.Update(It.IsAny<Route>()), Times.Once());
-        Assert.Pass();
+        _routeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _routeRepositoryMock.Verify(s => s.Update(route, It.IsAny<Route>()), Times.Once);
     }
     [Test]
     public void UpdateNegativeTest()
     {
-        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>())).Returns(false);
+        _routeRepositoryMock.Setup(x => x.Update(It.IsAny<Route>(), It.IsAny<Route>()));
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Route?)null);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Update(10, new RouteModel()));

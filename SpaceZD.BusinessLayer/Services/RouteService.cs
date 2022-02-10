@@ -9,10 +9,10 @@ namespace SpaceZD.BusinessLayer.Services;
 public class RouteService : IRouteService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDelete<Route> _routeRepository;
-    private readonly IRepositorySoftDelete<Station> _stationRepository;
+    private readonly IRepositorySoftDeleteNewUpdate<Route> _routeRepository;
+    private readonly IRepositorySoftDeleteNewUpdate<Station> _stationRepository;
 
-    public RouteService(IMapper mapper, IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Station> stationRepository)
+    public RouteService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Route> routeRepository, IRepositorySoftDeleteNewUpdate<Station> stationRepository)
     {
         _mapper = mapper;
         _routeRepository = routeRepository;
@@ -22,8 +22,8 @@ public class RouteService : IRouteService
     public RouteModel GetById(int id)
     {
         var entity = _routeRepository.GetById(id);
-        if (entity is null)
-            NotFound(nameof(Route), id);
+        ThrowIfEntityNotFound(entity, id);
+        
         return _mapper.Map<RouteModel>(entity);
     }
 
@@ -33,11 +33,9 @@ public class RouteService : IRouteService
     public int Add(RouteModel routeModel)
     {
         var startStation = _stationRepository.GetById(routeModel.StartStation.Id);
-        if (startStation is null)
-            NotFound(nameof(Station), routeModel.StartStation.Id);
+        ThrowIfEntityNotFound(startStation, routeModel.StartStation.Id);
         var endStation = _stationRepository.GetById(routeModel.EndStation.Id);
-        if (endStation is null)
-            NotFound(nameof(Station), routeModel.EndStation.Id);
+        ThrowIfEntityNotFound(endStation, routeModel.EndStation.Id);
 
         var route = _mapper.Map<Route>(routeModel);
         route.StartStation = startStation!;
@@ -48,22 +46,34 @@ public class RouteService : IRouteService
 
     public void Delete(int id)
     {
-        if (!_routeRepository.Update(id, true))
-            NotFound(nameof(Route), id);
+        var entity = _routeRepository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _routeRepository.Update(entity!, true);
     }
 
     public void Restore(int id)
     {
-        if (!_routeRepository.Update(id, false))
-            NotFound(nameof(Route), id);
+        var entity = _routeRepository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _routeRepository.Update(entity!, false);
     }
 
     public void Update(int id, RouteModel routeModel)
     {
-        routeModel.Id = id;
-        if (!_routeRepository.Update(_mapper.Map<Route>(routeModel)))
-            NotFound(nameof(Route), id);
+        var entity = _routeRepository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _routeRepository.Update(entity!, _mapper.Map<Route>(routeModel));
     }
 
-    private static void NotFound(string name, int id) => throw new NotFoundException($"{name} c Id = {id} не найден");
+    private static void ThrowIfEntityNotFound<T>(T? entity, int id)
+    {
+        if (entity is not null)
+            return;
+        if (entity is Station)
+            throw new NotFoundException(nameof(Station), id);
+        throw new NotFoundException(nameof(Route), id);
+    }
 }
