@@ -20,8 +20,7 @@ public class StationService : IStationService
     public StationModel GetById(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
         
         return _mapper.Map<StationModel>(entity);
     }
@@ -29,8 +28,7 @@ public class StationService : IStationService
     public List<StationModel> GetNearStations(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
         
         return _mapper.Map<List<StationModel>>(
             entity!.TransitsWithStartStation
@@ -47,8 +45,7 @@ public class StationService : IStationService
     public void Delete(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, true);
     }
@@ -56,8 +53,7 @@ public class StationService : IStationService
     public void Restore(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, false);
     }
@@ -65,11 +61,14 @@ public class StationService : IStationService
     public void Update(int id, StationModel stationModel)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, _mapper.Map<Station>(stationModel));
     }
 
-    private static void ThrowIfEntityNotFound(int id) => throw new NotFoundException(nameof(Station), id);
+    private static void ThrowIfEntityNotFound(Station? entity, int id)
+    {
+        if (entity is null)
+            throw new NotFoundException(nameof(Station), id);
+    }
 }

@@ -20,8 +20,8 @@ public class CarriageTypeService : ICarriageTypeService
     public CarriageTypeModel GetById(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
+        
         return _mapper.Map<CarriageTypeModel>(entity);
     }
 
@@ -32,8 +32,7 @@ public class CarriageTypeService : ICarriageTypeService
     public void Delete(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, true);
     }
@@ -41,8 +40,7 @@ public class CarriageTypeService : ICarriageTypeService
     public void Restore(int id)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, false);
     }
@@ -50,11 +48,14 @@ public class CarriageTypeService : ICarriageTypeService
     public void Update(int id, CarriageTypeModel carriageTypeModel)
     {
         var entity = _repository.GetById(id);
-        if (entity is null)
-            ThrowIfEntityNotFound(id);
+        ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, _mapper.Map<CarriageType>(carriageTypeModel));
     }
 
-    private static void ThrowIfEntityNotFound(int id) => throw new NotFoundException(nameof(CarriageType), id);
+    private static void ThrowIfEntityNotFound(CarriageType? entity, int id)
+    {
+        if (entity is null)
+            throw new NotFoundException(nameof(CarriageType), id);
+    }
 }
