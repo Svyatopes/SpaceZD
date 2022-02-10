@@ -29,7 +29,7 @@ namespace SpaceZD.BusinessLayer.Services
             var isVerified = SecurePasswordHasher.Verify(password, user.PasswordHash);
             if (!isVerified)
             {
-                throw new AuthentificationException($"Password is not correct for this user.");
+                throw new AuthenticationException($"Password is not correct for this user.");
             }
 
             var claims = new List<Claim>
