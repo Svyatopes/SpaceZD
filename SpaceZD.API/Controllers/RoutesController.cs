@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using SpaceZD.API.Models;
+using Microsoft.AspNetCore.Mvc;
 using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Controllers
@@ -8,19 +9,19 @@ namespace SpaceZD.API.Controllers
     public class RoutesController : ControllerBase
     {
         [HttpGet("{id}")]
-        public ActionResult<RouteModel> GetRouteById(int id)
+        public ActionResult<RouteFullOutputModel> GetRouteById(int id)
         {
             return Ok(new RouteModel());
         }
 
         [HttpGet]
-        public ActionResult<List<RouteModel>> GetRoutes()
+        public ActionResult<List<RouteShortOutputModel>> GetRoutes()
         {
-            return Ok(new List<RouteModel> { new RouteModel() });
+            return Ok(new List<RouteShortOutputModel> { new RouteShortOutputModel() });
         }
 
         [HttpPost]
-        public ActionResult AddRoute(RouteModel route)
+        public ActionResult AddRoute(RouteInsertInputModel route)
         {
             return StatusCode(StatusCodes.Status201Created, route);
         }
@@ -31,7 +32,7 @@ namespace SpaceZD.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult EditRoute(int id, RouteModel route)
+        public ActionResult EditRoute(int id, RouteUpdateInputModel route)
         {
             return BadRequest();
         }
