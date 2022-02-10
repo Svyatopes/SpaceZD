@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using SpaceZD.API.Models;
+using Microsoft.AspNetCore.Mvc;
 using SpaceZD.BusinessLayer.Models;
 
 namespace SpaceZD.API.Controllers
@@ -8,19 +9,19 @@ namespace SpaceZD.API.Controllers
     public class StationsController : ControllerBase
     {
         [HttpGet("{id}")]
-        public ActionResult<StationModel> GetStationById(int id)
+        public ActionResult<StationFullOutputModel> GetStationById(int id)
         {
             return Ok(new StationModel());
         }
 
         [HttpGet]
-        public ActionResult<List<StationModel>> GetStations()
+        public ActionResult<List<StationShortOutputModel>> GetStations()
         {
-            return Ok(new List<StationModel> { new StationModel() });
+            return Ok(new List<StationShortOutputModel> { new StationShortOutputModel() });
         }
 
         [HttpPost]
-        public ActionResult AddStation(StationModel station)
+        public ActionResult AddStation(StationInputModel station)
         {
             return StatusCode(StatusCodes.Status201Created, station);
         }
@@ -32,7 +33,7 @@ namespace SpaceZD.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult EditStation(int id, StationModel station)
+        public ActionResult EditStation(int id, StationInputModel station)
         {
             return BadRequest();
         }
