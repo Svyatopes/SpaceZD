@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
+public class UserRepository : BaseRepository, IRepositorySoftDelete<User>, ILoginUser
 {
     public UserRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -49,5 +49,10 @@ public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
         _context.SaveChanges();
 
         return true;
+    }
+
+    public User GetUserByLogin(string login)
+    {
+        return _context.Users.FirstOrDefault(u => u.Login == login);
     }
 }
