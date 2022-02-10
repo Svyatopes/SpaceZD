@@ -106,15 +106,13 @@ namespace SpaceZD.DataLayer.Tests
         {
             // given
             var entityToEdit = _context.Transits.FirstOrDefault(o => o.Id == id);
-            entityToEdit!.StartStation.Name = "Oredez";
+            var newEntity = TestEntity();
 
             // when 
-            bool edited = _repository.Update(entityToEdit);
+            _repository.Update(entityToEdit!, newEntity);
 
             // then
-            var entityUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-            Assert.IsTrue(edited);
+            var entityUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit!.Id);
             Assert.AreEqual(entityToEdit, entityUpdated);
         }
 
@@ -130,12 +128,11 @@ namespace SpaceZD.DataLayer.Tests
             _context.SaveChanges();
 
             // when 
-            bool edited = _repository.Update(entityToEdit.Id, isDeleted);
+            _repository.Update(entityToEdit, isDeleted);
 
             // then
             var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
-            Assert.IsTrue(edited);
             Assert.AreEqual(entityToEdit, entityToUpdated);
         }
 

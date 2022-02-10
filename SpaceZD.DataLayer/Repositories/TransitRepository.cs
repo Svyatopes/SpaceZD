@@ -19,28 +19,20 @@ public class TransitRepository : BaseRepository, IRepositorySoftDelete<Transit>
         return transit.Id;
     }
 
-    public bool Update(Transit transit)
+    public void Update(Transit entityToEdit, Transit newEntity)
     {
-        var entity = GetById(transit.Id);
-        if (entity == null) return false;
-
-        entity.StartStation = transit.StartStation;
-        entity.EndStation = transit.EndStation;
-        entity.Price = transit.Price;
-        entity.RouteTransit = transit.RouteTransit;
+        entityToEdit.StartStation = newEntity.StartStation;
+        entityToEdit.EndStation = newEntity.EndStation;
+        entityToEdit.Price = newEntity.Price;
+        entityToEdit.RouteTransit = newEntity.RouteTransit;
 
         _context.SaveChanges();
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Transit entity, bool isDeleted)
     {
-        var entity = GetById(id);
-        if (entity == null) return false;
-
         entity.IsDeleted = isDeleted;
 
         _context.SaveChanges();
-        return true;
     }
 }
