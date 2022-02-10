@@ -82,10 +82,10 @@ public class PlatformRepositoryTests
     public void UpdateEntityTest()
     {
         //given
-        var platform = PlatformRepositoryMocks.GetPlatforms()[0];
+        var oldPlatform = _context.Platforms.First();
 
-        platform.Id = _context.Platforms.First().Id;
 
+        var platform = PlatformRepositoryMocks.GetPlatform();
         platform.Number = 42;
 
         //SHOULDN'T CHANGED IN DB, because platform can't migrate to another station physically
@@ -93,12 +93,11 @@ public class PlatformRepositoryTests
         platform.IsDeleted = true;
 
         //when 
-        bool edited = _repository.Update(platform);
+        _repository.Update(oldPlatform, platform);
 
         //then
-        var updatedPlatform = _context.Platforms.FirstOrDefault(o => o.Id == platform.Id);
+        var updatedPlatform = _context.Platforms.FirstOrDefault(o => o.Id == oldPlatform.Id);
 
-        Assert.IsTrue(edited);
         Assert.AreEqual(platform.Number, updatedPlatform!.Number);
         Assert.AreNotEqual(platform.Station.Name, updatedPlatform.Station.Name);
         Assert.AreNotEqual(platform.IsDeleted, updatedPlatform.IsDeleted);
@@ -115,14 +114,14 @@ public class PlatformRepositoryTests
         _context.Platforms.Add(platformToEdit);
         _context.SaveChanges();
 
+
+
         //when 
-        bool edited = _repository.Update(platformToEdit.Id, isDeleted);
+        _repository.Update(platformToEdit, isDeleted);
 
         //then
 
         var updatedPlatform = _context.Platforms.FirstOrDefault(o => o.Id == platformToEdit.Id);
-        
-        Assert.IsTrue(edited);
         Assert.AreEqual(isDeleted, updatedPlatform!.IsDeleted);
         Assert.AreEqual(platformToEdit, updatedPlatform);
     }
