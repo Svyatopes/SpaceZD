@@ -51,7 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<SpaceZDMiddleware>();
+app.UseMiddleware<SpaceZdMiddleware>();
 
 app.UseAuthorization();
 
