@@ -29,7 +29,7 @@ builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Train>,TrainRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Ticket>,TicketRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Station>,StationRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Station>,StationRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<RouteTransit>,RouteTransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Route>,RouteRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Platform>,PlatformRepository>();
