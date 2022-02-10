@@ -70,8 +70,7 @@ public class RouteService : IRouteService
 
     private static void ThrowIfEntityNotFound<T>(T? entity, int id)
     {
-        if (entity is not null)
-            return;
-        throw new NotFoundException(typeof(T).Name, id);
+        if (entity is null)
+            throw new NotFoundException(typeof(T).Name, id);
     }
 }
