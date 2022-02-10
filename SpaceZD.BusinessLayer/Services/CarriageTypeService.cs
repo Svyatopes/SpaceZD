@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public class CarriageTypeService : ICarriageTypeService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDelete<CarriageType> _repository;
+    private readonly IRepositorySoftDeleteNewUpdate<CarriageType> _repository;
 
-    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository)
+    public CarriageTypeService(IMapper mapper, IRepositorySoftDeleteNewUpdate<CarriageType> repository)
     {
         _mapper = mapper;
         _repository = repository;
@@ -21,7 +21,7 @@ public class CarriageTypeService : ICarriageTypeService
     {
         var entity = _repository.GetById(id);
         if (entity is null)
-            NotFound(id);
+            ThrowIfEntityNotFound(id);
         return _mapper.Map<CarriageTypeModel>(entity);
     }
 
@@ -31,22 +31,30 @@ public class CarriageTypeService : ICarriageTypeService
 
     public void Delete(int id)
     {
-        if (!_repository.Update(id, true))
-            NotFound(id);
+        var entity = _repository.GetById(id);
+        if (entity is null)
+            ThrowIfEntityNotFound(id);
+
+        _repository.Update(entity!, true);
     }
 
     public void Restore(int id)
     {
-        if (!_repository.Update(id, false))
-            NotFound(id);
+        var entity = _repository.GetById(id);
+        if (entity is null)
+            ThrowIfEntityNotFound(id);
+
+        _repository.Update(entity!, false);
     }
 
     public void Update(int id, CarriageTypeModel carriageTypeModel)
     {
-        carriageTypeModel.Id = id;
-        if (!_repository.Update(_mapper.Map<CarriageType>(carriageTypeModel)))
-            NotFound(id);
+        var entity = _repository.GetById(id);
+        if (entity is null)
+            ThrowIfEntityNotFound(id);
+
+        _repository.Update(entity!, _mapper.Map<CarriageType>(carriageTypeModel));
     }
 
-    private static void NotFound(int id) => throw new NotFoundException($"CarriageType c Id = {id} не найден");
+    private static void ThrowIfEntityNotFound(int id) => throw new NotFoundException(nameof(CarriageType), id);
 }

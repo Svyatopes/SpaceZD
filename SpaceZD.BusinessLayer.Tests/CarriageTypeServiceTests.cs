@@ -14,19 +14,21 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class CarriageTypeServiceTests
 {
-    private readonly Mock<IRepositorySoftDelete<CarriageType>> _carriageTypeRepositoryMock;
+    private Mock<IRepositorySoftDeleteNewUpdate<CarriageType>> _carriageTypeRepositoryMock;
     private readonly IMapper _mapper;
 
     public CarriageTypeServiceTests()
     {
-        _carriageTypeRepositoryMock = new Mock<IRepositorySoftDelete<CarriageType>>();
         _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<BusinessLayerMapper>()));
+    }
+    [SetUp]
+    public void Setup()
+    {
+        _carriageTypeRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<CarriageType>>();
     }
 
     // Add
-    [TestCase(1)]
-    [TestCase(4)]
-    [TestCase(28)]
+    [TestCase(45)]
     public void AddTest(int expected)
     {
         // given
@@ -37,6 +39,7 @@ public class CarriageTypeServiceTests
         int actual = service.Add(new CarriageTypeModel());
 
         // then
+        _carriageTypeRepositoryMock.Verify(s => s.Add(It.IsAny<CarriageType>()), Times.Once);
         Assert.AreEqual(expected, actual);
     }
 
@@ -151,19 +154,23 @@ public class CarriageTypeServiceTests
     public void DeleteTest()
     {
         // given
-        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(true);
+        var carriageType = new CarriageType();
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), true));
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         // when
         service.Delete(45);
 
         // then
-        Assert.Pass();
+        _carriageTypeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _carriageTypeRepositoryMock.Verify(s => s.Update(carriageType, true), Times.Once);
     }
     [Test]
     public void DeleteNegativeTest()
     {
-        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(false);
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), true));
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((CarriageType?)null);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Delete(10));
@@ -175,19 +182,23 @@ public class CarriageTypeServiceTests
     public void RestoreTest()
     {
         // given
-        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(true);
+        var carriageType = new CarriageType();
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), false));
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         // when
         service.Restore(45);
 
         // then
-        Assert.Pass();
+        _carriageTypeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _carriageTypeRepositoryMock.Verify(s => s.Update(carriageType, false), Times.Once);
     }
     [Test]
     public void RestoreNegativeTest()
     {
-        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(false);
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), false));
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((CarriageType?)null);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Restore(10));
@@ -199,19 +210,23 @@ public class CarriageTypeServiceTests
     public void UpdateTest()
     {
         // given
-        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>())).Returns(true);
+        var carriageType = new CarriageType();
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), It.IsAny<CarriageType>()));
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         // when
         service.Update(45, new CarriageTypeModel());
 
         // then
-        Assert.Pass();
+        _carriageTypeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _carriageTypeRepositoryMock.Verify(s => s.Update(carriageType, It.IsAny<CarriageType>()), Times.Once);
     }
     [Test]
     public void UpdateNegativeTest()
     {
-        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>())).Returns(false);
+        _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), It.IsAny<CarriageType>()));
+        _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((CarriageType?)null);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Update(10, new CarriageTypeModel()));
