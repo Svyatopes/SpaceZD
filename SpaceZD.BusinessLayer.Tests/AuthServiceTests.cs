@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NUnit.Framework;
-using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
-using SpaceZD.BusinessLayer.Helpers;
-using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.BusinessLayer.Tests.Configuration;
+using SpaceZD.BusinessLayer.Tests.Helpers;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Principal;
+using System.Text;
 
 namespace SpaceZD.BusinessLayer.Tests;
 
@@ -47,6 +47,7 @@ public class AuthServiceTests
 
         //then
         Assert.IsNotNull(token);
+        Assert.IsTrue(ValidateToken(token));
     }
 
     [Test]
@@ -83,5 +84,29 @@ public class AuthServiceTests
 
         //when then
         Assert.Throws<AuthenticationException>(() => _authService.Login(login, wrongPassword));
+    }
+
+    private static bool ValidateToken(string authToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var validationParameters = GetValidationParameters();
+
+        SecurityToken validatedToken;
+        IPrincipal principal = tokenHandler.ValidateToken(authToken, validationParameters, out validatedToken);
+        return true;
+    }
+
+    private static TokenValidationParameters GetValidationParameters()
+    {
+        return new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = AuthOptions.Issuer,
+            ValidateAudience = true,
+            ValidAudience = AuthOptions.Audience,
+            ValidateLifetime = true,
+            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+            ValidateIssuerSigningKey = true,
+        };
     }
 }
