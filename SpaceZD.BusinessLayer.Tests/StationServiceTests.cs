@@ -14,7 +14,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class StationServiceTests
 {
-    private Mock<IRepositorySoftDelete<Station>> _stationRepositoryMock;
+    private Mock<IRepositorySoftDeleteNewUpdate<Station>> _stationRepositoryMock;
     private readonly IMapper _mapper;
 
     public StationServiceTests()
@@ -25,13 +25,11 @@ public class StationServiceTests
     [SetUp]
     public void SetUp()
     {
-        _stationRepositoryMock = new Mock<IRepositorySoftDelete<Station>>();
+        _stationRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Station>>();
     }
 
     // Add
-    [TestCase(1)]
-    [TestCase(4)]
-    [TestCase(28)]
+    [TestCase(45)]
     public void AddTest(int expected)
     {
         // given
@@ -42,6 +40,7 @@ public class StationServiceTests
         int actual = service.Add(new StationModel());
 
         // then
+        _stationRepositoryMock.Verify(s => s.Add(It.IsAny<Station>()), Times.Once);
         Assert.AreEqual(expected, actual);
     }
 
@@ -197,20 +196,23 @@ public class StationServiceTests
     public void DeleteTest()
     {
         // given
-        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(true);
+        var stations = new Station();
+        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), true));
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(stations);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         // when
         service.Delete(45);
 
         // then
-        _stationRepositoryMock.Verify(s => s.Update(It.IsAny<int>(), true), Times.Once());
-        Assert.Pass();
+        _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _stationRepositoryMock.Verify(s => s.Update(stations, true), Times.Once);
     }
     [Test]
     public void DeleteNegativeTest()
     {
-        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), true)).Returns(false);
+        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), true));
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Delete(10));
@@ -222,20 +224,23 @@ public class StationServiceTests
     public void RestoreTest()
     {
         // given
-        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(true);
+        var stations = new Station();
+        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), false));
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(stations);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         // when
         service.Restore(45);
 
         // then
-        _stationRepositoryMock.Verify(s => s.Update(It.IsAny<int>(), false), Times.Once());
-        Assert.Pass();
+        _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _stationRepositoryMock.Verify(s => s.Update(stations, false), Times.Once);
     }
     [Test]
     public void RestoreNegativeTest()
     {
-        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<int>(), false)).Returns(false);
+        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), false));
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Restore(10));
@@ -247,20 +252,23 @@ public class StationServiceTests
     public void UpdateTest()
     {
         // given
-        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>())).Returns(true);
+        var station = new Station();
+        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), It.IsAny<Station>()));
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         // when
         service.Update(45, new StationModel());
 
         // then
-        _stationRepositoryMock.Verify(s => s.Update(It.IsAny<Station>()), Times.Once());
-        Assert.Pass();
+        _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _stationRepositoryMock.Verify(s => s.Update(station, It.IsAny<Station>()), Times.Once);
     }
     [Test]
     public void UpdateNegativeTest()
     {
-        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>())).Returns(false);
+        _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), It.IsAny<Station>()));
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.Update(10, new StationModel()));

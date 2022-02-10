@@ -9,27 +9,29 @@ namespace SpaceZD.BusinessLayer.Services;
 public class StationService : IStationService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDelete<Station> _stationRepository;
+    private readonly IRepositorySoftDeleteNewUpdate<Station> _repository;
 
-    public StationService(IMapper mapper, IRepositorySoftDelete<Station> stationRepository)
+    public StationService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Station> repository)
     {
         _mapper = mapper;
-        _stationRepository = stationRepository;
+        _repository = repository;
     }
 
     public StationModel GetById(int id)
     {
-        var entity = _stationRepository.GetById(id);
+        var entity = _repository.GetById(id);
         if (entity is null)
-            NotFound(id);
+            ThrowIfEntityNotFound(id);
+        
         return _mapper.Map<StationModel>(entity);
     }
 
     public List<StationModel> GetNearStations(int id)
     {
-        var entity = _stationRepository.GetById(id);
+        var entity = _repository.GetById(id);
         if (entity is null)
-            NotFound(id);
+            ThrowIfEntityNotFound(id);
+        
         return _mapper.Map<List<StationModel>>(
             entity!.TransitsWithStartStation
                    .Where(t => !t.IsDeleted)
@@ -38,28 +40,36 @@ public class StationService : IStationService
                    .ToList());
     }
 
-    public List<StationModel> GetList() => _mapper.Map<List<StationModel>>(_stationRepository.GetList());
-    public List<StationModel> GetListDeleted() => _mapper.Map<List<StationModel>>(_stationRepository.GetList(true).Where(t => t.IsDeleted));
-    public int Add(StationModel stationModel) => _stationRepository.Add(_mapper.Map<Station>(stationModel));
+    public List<StationModel> GetList() => _mapper.Map<List<StationModel>>(_repository.GetList());
+    public List<StationModel> GetListDeleted() => _mapper.Map<List<StationModel>>(_repository.GetList(true).Where(t => t.IsDeleted));
+    public int Add(StationModel stationModel) => _repository.Add(_mapper.Map<Station>(stationModel));
 
     public void Delete(int id)
     {
-        if (!_stationRepository.Update(id, true))
-            NotFound(id);
+        var entity = _repository.GetById(id);
+        if (entity is null)
+            ThrowIfEntityNotFound(id);
+
+        _repository.Update(entity!, true);
     }
 
     public void Restore(int id)
     {
-        if (!_stationRepository.Update(id, false))
-            NotFound(id);
+        var entity = _repository.GetById(id);
+        if (entity is null)
+            ThrowIfEntityNotFound(id);
+
+        _repository.Update(entity!, false);
     }
 
     public void Update(int id, StationModel stationModel)
     {
-        stationModel.Id = id;
-        if (!_stationRepository.Update(_mapper.Map<Station>(stationModel)))
-            NotFound(id);
+        var entity = _repository.GetById(id);
+        if (entity is null)
+            ThrowIfEntityNotFound(id);
+
+        _repository.Update(entity!, _mapper.Map<Station>(stationModel));
     }
 
-    private static void NotFound(int id) => throw new NotFoundException($"Station c Id = {id} не найден");
+    private static void ThrowIfEntityNotFound(int id) => throw new NotFoundException(nameof(Station), id);
 }
