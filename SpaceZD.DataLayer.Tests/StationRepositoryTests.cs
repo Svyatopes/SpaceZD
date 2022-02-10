@@ -12,7 +12,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class StationRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<Station> _repository;
+    private IRepositorySoftDeleteNewUpdate<Station> _repository;
 
     [SetUp]
     public void Setup()
@@ -41,6 +41,7 @@ public class StationRepositoryTests
             new()
             {
                 Name = "41 км",
+                Platforms = new List<Platform>(),
                 IsDeleted = true
             },
             new()
@@ -109,16 +110,18 @@ public class StationRepositoryTests
     {
         // given
         var entityToEdit = _context.Stations.FirstOrDefault(o => o.Id == id);
-        entityToEdit!.Name = "qwertyuiop";
+        var entityUpdate = TestEntity;
+        entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
+        foreach (var pl in entityUpdate.Platforms)
+            pl.Station = entityUpdate;
 
         // when 
-        bool edited = _repository.Update(entityToEdit);
+        _repository.Update(entityToEdit, entityUpdate);
 
         // then
-        var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.AreEqual(entityToEdit, entityToUpdated);
+        Assert.AreEqual(entityUpdate.Name, entityToEdit.Name);
+        Assert.AreNotEqual(entityUpdate.IsDeleted, entityToEdit.IsDeleted);
+        CollectionAssert.AreNotEqual(entityUpdate.Platforms, entityToEdit.Platforms);
     }
 
     [TestCase(true)]
@@ -132,13 +135,10 @@ public class StationRepositoryTests
         _context.SaveChanges();
 
         // when 
-        bool edited = _repository.Update(entityToEdit.Id, isDeleted);
+        _repository.Update(entityToEdit, isDeleted);
 
         // then
-        var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.AreEqual(entityToEdit, entityToUpdated);
+        Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
     private Station TestEntity => new()
@@ -146,9 +146,9 @@ public class StationRepositoryTests
         Name = "Москва",
         Platforms = new List<Platform>
         {
-            new() { Number = 1 },
-            new() { Number = 2 },
-            new() { Number = 3 }
+            new() { Number = 1, IsDeleted = false },
+            new() { Number = 2, IsDeleted = false },
+            new() { Number = 3, IsDeleted = true }
         }
     };
 }

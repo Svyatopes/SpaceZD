@@ -11,7 +11,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class CarriageTypeRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<CarriageType> _repository;
+    private IRepositorySoftDeleteNewUpdate<CarriageType> _repository;
 
     [SetUp]
     public void Setup()
@@ -24,7 +24,7 @@ public class CarriageTypeRepositoryTests
         _repository = new CarriageTypeRepository(_context);
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
-        
+
         // seed
         var carriageTypes = new CarriageType[]
         {
@@ -101,17 +101,15 @@ public class CarriageTypeRepositoryTests
     {
         // given
         var entityToEdit = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
-        entityToEdit!.Name = "qwertyuiop";
-        entityToEdit.NumberOfSeats = 3;
+        var entityUpdate = new CarriageType { Name = "qwertyuiop", NumberOfSeats = 3, IsDeleted = !entityToEdit!.IsDeleted };
 
         // when 
-        bool edited = _repository.Update(entityToEdit);
+        _repository.Update(entityToEdit, entityUpdate);
 
         // then
-        var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.AreEqual(entityToEdit, entityToUpdated);
+        Assert.AreEqual(entityUpdate.Name, entityToEdit.Name);
+        Assert.AreEqual(entityUpdate.NumberOfSeats, entityToEdit.NumberOfSeats);
+        Assert.AreNotEqual(entityUpdate.IsDeleted, entityToEdit.IsDeleted);
     }
 
     [TestCase(true)]
@@ -125,13 +123,10 @@ public class CarriageTypeRepositoryTests
         _context.SaveChanges();
 
         // when 
-        bool edited = _repository.Update(entityToEdit.Id, isDeleted);
+        _repository.Update(entityToEdit, isDeleted);
 
         // then
-        var entityToUpdated = _context.CarriageTypes.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.AreEqual(entityToEdit, entityToUpdated);
+        Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
     private CarriageType TestEntity => new()
