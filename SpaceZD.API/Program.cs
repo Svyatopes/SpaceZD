@@ -38,7 +38,7 @@ builder.Services.AddScoped<IRepositorySoftDelete<Platform>,PlatformRepository>()
 builder.Services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>,PlatformMaintenanceRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Person>,PersonRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Order>,OrderRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<CarriageType>,CarriageTypeRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<CarriageType>,CarriageTypeRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Carriage>,CarriageRepository>();
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
 
