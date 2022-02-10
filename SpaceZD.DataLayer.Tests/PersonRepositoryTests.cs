@@ -81,9 +81,7 @@ public class PersonRepositoryTests
     public void UpdateEntityTest()
     {
         //given
-        var person = PersonRepositoryMocks.GetPersons()[0];
-
-        person.Id = _context.Persons.First().Id;
+        var person = PersonRepositoryMocks.GetPerson();
 
         person.FirstName = "TestFirstName";
         person.LastName = "TestLastName";
@@ -92,14 +90,15 @@ public class PersonRepositoryTests
         //SHOULDN'T CHANGED IN DB
         person.IsDeleted = true;
 
+        var personToEdit = _context.Persons.First();
+
         //when 
-        bool edited = _repository.Update(person);
+        _repository.Update(personToEdit, person);
 
         //then
-        var updatedPerson = _context.Persons.FirstOrDefault(o => o.Id == person.Id);
+        var updatedPerson = _context.Persons.FirstOrDefault(o => o.Id == personToEdit.Id);
 
-        Assert.IsTrue(edited);
-        Assert.AreEqual(person.Id, updatedPerson!.Id);
+        Assert.AreEqual(personToEdit.Id, updatedPerson!.Id);
         Assert.AreEqual(person.FirstName, updatedPerson.FirstName);
         Assert.AreEqual(person.LastName, updatedPerson.LastName);
         Assert.AreEqual(person.Passport, updatedPerson.Passport);
@@ -119,13 +118,12 @@ public class PersonRepositoryTests
         _context.SaveChanges();
 
         //when 
-        bool edited = _repository.Update(personToEdit.Id, isDeleted);
+        _repository.Update(personToEdit, isDeleted);
 
         //then
 
         var updatedPerson = _context.Persons.FirstOrDefault(o => o.Id == personToEdit.Id);
 
-        Assert.IsTrue(edited);
         Assert.AreEqual(isDeleted, updatedPerson!.IsDeleted);
         Assert.AreEqual(personToEdit, updatedPerson);
     }
