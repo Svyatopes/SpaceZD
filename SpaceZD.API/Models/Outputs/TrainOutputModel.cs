@@ -1,8 +1,7 @@
-﻿namespace SpaceZD.API.Models
+﻿namespace SpaceZD.API.Models;
+
+public class TrainOutputModel
 {
-    public class TrainOutputModel
-    {
-        public int Id { get; set; }
-        public List<CarriageOutputModel> Carriages { get; set; }
-    }
+    public int Id { get; set; }
+    public List<CarriageOutputModel> Carriages { get; set; }
 }

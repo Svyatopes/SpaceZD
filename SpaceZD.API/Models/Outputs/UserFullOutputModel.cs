@@ -1,7 +1,6 @@
-﻿namespace SpaceZD.API.Models
+﻿namespace SpaceZD.API.Models;
+
+public class UserFullOutputModel : UserShortOutputModel
 {
-    public class UserFullOutputModel : UserShortOutputModel
-    {
-        public List<OrderShortOutputModel> Orders { get; set; }
-    }
+    public List<OrderShortOutputModel> Orders { get; set; }
 }
