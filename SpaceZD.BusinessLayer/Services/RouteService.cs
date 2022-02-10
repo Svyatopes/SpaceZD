@@ -72,8 +72,6 @@ public class RouteService : IRouteService
     {
         if (entity is not null)
             return;
-        if (entity is Station)
-            throw new NotFoundException(nameof(Station), id);
-        throw new NotFoundException(nameof(Route), id);
+        throw new NotFoundException(typeof(T).Name, id);
     }
 }
