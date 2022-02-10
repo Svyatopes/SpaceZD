@@ -17,11 +17,6 @@ public class AuthServiceTests
 {
     private Mock<ILoginUser> _loginUserMock;
 
-    public AuthServiceTests()
-    {
-    }
-
-
     [SetUp]
     public void Setup()
     {
