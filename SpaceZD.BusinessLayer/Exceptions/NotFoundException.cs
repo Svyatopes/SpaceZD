@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SpaceZD.BusinessLayer.Exceptions;
 
-namespace SpaceZD.BusinessLayer.Exceptions
+public class NotFoundException : Exception
 {
-    public class NotFoundException : Exception
-    {
-        public NotFoundException(string message) : base(message) { }
-    }
+    public NotFoundException(string message) : base(message) {}
+    public NotFoundException(string entityName, int id) : base($"{entityName} c Id = {id} не найден") {}
 }
