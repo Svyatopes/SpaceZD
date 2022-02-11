@@ -98,7 +98,7 @@ public class PlatformMaintenanceTests
                                 },
                                 new()
                                 {
-                                    Number=2
+                                    Number=3
                                 }
                             }
                         }
