@@ -22,20 +22,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt =>
-    {
-        opt.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = AuthOptions.Issuer,
-            ValidateAudience = true,
-            ValidAudience = AuthOptions.Audience,
-            ValidateLifetime = true,
-            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-            ValidateIssuerSigningKey = true,
+       .AddJwtBearer(opt =>
+       {
+           opt.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateIssuer = true,
+               ValidIssuer = AuthOptions.Issuer,
+               ValidateAudience = true,
+               ValidAudience = AuthOptions.Audience,
+               ValidateLifetime = true,
+               IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+               ValidateIssuerSigningKey = true,
 
-        };
-    });
+           };
+       });
 
 builder.Services.AddAuthorization();
 
@@ -84,7 +84,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<SpaceZdMiddleware>();
-
 
 app.MapControllers();
 

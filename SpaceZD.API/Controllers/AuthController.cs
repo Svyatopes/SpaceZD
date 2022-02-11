@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Models;
-using SpaceZD.API.Models.Inputs;
 using SpaceZD.BusinessLayer.Services;
 
 namespace SpaceZD.API.Controllers;

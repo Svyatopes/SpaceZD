@@ -1,7 +1,6 @@
-﻿namespace SpaceZD.BusinessLayer.Exceptions
+﻿namespace SpaceZD.BusinessLayer.Exceptions;
+
+public class AuthenticationException : Exception
 {
-    public class AuthenticationException : Exception
-    {
-        public AuthenticationException(string message) : base(message) { }
-    }
+    public AuthenticationException(string message) : base(message) { }
 }

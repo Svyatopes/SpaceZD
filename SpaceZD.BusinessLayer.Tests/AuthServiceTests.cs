@@ -16,6 +16,8 @@ namespace SpaceZD.BusinessLayer.Tests;
 public class AuthServiceTests
 {
     private Mock<ILoginUser> _loginUserMock;
+    private const string _login = "CoachPotato1861";
+    private const string _password = "MySuperPassword";
 
     [SetUp]
     public void Setup()
@@ -27,23 +29,17 @@ public class AuthServiceTests
     public void LoginTest()
     {
         //given
-        var login = "CoachPotato1861";
-        var password = "MySuperPassword";
-
         _loginUserMock.Setup(a => a.GetUserByLogin(It.IsAny<string>())).Returns(new User
         {
             Id = 1,
-            Login = login,
-            PasswordHash = SecurePasswordHasher.Hash(password)
+            Login = _login,
+            PasswordHash = SecurePasswordHasher.Hash(_password)
         });
 
-
-        var _authService = new AuthService(_loginUserMock.Object);
+        var authService = new AuthService(_loginUserMock.Object);
 
         //when
-
-        var token = _authService.Login(login, password);
-
+        var token = authService.Login(_login, _password);
 
         //then
         Assert.IsNotNull(token);
@@ -54,14 +50,11 @@ public class AuthServiceTests
     public void LoginTest_NotFoundException()
     {
         //given
-        var login = "CoachPotato1861";
-        var password = "MySuperPassword";
-
         _loginUserMock.Setup(a => a.GetUserByLogin(It.IsAny<string>())).Returns(default(User));
-        var _authService = new AuthService(_loginUserMock.Object);
+        var authService = new AuthService(_loginUserMock.Object);
 
         //when then
-        Assert.Throws<NotFoundException>(() => _authService.Login(login, password));
+        Assert.Throws<NotFoundException>(() => authService.Login(_login, _password));
     }
 
 
@@ -69,36 +62,33 @@ public class AuthServiceTests
     public void LoginTest_AuthenticationException()
     {
         //given
-        var login = "CoachPotato1861";
-        var password = "MySuperPassword";
         var wrongPassword = "MyMegaPassword";
 
         _loginUserMock.Setup(a => a.GetUserByLogin(It.IsAny<string>())).Returns(new User
         {
             Id = 1,
-            Login = login,
-            PasswordHash = SecurePasswordHasher.Hash(password)
+            Login = _login,
+            PasswordHash = SecurePasswordHasher.Hash(_password)
         });
 
-        var _authService = new AuthService(_loginUserMock.Object);
+        var authService = new AuthService(_loginUserMock.Object);
 
         //when then
-        Assert.Throws<AuthenticationException>(() => _authService.Login(login, wrongPassword));
+        Assert.Throws<AuthenticationException>(() => authService.Login(_login, wrongPassword));
     }
 
     private static bool ValidateToken(string authToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var validationParameters = GetValidationParameters();
 
-        SecurityToken validatedToken;
-        IPrincipal principal = tokenHandler.ValidateToken(authToken, validationParameters, out validatedToken);
+        tokenHandler.ValidateToken(authToken, GetValidationParameters(), out _);
+        
         return true;
     }
 
     private static TokenValidationParameters GetValidationParameters()
     {
-        return new TokenValidationParameters()
+        return new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidIssuer = AuthOptions.Issuer,

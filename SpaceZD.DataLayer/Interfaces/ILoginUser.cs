@@ -1,9 +1,8 @@
 ﻿using SpaceZD.DataLayer.Entities;
 
-namespace SpaceZD.DataLayer.Interfaces
+namespace SpaceZD.DataLayer.Interfaces;
+
+public interface ILoginUser
 {
-    public interface ILoginUser
-    {
-        User GetUserByLogin(string login);
-    }
+    User? GetUserByLogin(string login);
 }

@@ -51,7 +51,7 @@ public class UserRepository : BaseRepository, IRepositorySoftDelete<User>, ILogi
         return true;
     }
 
-    public User GetUserByLogin(string login)
+    public User? GetUserByLogin(string login)
     {
         return _context.Users.FirstOrDefault(u => u.Login == login);
     }
