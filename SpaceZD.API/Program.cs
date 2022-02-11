@@ -31,7 +31,7 @@ builder.Services.AddScoped<IRepositorySoftDelete<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Train>,TrainRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Ticket>,TicketRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Station>,StationRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<RouteTransit>,RouteTransitRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<RouteTransit>,RouteTransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Route>,RouteRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Platform>,PlatformRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>,PlatformMaintenanceRepository>();

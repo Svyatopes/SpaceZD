@@ -12,7 +12,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class RouteTransitRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<RouteTransit> _repository;
+    private IRepositorySoftDeleteNewUpdate<RouteTransit> _repository;
 
     [SetUp]
     public void Setup()
@@ -24,6 +24,7 @@ public class RouteTransitRepositoryTests
         _repository = new RouteTransitRepository(_context);
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
+
 
         // seed
         var routetransuts = new RouteTransit[]
@@ -114,28 +115,21 @@ public class RouteTransitRepositoryTests
     [TestCase(1)]
     [TestCase(2)]
     [TestCase(3)]
-    public void UpdateEntityTest(int id)
+    public void UpdateRouteTransitTest(int id)
     {
         // given
-        var routeTransitToEdit = _context.RouteTransits.FirstOrDefault(o => o.Id == id);
-        routeTransitToEdit.Transit =
-            new Transit
-            {
-                StartStation = new Station { Name = "СПБ" },
-                EndStation = new Station { Name = "Москва" }
-            };
-
-        routeTransitToEdit.DepartingTime = new TimeSpan(0, 0, 0);
-        routeTransitToEdit.ArrivalTime = new TimeSpan(0, 59, 0);
+        var oldRouteTransitToEdit = _context.RouteTransits.FirstOrDefault(o => o.Id == id);
+        var newRouteTransitToEdit = GetRouteTransit;
 
         // when 
-        bool routeTransitEdited = _repository.Update(routeTransitToEdit);
+        _repository.Update(oldRouteTransitToEdit, newRouteTransitToEdit);
 
         // then
-        var routeTransitToUpdated = _context.RouteTransits.FirstOrDefault(o => o.Id == routeTransitToEdit.Id);
+        var routeTransitToUpdated = _context.RouteTransits.FirstOrDefault(o => o.Id == oldRouteTransitToEdit.Id);
 
-        Assert.IsTrue(routeTransitEdited);
-        Assert.IsTrue(routeTransitToUpdated!.Equals(routeTransitToEdit));
+        Assert.AreEqual(newRouteTransitToEdit.Transit, routeTransitToUpdated.Transit);
+        Assert.AreEqual(newRouteTransitToEdit.DepartingTime, routeTransitToUpdated.DepartingTime);
+        Assert.AreEqual(newRouteTransitToEdit.ArrivalTime, routeTransitToUpdated.ArrivalTime);
     }
 
     [TestCase(true)]
@@ -144,18 +138,15 @@ public class RouteTransitRepositoryTests
     {
         // given
         var routeTransitToEdit = GetRouteTransit;
-        routeTransitToEdit.IsDeleted = !isDeleted;
+        routeTransitToEdit.IsDeleted = isDeleted;
         _context.RouteTransits.Add(routeTransitToEdit);
         _context.SaveChanges();
 
         // when 
-        bool routeTransitEdited = _repository.Update(routeTransitToEdit.Id, isDeleted);
+        _repository.Update(GetRouteTransit, isDeleted);
 
         // then
-        var routeTransitToUpdated = _context.RouteTransits.FirstOrDefault(o => o.Id == routeTransitToEdit.Id);
-
-        Assert.IsTrue(routeTransitEdited);
-        Assert.AreEqual(routeTransitToEdit, routeTransitToUpdated);
+        Assert.AreEqual(isDeleted, routeTransitToEdit.IsDeleted);
     }
 
     private RouteTransit GetRouteTransit => new()
