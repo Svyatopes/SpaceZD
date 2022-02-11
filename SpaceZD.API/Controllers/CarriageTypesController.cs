@@ -1,5 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Models;
+using SpaceZD.BusinessLayer.Models;
+using SpaceZD.BusinessLayer.Services;
 
 namespace SpaceZD.API.Controllers;
 
@@ -7,45 +10,64 @@ namespace SpaceZD.API.Controllers;
 [Route("api/[controller]")]
 public class CarriageTypesController : ControllerBase
 {
+    private readonly IMapper _mapper;
+    private readonly ICarriageTypeService _carriageTypeService;
+    public CarriageTypesController(IMapper mapper, ICarriageTypeService carriageTypeService)
+    {
+        _mapper = mapper;
+        _carriageTypeService = carriageTypeService;
+    }
+
+    //api/CarriageTypes
     [HttpGet]
     public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypes()
     {
-        return Ok(new List<CarriageTypeOutputModel> { new CarriageTypeOutputModel() });
+        return Ok(_mapper.Map<List<CarriageTypeOutputModel>>(_carriageTypeService.GetList()));
     }
 
-    [HttpGet("{id}")]
+    //api/CarriageTypes/deleted
+    [HttpGet("/deleted")]
+    public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypesDelete()
+    {
+        return Ok(_mapper.Map<List<CarriageTypeOutputModel>>(_carriageTypeService.GetListDeleted()));
+    }
+
+    //api/CarriageTypes/42
+    [HttpGet("{id:int}")]
     public ActionResult<CarriageTypeOutputModel> GetCarriageTypeById(int id)
     {
-        return Ok(new CarriageTypeOutputModel());
+        return Ok(_mapper.Map<CarriageTypeOutputModel>(_carriageTypeService.GetById(id)));
     }
 
-    [HttpGet("{id}/carriages")]
-    public ActionResult<CarriageTypeOutputModel> GetCarriageTypeByIdWithCarriage(int id)
-    {
-        return Ok(new CarriageTypeOutputModel());
-    }
-
+    //api/CarriageTypes
     [HttpPost]
     public ActionResult AddCarriageType(CarriageTypeInputModel carriageType)
     {
-        return StatusCode(StatusCodes.Status201Created, carriageType);
+        _carriageTypeService.Add(_mapper.Map<CarriageTypeModel>(carriageType));
+        return StatusCode(StatusCodes.Status201Created);
     }
 
-    [HttpPut("{id}")]
+    //api/CarriageTypes/42
+    [HttpPut("{id:int}")]
     public ActionResult EditCarriageType(int id, CarriageTypeInputModel carriageType)
     {
-        return BadRequest();
-    }
-
-    [HttpDelete("{id}")]
-    public ActionResult DeleteCarriageType(int id)
-    {
+        _carriageTypeService.Update(id, _mapper.Map<CarriageTypeModel>(carriageType));
         return Accepted();
     }
 
-    [HttpPatch("{id}")]
+    //api/CarriageTypes/42
+    [HttpDelete("{id:int}")]
+    public ActionResult DeleteCarriageType(int id)
+    {
+        _carriageTypeService.Delete(id);
+        return Accepted();
+    }
+
+    //api/CarriageTypes/42
+    [HttpPatch("{id:int}")]
     public ActionResult RestoreCarriageType(int id)
     {
+        _carriageTypeService.Restore(id);
         return Accepted();
     }
 }
