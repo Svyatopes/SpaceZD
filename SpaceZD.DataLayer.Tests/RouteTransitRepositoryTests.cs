@@ -27,7 +27,7 @@ public class RouteTransitRepositoryTests
 
 
         // seed
-        var routetransuts = new RouteTransit[]
+        var routetransits = new RouteTransit[]
         {
                 new()
                 {
@@ -62,7 +62,7 @@ public class RouteTransitRepositoryTests
                 }
 
         };
-        _context.RouteTransits.AddRange(routetransuts);
+        _context.RouteTransits.AddRange(routetransits);
         _context.SaveChanges();
 
     }
@@ -143,7 +143,7 @@ public class RouteTransitRepositoryTests
         _context.SaveChanges();
 
         // when 
-        _repository.Update(GetRouteTransit, isDeleted);
+        _repository.Update(routeTransitToEdit, isDeleted);
 
         // then
         Assert.AreEqual(isDeleted, routeTransitToEdit.IsDeleted);
