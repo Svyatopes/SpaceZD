@@ -1,4 +1,4 @@
-﻿namespace SpaceZD.DataLayer.Interfaces;
+namespace SpaceZD.DataLayer.Interfaces;
 
 public interface IRepositorySoftDeleteNewUpdate<T> where T : class
 {
