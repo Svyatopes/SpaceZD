@@ -4,7 +4,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PersonRepository : BaseRepository, IRepositorySoftDelete<Person>
+public class PersonRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Person>
 {
     public PersonRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -19,33 +19,18 @@ public class PersonRepository : BaseRepository, IRepositorySoftDelete<Person>
         return person.Id;
     }
 
-    public bool Update(Person person)
+    public void Update(Person oldPerson, Person newPerson)
     {
-        var personInDb = GetById(person.Id);
-
-        if (personInDb == null)
-            return false;
-
-        personInDb.FirstName = person.FirstName;
-        personInDb.LastName = person.LastName;
-        personInDb.Patronymic = person.Patronymic;
-        personInDb.Passport = person.Passport;
-
+        oldPerson.FirstName = newPerson.FirstName;
+        oldPerson.LastName = newPerson.LastName;
+        oldPerson.Patronymic = newPerson.Patronymic;
+        oldPerson.Passport = newPerson.Passport;
         _context.SaveChanges();
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Person person, bool isDeleted)
     {
-        var personInDb = GetById(id);
-
-        if (personInDb == null)
-            return false;
-
-        personInDb.IsDeleted = isDeleted;
-
+        person.IsDeleted = isDeleted;
         _context.SaveChanges();
-
-        return true;
     }
 }
