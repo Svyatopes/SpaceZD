@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class RouteRepository : BaseRepository, IRepositorySoftDelete<Route>
+public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Route>
 {
     public RouteRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -25,29 +25,20 @@ public class RouteRepository : BaseRepository, IRepositorySoftDelete<Route>
         return route.Id;
     }
 
-    public bool Update(Route route)
+    public void Update(Route routeOld, Route routeUpdate)
     {
-        var entity = GetById(route.Id);
-        if (entity is null)
-            return false;
-
-        entity.Code = route.Code;
-        entity.StartTime = route.StartTime;
-        entity.StartStation = route.StartStation;
-        entity.EndStation = route.EndStation;
+        routeOld.Code = routeUpdate.Code;
+        routeOld.StartTime = routeUpdate.StartTime;
+        routeOld.StartStation = routeUpdate.StartStation;
+        routeOld.EndStation = routeUpdate.EndStation;
 
         _context.SaveChanges();
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Route route, bool isDeleted)
     {
-        var entity = GetById(id);
-        if (entity is null)
-            return false;
-
-        entity.IsDeleted = isDeleted;
+        route.IsDeleted = isDeleted;
+        
         _context.SaveChanges();
-        return true;
     }
 }

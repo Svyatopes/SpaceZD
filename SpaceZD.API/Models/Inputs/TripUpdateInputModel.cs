@@ -1,8 +1,7 @@
-﻿namespace SpaceZD.API.Models
+﻿namespace SpaceZD.API.Models;
+
+public class TripUpdateInputModel
 {
-    public class TripUpdateInputModel
-    {
-        public int TrainId { get; set; }
-        public DateTime StartTime { get; set; }
-    }
+    public int TrainId { get; set; }
+    public DateTime StartTime { get; set; }
 }

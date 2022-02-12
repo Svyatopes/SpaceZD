@@ -13,7 +13,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class RouteRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<Route> _repository;
+    private IRepositorySoftDeleteNewUpdate<Route> _repository;
 
     [SetUp]
     public void Setup()
@@ -145,19 +145,21 @@ public class RouteRepositoryTests
     {
         // given
         var entityToEdit = _context.Routes.FirstOrDefault(o => o.Id == id);
-        entityToEdit!.Code = "h589";
-        entityToEdit.StartStation = new Station { Name = "start" };
-        entityToEdit.EndStation = new Station { Name = "end" };
-        entityToEdit.StartTime = DateTime.Now;
+        var entityUpdate = TestEntity;
+        entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
+        foreach (var rt in entityUpdate.Transits)
+            rt.Route = entityUpdate;
 
         // when 
-        bool edited = _repository.Update(entityToEdit);
+        _repository.Update(entityToEdit, entityUpdate);
 
         // then
-        var entityToUpdated = _context.Routes.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.IsTrue(entityToUpdated!.Equals(entityToEdit));
+        Assert.AreEqual(entityUpdate.Code, entityToEdit.Code);
+        Assert.AreEqual(entityUpdate.StartTime, entityToEdit.StartTime);
+        Assert.AreEqual(entityUpdate.StartStation, entityToEdit.StartStation);
+        Assert.AreEqual(entityUpdate.EndStation, entityToEdit.EndStation);
+        Assert.AreNotEqual(entityUpdate.IsDeleted, entityToEdit.IsDeleted);
+        CollectionAssert.AreNotEqual(entityUpdate.Transits, entityToEdit.Transits);
     }
 
     [TestCase(true)]
@@ -171,13 +173,10 @@ public class RouteRepositoryTests
         _context.SaveChanges();
 
         // when 
-        bool edited = _repository.Update(entityToEdit.Id, isDeleted);
+        _repository.Update(entityToEdit, isDeleted);
 
         // then
-        var entityToUpdated = _context.Routes.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.AreEqual(entityToEdit, entityToUpdated);
+        Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
     private Route TestEntity => new()
