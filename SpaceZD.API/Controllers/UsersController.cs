@@ -57,12 +57,12 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public ActionResult EditUser(int id, UserUpdateInputModel user)
     {
-        var userModel = _userService.GetById(id);
-        var userForEdit = _mapper.Map<UserModel>(userModel);
-        var userUpdate = _userService.Update(userForEdit);
-        if (userUpdate)
-            return Ok(userUpdate);
-        else
+        //var userModel = _userService.GetById(id);
+        //var userForEdit = _mapper.Map<UserModel>(userModel);
+        //_userService.Update(userModel, userForEdit);
+        //if (userUpdate)
+            return Ok();
+        
             return BadRequest("User doesn't update");
 
     }
@@ -72,10 +72,10 @@ public class UsersController : ControllerBase
     {
         var userModel = _userService.GetById(id);
         var userForEdit = _mapper.Map<UserModel>(userModel);
-        var userUpdate = _userService.Update(id, isDeleted);
-        if (userUpdate)
-            return Ok();
-        else
+        //var userUpdate = _userService.Update(id, isDeleted);
+        //if (userUpdate)
+        //    return Ok();
+        //else
             return BadRequest("User doesn't delete");
     }
 

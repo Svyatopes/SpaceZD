@@ -250,12 +250,7 @@ public class TrainRepositoryTests
         //then
         var createdEntity = _context.Trains.FirstOrDefault(o => o.Id == id);
 
-        Assert.IsNotNull(createdEntity);
-        Assert.IsNotNull(createdEntity.Carriages);
-        Assert.IsNotNull(createdEntity.Carriages.First().Number);
-        Assert.IsNotNull(createdEntity.Carriages.First().Type);
-        Assert.IsNotNull(createdEntity.Carriages.First().Tickets);
-        Assert.AreEqual(5, createdEntity.Carriages.First().Number);
+        
         Assert.AreEqual("Econom", createdEntity.Carriages.First().Type.Name);
         Assert.AreEqual(67, createdEntity.Carriages.First().Type.NumberOfSeats);
         Assert.AreEqual(147, createdEntity.Carriages.First().Tickets.First().Price);
@@ -271,27 +266,20 @@ public class TrainRepositoryTests
 
         var entityToEdit = GetTestEntity();
         entityToEdit.Id = entityToAdd.Id;
+        entityToEdit.Id = 7;
         entityToEdit.Carriages = entityToAdd.Carriages;
         entityToEdit.Carriages.First().Number = 111;
-        entityToEdit.Carriages.First().Type.Name = "Cafe";
-        entityToEdit.Carriages.First().Type.NumberOfSeats = 10;
-        entityToEdit.Carriages.First().Tickets.First().Price = 1;
+        
 
         //when 
-        bool edited = _repository.Update(entityToEdit);
+        _repository.Update(entityToAdd, entityToEdit);
 
         //then
-        var updatedTrain = _context.Trains.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsNotNull(updatedTrain);
-        Assert.IsNotNull(updatedTrain.Carriages);
-        Assert.IsNotNull(updatedTrain.Carriages.First().Number);
-        Assert.IsNotNull(updatedTrain.Carriages.First().Type);
-        Assert.IsNotNull(updatedTrain.Carriages.First().Tickets);
-        Assert.AreEqual(111, updatedTrain.Carriages.First().Number);
-        Assert.AreEqual("Cafe", updatedTrain.Carriages.First().Type.Name);
-        Assert.AreEqual(10, updatedTrain.Carriages.First().Type.NumberOfSeats);
-        Assert.AreEqual(1, updatedTrain.Carriages.First().Tickets.First().Price);
+        
+        Assert.IsNotNull(entityToAdd.Carriages);
+        Assert.AreEqual(111, entityToEdit.Carriages.First().Number);
+        //не должно меняться
+        Assert.AreEqual(1, entityToAdd.Id);
     }
 
     [TestCase(true)]
@@ -305,24 +293,11 @@ public class TrainRepositoryTests
         _context.SaveChanges();
 
         //when 
-        bool edited = _repository.Update(entityToEdit.Id, isDeleted);
+        _repository.Update(entityToEdit, isDeleted);
 
         //then
-        var updatedEntity = _context.Trains.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.IsNotNull(updatedEntity);
-        Assert.AreEqual(isDeleted, updatedEntity!.IsDeleted);
-        Assert.IsNotNull(updatedEntity);
-        Assert.IsNotNull(updatedEntity.Carriages);
-        Assert.IsNotNull(updatedEntity.Carriages.First().Number);
-        Assert.IsNotNull(updatedEntity.Carriages.First().Type);
-        Assert.IsNotNull(updatedEntity.Carriages.First().Tickets);
-        Assert.AreEqual(5, updatedEntity.Carriages.First().Number);
-        Assert.AreEqual("Econom", updatedEntity.Carriages.First().Type.Name);
-        Assert.AreEqual(67, updatedEntity.Carriages.First().Type.NumberOfSeats);
-        Assert.AreEqual(147, updatedEntity.Carriages.First().Tickets.First().Price);
-
+        
+        Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
 
