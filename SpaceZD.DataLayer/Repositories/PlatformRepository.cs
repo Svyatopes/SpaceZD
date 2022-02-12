@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PlatformRepository : BaseRepository, IRepositorySoftDelete<Platform>
+public class PlatformRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Platform>
 {
     public PlatformRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -23,29 +23,15 @@ public class PlatformRepository : BaseRepository, IRepositorySoftDelete<Platform
         return platform.Id;
     }
 
-    public bool Update(Platform platform)
+    public void Update(Platform oldPlatform, Platform newPlatform)
     {
-        var platformInDb = GetById(platform.Id);
-
-        if (platformInDb == null)
-            return false;
-
-        platformInDb.Number = platform.Number;
-
+        oldPlatform.Number = newPlatform.Number;
         _context.SaveChanges();
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Platform platform, bool isDeleted)
     {
-        var platformInDb = GetById(id);
-
-        if (platformInDb == null)
-            return false;
-
-        platformInDb.IsDeleted = isDeleted;
-
+        platform.IsDeleted = isDeleted;
         _context.SaveChanges();
-        return true;
     }
 }
