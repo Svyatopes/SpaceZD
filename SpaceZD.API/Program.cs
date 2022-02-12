@@ -25,12 +25,11 @@ builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingP
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(BusinessLayerMapper).Assembly);
 
 //Repositories
-builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<User>,UserRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<Transit>,TransitRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Train>,TrainRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Train>,TrainRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Ticket>,TicketRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Station>,StationRepository>();
 builder.Services.AddScoped<IRepositorySoftDelete<RouteTransit>,RouteTransitRepository>();
@@ -46,6 +45,7 @@ builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
 //Services
 builder.Services.AddScoped<ICarriageTypeService, CarriageTypeService>();
 builder.Services.AddScoped<IStationService, StationService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();
