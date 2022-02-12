@@ -11,7 +11,10 @@ public class Transit
 
     private bool Equals(Transit other)
     {
-        return StartStation == other.StartStation && EndStation == other.EndStation && IsDeleted == other.IsDeleted;
+        return StartStation.Equals(other.StartStation) &&
+            EndStation.Equals(other.EndStation) &&
+            Price == other.Price &&
+            IsDeleted == other.IsDeleted;
     }
     public override bool Equals(object? obj)
     {

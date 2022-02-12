@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -8,7 +9,10 @@ public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDele
 {
     public PlatformMaintenanceRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public PlatformMaintenance? GetById(int id) => _context.PlatformMaintenances.FirstOrDefault(p => p.Id == id);
+    public PlatformMaintenance? GetById(int id) =>
+        _context.PlatformMaintenances
+                .Include(p => p.Platform)
+                .FirstOrDefault(p => p.Id == id);
 
     public IEnumerable<PlatformMaintenance> GetList(bool includeAll = false) => _context.PlatformMaintenances.Where(p => !p.IsDeleted || includeAll).ToList();
 

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -8,7 +9,10 @@ public class CarriageRepository : BaseRepository, IRepositorySoftDelete<Carriage
 {
     public CarriageRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Carriage? GetById(int id) => _context.Carriages.FirstOrDefault(c => c.Id == id);
+    public Carriage? GetById(int id) =>
+        _context.Carriages
+                .Include(c => c.Type)
+                .FirstOrDefault(c => c.Id == id);
 
     public IEnumerable<Carriage> GetList(bool includeAll = false) => _context.Carriages.Where(c => !c.IsDeleted || includeAll).ToList();
 
@@ -18,7 +22,7 @@ public class CarriageRepository : BaseRepository, IRepositorySoftDelete<Carriage
         _context.SaveChanges();
         return carriage.Id;
     }
-    
+
     public bool Update(Carriage carriage)
     {
         var entity = GetById(carriage.Id);
