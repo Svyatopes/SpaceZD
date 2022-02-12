@@ -141,28 +141,24 @@ public class UserRepositoryTests
     }
 
 
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    public void GetByIdTest(int id)
+    [Test]    
+    public void GetByIdTest()
     {
         //given
-        var entityToAdd = GetListTestEntities();
-        foreach (var item in entityToAdd)
-        {
-            _context.Users.Add(item);
-            _context.SaveChanges();
-        }
-        var idAdded = _context.Users.Find(id);
+        var entityToAdd = GetTestEntity();
+        _context.Users.Add(entityToAdd);
+        _context.SaveChanges();
+        
+        var user = _context.Users.Find(1);
 
         //when
-        var received = _repository.GetById(id);
+        var received = _repository.GetById(1);
 
         //then
-        Assert.IsNotNull(received);
-        Assert.IsNotNull(received.Orders);
-        Assert.IsFalse(received!.IsDeleted);       
-        Assert.AreEqual(received, idAdded);
+        Assert.AreEqual(user, received);
+        Assert.AreEqual("Sasha", received.Name);
+        Assert.AreEqual("SashahsaS", received.Login);
+
     }
 
 
@@ -205,11 +201,7 @@ public class UserRepositoryTests
         //then
         var createdEntity = _context.Users.FirstOrDefault(o => o.Id == id);
 
-        Assert.IsNotNull(createdEntity);
-        Assert.IsNotNull(createdEntity.Name);
-        Assert.IsNotNull(createdEntity.Login);
-        Assert.IsNotNull(createdEntity.PasswordHash);
-        Assert.IsNotNull(createdEntity.Role);
+        
         Assert.AreEqual("Sasha", createdEntity.Name);
         Assert.AreEqual("SashahsaS", createdEntity.Login);
         Assert.AreEqual("hdebuvjcbh", createdEntity.PasswordHash);
@@ -229,21 +221,19 @@ public class UserRepositoryTests
         entityToEdit.Name = "Masha";
         entityToEdit.Login = "MashahsaM";
         entityToEdit.PasswordHash = "sjvbgfg";
+        entityToEdit.Role = Enums.Role.User;
 
         //when 
-        bool edited = _repository.Update(entityToEdit);
+        _repository.Update(entityToAdd, entityToEdit);
 
         //then
         var updatedEntity = _context.Users.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
-        Assert.IsNotNull(updatedEntity);
-        Assert.IsNotNull(updatedEntity.Name);
-        Assert.IsNotNull(updatedEntity.Login);
-        Assert.IsNotNull(updatedEntity.PasswordHash);
-        Assert.IsNotNull(updatedEntity.Role);
+        
         Assert.AreEqual("Masha", updatedEntity.Name);
-        Assert.AreEqual("MashahsaM", updatedEntity.Login);
-        Assert.AreEqual("sjvbgfg", updatedEntity.PasswordHash);
+        //не должно меняться
+        Assert.AreEqual("SashahsaS", updatedEntity.Login);
+        Assert.AreEqual("hdebuvjcbh", updatedEntity.PasswordHash);
         Assert.AreEqual(Enums.Role.TrainRouteManager, updatedEntity.Role);
     }
 
@@ -258,23 +248,11 @@ public class UserRepositoryTests
         _context.SaveChanges();
 
         //when 
-        bool edited = _repository.Update(entityToEdit.Id, isDeleted);
+        _repository.Update(entityToEdit, isDeleted);
 
         //then
-        var updatedEntity = _context.Users.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-        Assert.IsTrue(edited);
-        Assert.IsNotNull(updatedEntity);
-        Assert.AreEqual(isDeleted, updatedEntity!.IsDeleted);
-        Assert.IsNotNull(updatedEntity);
-        Assert.IsNotNull(updatedEntity.Name);
-        Assert.IsNotNull(updatedEntity.Login);
-        Assert.IsNotNull(updatedEntity.PasswordHash);
-        Assert.IsNotNull(updatedEntity.Role);
-        Assert.AreEqual("Sasha", updatedEntity.Name);
-        Assert.AreEqual("SashahsaS", updatedEntity.Login);
-        Assert.AreEqual("hdebuvjcbh", updatedEntity.PasswordHash);
-        Assert.AreEqual(Enums.Role.TrainRouteManager, updatedEntity.Role);
+        
+        Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
 
