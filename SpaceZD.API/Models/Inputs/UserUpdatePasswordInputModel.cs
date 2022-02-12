@@ -1,8 +1,7 @@
-﻿namespace SpaceZD.API.Models
+﻿namespace SpaceZD.API.Models;
+
+public class UserUpdatePasswordInputModel
 {
-    public class UserUpdatePasswordInputModel
-    {
-        public string PasswordOld { get; set; }
-        public string PasswordNew { get; set; }
-    }
+    public string PasswordOld { get; set; }
+    public string PasswordNew { get; set; }
 }
