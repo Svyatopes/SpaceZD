@@ -12,7 +12,7 @@ public class UserApiMappingProfile : Profile
         CreateMap<UserUpdateInputModel, UserModel>();
         CreateMap<UserUpdatePasswordInputModel, UserUpdatePasswordModel>();
 
-        CreateMap<UserModel, UserOutputModel>();
+        CreateMap<UserModel, UserFullOutputModel>();
         CreateMap<UserModel, UserShortOutputModel>();
     }
 }

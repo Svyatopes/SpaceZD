@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SpaceZD.API.Controllers
+namespace SpaceZD.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class TripStationsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TripStationsController : ControllerBase
-    {
-    }
 }
