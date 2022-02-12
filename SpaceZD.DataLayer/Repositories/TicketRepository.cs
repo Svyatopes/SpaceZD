@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
+public class TicketRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Ticket>
 {
     public TicketRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -25,32 +25,21 @@ public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
         return ticket.Id;
     }
 
-    public bool Update(Ticket ticket)
+    public void Update(Ticket ticketOld, Ticket ticketNew)
     {
-        var ticketInDb = GetById(ticket.Id);
-
-        if (ticketInDb is null)
-            return false;
-
-        ticketInDb.Carriage = ticket.Carriage;
-        ticketInDb.SeatNumber = ticket.SeatNumber;
-        ticketInDb.Price = ticket.Price;
-        ticketInDb.Person = ticket.Person;
+        ticketOld.Carriage = ticketNew.Carriage;
+        ticketOld.SeatNumber = ticketNew.SeatNumber;
+        ticketOld.Price = ticketNew.Price;
+        ticketOld.Person = ticketNew.Person;
 
         _context.SaveChanges();
-        return true;
+        
     }
-
-    public bool Update(int id, bool isDeleted)
+    
+    public void Update(Ticket ticket, bool isDeleted)
     {
-        var ticket = GetById(id);
-        if (ticket is null)
-            return false;
-
         ticket.IsDeleted = isDeleted;
         _context.SaveChanges();
-
-        return true;
 
     }
 }
