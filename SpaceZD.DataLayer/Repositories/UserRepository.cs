@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
+public class UserRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<User>
 {
     public UserRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -23,31 +23,19 @@ public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
         return user.Id;
     }
 
-    public bool Update(User user)
+    public void Update(User userOld, User userNew)
     {
-        var userInDb = GetById(user.Id);
-
-        if (userInDb == null)
-            return false;
-
-        userInDb.Name = user.Name;
-        userInDb.Login = user.Login;
-        userInDb.PasswordHash = user.PasswordHash;
+        userOld.Name = userNew.Name;
 
         _context.SaveChanges();
-        return true;
+
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(User user, bool isDeleted)
     {
-        var user = GetById(id);
-        if (user is null)
-            return false;
-
         user.IsDeleted = isDeleted;
 
         _context.SaveChanges();
 
-        return true;
     }
 }

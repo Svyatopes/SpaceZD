@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SpaceZD.BusinessLayer.Configuration;
+using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -8,10 +8,10 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public class UserService : IUserService
     {
-        private readonly IRepositorySoftDelete<User> _userRepository;
+        private readonly IRepositorySoftDeleteNewUpdate<User> _userRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IRepositorySoftDelete<User> userRepository, IMapper mapper)
+        public UserService(IRepositorySoftDeleteNewUpdate<User> userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -20,6 +20,7 @@ namespace SpaceZD.BusinessLayer.Services
         public UserModel GetById(int id)
         {
             var entity = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(entity, id);
             return _mapper.Map<UserModel>(entity);
         }
 
@@ -29,32 +30,41 @@ namespace SpaceZD.BusinessLayer.Services
             return _mapper.Map<List<UserModel>>(entities);
         }
 
+        public List<UserModel> GetListDeleted(bool includeAll = true)
+        {
+            var entities = _userRepository.GetList(includeAll).Where(t => t.IsDeleted);
+            return _mapper.Map<List<UserModel>>(entities);
+
+        }
+
+
         public int Add(UserModel entity)
         {
             var addEntity = _mapper.Map<User>(entity);
-
-            var idEntity = _userRepository.Add(addEntity);
-            return idEntity;
+            var id = _userRepository.Add(addEntity);
+            return id;
         }
 
-        public bool Update(UserModel entity)
+        public void Update(int id, UserModel entity)
         {
-            var addEntity = _mapper.Map<User>(entity);
-            var entityInDb = GetById(addEntity.Id);
-
-            entityInDb.Name = addEntity.Name;
-            entityInDb.PasswordHash = addEntity.PasswordHash;
-            return true;
+            var userOld = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(userOld, id);
+            var userNew = _mapper.Map<User>(entity);
+            _userRepository.Update(userOld, userNew);
 
         }
 
-        public bool Update(int id, bool isDeleted)
+        public void Update(int id)
         {
-            var user = GetById(id);
-            var entity = _mapper.Map<User>(user);
-            var deleteEntity = _userRepository.Update(id, isDeleted);
-            
-            return true;
+            var entity = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(entity, id);
+            _userRepository.Update(entity, false);
+
+        }
+        private static void ThrowIfEntityNotFound<T>(T? entity, int id)
+        {
+            if (entity is null)
+                throw new NotFoundException(typeof(T).Name, id);
         }
 
     }

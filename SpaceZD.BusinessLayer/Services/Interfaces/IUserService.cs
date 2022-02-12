@@ -7,7 +7,8 @@ namespace SpaceZD.BusinessLayer.Services
         int Add(UserModel entity);
         UserModel GetById(int id);
         List<UserModel> GetList(bool includeAll = false);
-        bool Update(int id, bool isDeleted);
-        bool Update(UserModel entity);
+        List<UserModel> GetListDeleted(bool includeAll = true);
+        void Update(int id);
+        void Update(int id, UserModel entity);
     }
 }
