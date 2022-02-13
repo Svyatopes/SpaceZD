@@ -16,7 +16,7 @@ public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Ro
                 .Include(r => r.EndStation)
                 .FirstOrDefault(r => r.Id == id);
 
-    public IEnumerable<Route> GetList(bool includeAll = false) => _context.Routes.Where(r => !r.IsDeleted || includeAll).ToList();
+    public List<Route> GetList(bool includeAll = false) => _context.Routes.Where(r => !r.IsDeleted || includeAll).ToList();
 
     public int Add(Route route)
     {

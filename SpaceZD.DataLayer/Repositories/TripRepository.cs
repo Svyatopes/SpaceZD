@@ -16,7 +16,7 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
                 .Include(t => t.Stations)
                 .FirstOrDefault(t => t.Id == id);
 
-    public IEnumerable<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
+    public List<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
 
     public int Add(Trip trip)
     {

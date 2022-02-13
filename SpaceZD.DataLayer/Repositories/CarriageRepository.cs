@@ -14,7 +14,7 @@ public class CarriageRepository : BaseRepository, IRepositorySoftDelete<Carriage
                 .Include(c => c.Type)
                 .FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<Carriage> GetList(bool includeAll = false) => _context.Carriages.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<Carriage> GetList(bool includeAll = false) => _context.Carriages.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public int Add(Carriage carriage)
     {

@@ -18,7 +18,7 @@ public class OrderRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Or
                 .Include(o => o.Tickets)
                 .FirstOrDefault(o => o.Id == id);
 
-    public IEnumerable<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
+    public List<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
 
     public int Add(Order order)
     {

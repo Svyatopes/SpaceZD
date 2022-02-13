@@ -14,7 +14,7 @@ public class RouteTransitRepository : BaseRepository, IRepositorySoftDelete<Rout
                 .Include(rt => rt.Transit)
                 .FirstOrDefault(rt => rt.Id == id);
 
-    public IEnumerable<RouteTransit> GetList(bool includeAll = false) => _context.RouteTransits.Where(r => !r.IsDeleted || includeAll).ToList();
+    public List<RouteTransit> GetList(bool includeAll = false) => _context.RouteTransits.Where(r => !r.IsDeleted || includeAll).ToList();
 
     public int Add(RouteTransit routeTransit)
     {

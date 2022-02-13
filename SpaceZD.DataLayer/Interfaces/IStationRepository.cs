@@ -4,5 +4,5 @@ namespace SpaceZD.DataLayer.Interfaces;
 
 public interface IStationRepository : IRepositorySoftDeleteNewUpdate<Station>
 {
-    IEnumerable<Platform> GetReadyPlatformsStation(Station station, DateTime moment);
+    List<Platform> GetReadyPlatformsStation(Station station, DateTime moment);
 }
