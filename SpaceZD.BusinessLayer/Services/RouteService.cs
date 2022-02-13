@@ -23,12 +23,29 @@ public class RouteService : IRouteService
     {
         var entity = _routeRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        
+
+        entity!.Transits = entity.Transits.Where(t => !t.IsDeleted).ToList();
+
         return _mapper.Map<RouteModel>(entity);
     }
 
-    public List<RouteModel> GetList() => _mapper.Map<List<RouteModel>>(_routeRepository.GetList());
-    public List<RouteModel> GetListDeleted() => _mapper.Map<List<RouteModel>>(_routeRepository.GetList(true).Where(t => t.IsDeleted));
+    public List<RouteModel> GetList()
+    {
+        var entities = _routeRepository.GetList();
+        foreach (var route in entities)
+            route.Transits = route.Transits.Where(t => !t.IsDeleted).ToList();
+        
+        return _mapper.Map<List<RouteModel>>(entities);
+    }
+    
+    public List<RouteModel> GetListDeleted()
+    {
+        var entities = _routeRepository.GetList(true).Where(t => t.IsDeleted);
+        foreach (var route in entities)
+            route.Transits = route.Transits.Where(t => !t.IsDeleted).ToList();
+
+        return _mapper.Map<List<RouteModel>>(entities);
+    }
 
     public int Add(RouteModel routeModel)
     {

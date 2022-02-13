@@ -45,6 +45,20 @@ public class StationsController : ControllerBase
     {
         return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetNearStations(id)));
     }
+    
+    //api/Stations/42/work-platforms
+    [HttpGet("{id:int}/ready-platforms")]
+    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsStationById(int id)
+    {
+        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsStationById(id, DateTime.Now)));
+    }
+    
+    //api/Stations/42/work-platforms/2022-10-05
+    [HttpGet("{id:int}/ready-platforms/{date:DateTime}")]
+    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsStationById(int id, DateTime date)
+    {
+        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsStationById(id, date)));
+    }
 
     //api/Stations
     [HttpPost]

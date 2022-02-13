@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -12,14 +13,14 @@ namespace SpaceZD.DataLayer.Tests;
 public class StationRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<Station> _repository;
+    private IStationRepository _repository;
 
     [SetUp]
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                      .UseInMemoryDatabase(databaseName: "Test")
-                      .Options;
+                     .UseInMemoryDatabase("Test")
+                     .Options;
 
         _context = new VeryVeryImportantContext(options);
         _repository = new StationRepository(_context);
@@ -139,6 +140,81 @@ public class StationRepositoryTests
 
         // then
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
+    }
+
+    [TestCaseSource(nameof(GetReadyPlatformsStation))]
+    public void GetReadyPlatformsStationTest(Station station)
+    {
+        // given
+        var expected = new List<Platform>();
+        foreach (var pl in station.Platforms)
+        {
+            pl.Station = station;
+            if (pl.Number == 3)
+                expected.Add(pl);
+        }
+
+        // when 
+        var actual = _repository.GetReadyPlatformsStation(station, new DateTime(2022, 1, 1));
+
+        // then
+        CollectionAssert.AreEqual(expected, actual);
+    }
+    public static IEnumerable<TestCaseData> GetReadyPlatformsStation()
+    {
+        var allTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = false };
+        var allTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = true };
+        var notTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = false };
+        var notTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = true };
+
+        var allTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MaxValue };
+        var notTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MinValue };
+
+        var notReadyPlatformFist = new Platform
+        {
+            Number = 1,
+            PlatformMaintenances = new List<PlatformMaintenance> { allTimeDeletedPM, notTimeDeletedPM },
+            TripStations = new List<TripStation> { allTimeTS, notTimeTS },
+            IsDeleted = false
+        };
+        var notReadyPlatformSecond = new Platform
+        {
+            Number = 5,
+            PlatformMaintenances = new List<PlatformMaintenance> { notTimePM, notTimeDeletedPM, allTimePM },
+            TripStations = new List<TripStation> { allTimeTS },
+            IsDeleted = false
+        };
+        var notReadyDeletedPlatform = new Platform
+        {
+            Number = 2,
+            PlatformMaintenances = new List<PlatformMaintenance> { notTimePM, notTimeDeletedPM, allTimePM },
+            TripStations = new List<TripStation> { allTimeTS },
+            IsDeleted = true
+        };
+        var readyPlatform = new Platform
+        {
+            Number = 3,
+            PlatformMaintenances = new List<PlatformMaintenance> { notTimeDeletedPM, allTimeDeletedPM },
+            TripStations = new List<TripStation> { notTimeTS },
+            IsDeleted = false
+        };
+        var readyDeletedPlatform = new Platform
+        {
+            Number = 4,
+            PlatformMaintenances = new List<PlatformMaintenance> { notTimeDeletedPM, allTimePM, allTimeDeletedPM },
+            TripStations = new List<TripStation> { notTimeTS },
+            IsDeleted = true
+        };
+
+        yield return new TestCaseData(new Station
+        {
+            Name = "Москва",
+            Platforms = new List<Platform> { notReadyPlatformFist, notReadyPlatformSecond, notReadyDeletedPlatform, readyPlatform, readyDeletedPlatform }
+        });
+        yield return new TestCaseData(new Station
+            { Name = "Выборг", Platforms = new List<Platform> { readyPlatform, readyPlatform, readyPlatform, notReadyPlatformSecond } });
+        yield return new TestCaseData(new Station
+            { Name = "Сочи", Platforms = new List<Platform> { readyDeletedPlatform, notReadyDeletedPlatform, notReadyPlatformSecond, notReadyPlatformFist } });
     }
 
     private Station TestEntity => new()

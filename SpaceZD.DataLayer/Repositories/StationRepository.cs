@@ -5,9 +5,9 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class StationRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Station>
+public class StationRepository : BaseRepository, IStationRepository
 {
-    public StationRepository(VeryVeryImportantContext context) : base(context) { }
+    public StationRepository(VeryVeryImportantContext context) : base(context) {}
 
     public Station? GetById(int id) =>
         _context.Stations
@@ -33,7 +33,19 @@ public class StationRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<
     public void Update(Station station, bool isDeleted)
     {
         station.IsDeleted = isDeleted;
-        
+
         _context.SaveChanges();
+    }
+
+    public IEnumerable<Platform> GetReadyPlatformsStation(Station station, DateTime moment)
+    {
+        return station.Platforms
+                      .Where(pl => !pl.IsDeleted &&
+                           !pl.PlatformMaintenances
+                              .Where(t => !t.IsDeleted)
+                              .Any(pm => pm.StartTime <= moment && pm.EndTime >= moment) &&
+                           !pl.TripStations
+                              .Any(ts => ts.ArrivalTime <= moment && ts.DepartingTime >= moment))
+                      .ToArray();
     }
 }
