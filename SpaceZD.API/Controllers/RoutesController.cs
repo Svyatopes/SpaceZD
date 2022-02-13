@@ -26,14 +26,14 @@ public class RoutesController : ControllerBase
     }
 
     //api/Routes/deleted
-    [HttpGet("/deleted")]
-    public ActionResult<List<RouteOutputModel>> GetRoutesDelete()
+    [HttpGet("deleted")]
+    public ActionResult<List<RouteOutputModel>> GetDeletedRoutes()
     {
         return Ok(_mapper.Map<List<RouteOutputModel>>(_routeService.GetListDeleted()));
     }
 
     //api/Routes/42
-    [HttpGet("{id:int}")]
+    [HttpGet("{id}")]
     public ActionResult<RouteOutputModel> GetRouteById(int id)
     {
         return Ok(_mapper.Map<RouteOutputModel>(_routeService.GetById(id)));
@@ -48,7 +48,7 @@ public class RoutesController : ControllerBase
     }
 
     //api/Routes/42
-    [HttpPut("{id:int}")]
+    [HttpPut("{id}")]
     public ActionResult EditRoute(int id, RouteInputModel route)
     {
         _routeService.Update(id, _mapper.Map<RouteModel>(route));
@@ -56,7 +56,7 @@ public class RoutesController : ControllerBase
     }
 
     //api/Routes/42
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public ActionResult DeleteRoute(int id)
     {
         _routeService.Delete(id);
@@ -64,7 +64,7 @@ public class RoutesController : ControllerBase
     }
 
     //api/Routes/42
-    [HttpPatch("{id:int}")]
+    [HttpPatch("{id}")]
     public ActionResult RestoreRoute(int id)
     {
         _routeService.Restore(id);

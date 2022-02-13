@@ -27,7 +27,7 @@ public class StationService : IStationService
         return _mapper.Map<StationModel>(entity);
     }
 
-    public List<PlatformModel> GetReadyPlatformsStationById(int id, DateTime moment)
+    public List<PlatformModel> GetReadyPlatformsByStationId(int id, DateTime moment)
     {
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);

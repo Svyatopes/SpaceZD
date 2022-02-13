@@ -10,9 +10,9 @@ public class RouteService : IRouteService
 {
     private readonly IMapper _mapper;
     private readonly IRepositorySoftDeleteNewUpdate<Route> _routeRepository;
-    private readonly IRepositorySoftDeleteNewUpdate<Station> _stationRepository;
+    private readonly IStationRepository _stationRepository;
 
-    public RouteService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Route> routeRepository, IRepositorySoftDeleteNewUpdate<Station> stationRepository)
+    public RouteService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Route> routeRepository, IStationRepository stationRepository)
     {
         _mapper = mapper;
         _routeRepository = routeRepository;

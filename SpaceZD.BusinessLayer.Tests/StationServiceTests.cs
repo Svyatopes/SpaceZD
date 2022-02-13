@@ -284,7 +284,7 @@ public class StationServiceTests
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         // when
-        var actual = service.GetReadyPlatformsStationById(20, moment);
+        var actual = service.GetReadyPlatformsByStationId(20, moment);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(20), Times.Once);
@@ -356,7 +356,7 @@ public class StationServiceTests
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
-        Assert.Throws<NotFoundException>(() => service.GetReadyPlatformsStationById(10, DateTime.Today));
+        Assert.Throws<NotFoundException>(() => service.GetReadyPlatformsByStationId(10, DateTime.Today));
     }
 
 

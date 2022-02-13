@@ -26,14 +26,14 @@ public class CarriageTypesController : ControllerBase
     }
 
     //api/CarriageTypes/deleted
-    [HttpGet("/deleted")]
-    public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypesDelete()
+    [HttpGet("deleted")]
+    public ActionResult<List<CarriageTypeOutputModel>> GetDeletedCarriageTypes()
     {
         return Ok(_mapper.Map<List<CarriageTypeOutputModel>>(_carriageTypeService.GetListDeleted()));
     }
 
     //api/CarriageTypes/42
-    [HttpGet("{id:int}")]
+    [HttpGet("{id}")]
     public ActionResult<CarriageTypeOutputModel> GetCarriageTypeById(int id)
     {
         return Ok(_mapper.Map<CarriageTypeOutputModel>(_carriageTypeService.GetById(id)));
@@ -48,7 +48,7 @@ public class CarriageTypesController : ControllerBase
     }
 
     //api/CarriageTypes/42
-    [HttpPut("{id:int}")]
+    [HttpPut("{id}")]
     public ActionResult EditCarriageType(int id, CarriageTypeInputModel carriageType)
     {
         _carriageTypeService.Update(id, _mapper.Map<CarriageTypeModel>(carriageType));
@@ -56,7 +56,7 @@ public class CarriageTypesController : ControllerBase
     }
 
     //api/CarriageTypes/42
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public ActionResult DeleteCarriageType(int id)
     {
         _carriageTypeService.Delete(id);
@@ -64,7 +64,7 @@ public class CarriageTypesController : ControllerBase
     }
 
     //api/CarriageTypes/42
-    [HttpPatch("{id:int}")]
+    [HttpPatch("{id}")]
     public ActionResult RestoreCarriageType(int id)
     {
         _carriageTypeService.Restore(id);

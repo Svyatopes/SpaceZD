@@ -26,38 +26,38 @@ public class StationsController : ControllerBase
     }
 
     //api/Stations/deleted
-    [HttpGet("/deleted")]
-    public ActionResult<List<StationShortOutputModel>> GetStationsDelete()
+    [HttpGet("deleted")]
+    public ActionResult<List<StationShortOutputModel>> GetDeletedStations()
     {
         return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetListDeleted()));
     }
 
     //api/Stations/42
-    [HttpGet("{id:int}")]
+    [HttpGet("{id}")]
     public ActionResult<StationFullOutputModel> GetStationById(int id)
     {
         return Ok(_mapper.Map<StationFullOutputModel>(_stationService.GetById(id)));
     }
     
     //api/Stations/42/near-stations
-    [HttpGet("{id:int}/near-stations")]
+    [HttpGet("{id}/near-stations")]
     public ActionResult<List<StationShortOutputModel>> GetNearStationsById(int id)
     {
         return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetNearStations(id)));
     }
     
     //api/Stations/42/work-platforms
-    [HttpGet("{id:int}/ready-platforms")]
-    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsStationById(int id)
+    [HttpGet("{id}/ready-platforms")]
+    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsByStationId(int id)
     {
-        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsStationById(id, DateTime.Now)));
+        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsByStationId(id, DateTime.Now)));
     }
     
     //api/Stations/42/work-platforms/2022-10-05
-    [HttpGet("{id:int}/ready-platforms/{date:DateTime}")]
-    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsStationById(int id, DateTime date)
+    [HttpGet("{id}/ready-platforms/{date}")]
+    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsByStationId(int id, DateTime date)
     {
-        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsStationById(id, date)));
+        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsByStationId(id, date)));
     }
 
     //api/Stations
@@ -69,7 +69,7 @@ public class StationsController : ControllerBase
     }
 
     //api/Stations/42
-    [HttpPut("{id:int}")]
+    [HttpPut("{id}")]
     public ActionResult EditStation(int id, StationInputModel station)
     {
         _stationService.Update(id, _mapper.Map<StationModel>(station));
@@ -77,7 +77,7 @@ public class StationsController : ControllerBase
     }
 
     //api/Stations/42
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public ActionResult DeleteStation(int id)
     {
         _stationService.Delete(id);
@@ -85,7 +85,7 @@ public class StationsController : ControllerBase
     }
 
     //api/Stations/42
-    [HttpPatch("{id:int}")]
+    [HttpPatch("{id}")]
     public ActionResult RestoreStation(int id)
     {
         _stationService.Restore(id);
