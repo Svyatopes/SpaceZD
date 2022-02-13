@@ -81,10 +81,7 @@ public class OrderRepositoryTests
     public void UpdateEntityTest()
     {
         //given
-        var order = OrderRepositoryMocks.GetOrders()[0];
-
-        order.Id = _context.Orders.First().Id;
-        
+        var order = OrderRepositoryMocks.GetOrder();
 
         order.Trip = new Trip() { Route = new Route() { Code = "231B" } };
         order.StartStation = new TripStation()
@@ -98,21 +95,24 @@ public class OrderRepositoryTests
 
         var originalUser = order.User;
 
+        //SHOULDN'T CHANGED
         order.User = new User()
         {
             Name = "Enot",
             Role = Enums.Role.User
         };
 
+        var orderToEdit = _context.Orders.First();
+
         //when 
-        bool edited = _repository.Update(order);
+       _repository.Update(orderToEdit, order);
 
         //then
-        var updatedOrder = _context.Orders.FirstOrDefault(o => o.Id == order.Id);
+        var updatedOrder = _context.Orders.FirstOrDefault(o => o.Id == orderToEdit.Id);
 
-        Assert.AreEqual("Tomsk", updatedOrder!.StartStation.Station.Name);
-        Assert.AreEqual("Bolotnoe", updatedOrder.EndStation.Station.Name);
-        Assert.AreEqual("231B", updatedOrder.Trip.Route.Code);
+        Assert.AreEqual(order.StartStation.Station.Name, updatedOrder!.StartStation.Station.Name);
+        Assert.AreEqual(order.EndStation.Station.Name, updatedOrder.EndStation.Station.Name);
+        Assert.AreEqual(order.Trip.Route.Code, updatedOrder.Trip.Route.Code);
         Assert.AreEqual(originalUser.Name, updatedOrder.User.Name);
     }
 
@@ -127,13 +127,12 @@ public class OrderRepositoryTests
         _context.SaveChanges();
 
         //when 
-        bool edited = _repository.Update(orderToEdit.Id, isDeleted);
+        _repository.Update(orderToEdit, isDeleted);
 
         //then
         
         var updatedOrder = _context.Orders.FirstOrDefault(o => o.Id == orderToEdit.Id);
 
-        Assert.IsTrue(edited);
         Assert.AreEqual(isDeleted, updatedOrder!.IsDeleted);
         Assert.AreEqual(orderToEdit, updatedOrder);
     } 
