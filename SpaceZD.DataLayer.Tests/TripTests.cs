@@ -75,24 +75,41 @@ namespace SpaceZD.DataLayer.Tests
             Assert.AreEqual(entityOnCreate, entityToAdd);
         }
 
-
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
         public void UpdateEntityTest(int id)
         {
             // given
-            var entityToEdit = _context.Trips.FirstOrDefault(o => o.Id == id);
-            entityToEdit!.Route.Code = "Oredez345";
+            var entityToEdit = _context.Transits.FirstOrDefault(o => o.Id == id);
+            var newEntity = TripRepositoryMocks.GetTrip();
 
             // when 
-            bool edited = _repository.Update(entityToEdit);
+            _repository.Update(entityToEdit!, newEntity);
 
             // then
-            var entityUpdated = _context.TripStations.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-            Assert.IsTrue(edited);
+            var entityUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit!.Id);
             Assert.AreEqual(entityToEdit, entityUpdated);
+        }
+
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void UpdateIsDeletedTest(bool isDeleted)
+        {
+            // given
+            var entityToEdit = TripRepositoryMocks.GetTrip();
+            entityToEdit.IsDeleted = !isDeleted;
+            _context.Transits.Add(entityToEdit);
+            _context.SaveChanges();
+
+            // when 
+            _repository.Update(entityToEdit, isDeleted);
+
+            // then
+            var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
+
+            Assert.AreEqual(entityToEdit, entityToUpdated);
         }
     }
 }
