@@ -1,46 +1,46 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using SpaceZD.API.Models;
+using Microsoft.AspNetCore.Mvc;
 using SpaceZD.BusinessLayer.Models;
 
-namespace SpaceZD.API.Controllers
+namespace SpaceZD.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class StationsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class StationsController : ControllerBase
+    [HttpGet("{id}")]
+    public ActionResult<StationFullOutputModel> GetStationById(int id)
     {
-        [HttpGet("{id}")]
-        public ActionResult<StationModel> GetStationById(int id)
-        {
-            return Ok(new StationModel());
-        }
+        return Ok(new StationModel());
+    }
 
-        [HttpGet]
-        public ActionResult<List<StationModel>> GetStations()
-        {
-            return Ok(new List<StationModel> { new StationModel() });
-        }
+    [HttpGet]
+    public ActionResult<List<StationShortOutputModel>> GetStations()
+    {
+        return Ok(new List<StationShortOutputModel> { new StationShortOutputModel() });
+    }
 
-        [HttpPost]
-        public ActionResult AddStation(StationModel station)
-        {
-            return StatusCode(StatusCodes.Status201Created, station);
-        }
+    [HttpPost]
+    public ActionResult AddStation(StationInputModel station)
+    {
+        return StatusCode(StatusCodes.Status201Created, station);
+    }
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteStation(int id)
-        {
-            return Accepted();
-        }
+    [HttpDelete("{id}")]
+    public ActionResult DeleteStation(int id)
+    {
+        return Accepted();
+    }
 
-        [HttpPut("{id}")]
-        public ActionResult EditStation(int id, StationModel station)
-        {
-            return BadRequest();
-        }
+    [HttpPut("{id}")]
+    public ActionResult EditStation(int id, StationInputModel station)
+    {
+        return BadRequest();
+    }
 
-        [HttpPatch("{id}")]
-        public ActionResult RestoreStation(int id)
-        {
-            return Accepted();
-        }
+    [HttpPatch("{id}")]
+    public ActionResult RestoreStation(int id)
+    {
+        return Accepted();
     }
 }

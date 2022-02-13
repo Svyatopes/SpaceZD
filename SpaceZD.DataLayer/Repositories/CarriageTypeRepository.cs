@@ -4,7 +4,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class CarriageTypeRepository : BaseRepository, IRepositorySoftDelete<CarriageType>
+public class CarriageTypeRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<CarriageType>
 {
     public CarriageTypeRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -19,30 +19,18 @@ public class CarriageTypeRepository : BaseRepository, IRepositorySoftDelete<Carr
         return carriageType.Id;
     }
 
-    public bool Update(CarriageType carriageType)
+    public void Update(CarriageType carriageTypeOld, CarriageType carriageTypeUpdate)
     {
-        var entity = GetById(carriageType.Id);
-        if (entity is null)
-            return false;
-
-        entity.Name = carriageType.Name;
-        entity.NumberOfSeats = carriageType.NumberOfSeats;
+        carriageTypeOld.Name = carriageTypeUpdate.Name;
+        carriageTypeOld.NumberOfSeats = carriageTypeUpdate.NumberOfSeats;
 
         _context.SaveChanges();
-
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(CarriageType carriageType, bool isDeleted)
     {
-        var entity = GetById(id);
-        if (entity is null)
-            return false;
-
-        entity.IsDeleted = isDeleted;
+        carriageType.IsDeleted = isDeleted;
 
         _context.SaveChanges();
-
-        return true;
     }
 }

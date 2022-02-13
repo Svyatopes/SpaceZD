@@ -1,4 +1,5 @@
-﻿using SpaceZD.DataLayer.DbContextes;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -8,8 +9,13 @@ public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
 {
     public TicketRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Ticket? GetById(int id) => _context.Tickets.FirstOrDefault(t => t.Id == id);
-    
+    public Ticket? GetById(int id) =>
+        _context.Tickets
+                .Include(t => t.Carriage)
+                .Include(t => t.Order)
+                .Include(t => t.Person)
+                .FirstOrDefault(t => t.Id == id);
+
     public IEnumerable<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 
     public int Add(Ticket ticket)
@@ -34,7 +40,7 @@ public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
         _context.SaveChanges();
         return true;
     }
-    
+
     public bool Update(int id, bool isDeleted)
     {
         var ticket = GetById(id);
