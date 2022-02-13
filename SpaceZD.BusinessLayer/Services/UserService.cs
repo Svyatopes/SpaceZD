@@ -42,7 +42,6 @@ namespace SpaceZD.BusinessLayer.Services
         public int Add(UserModel entity, string password)
         {
             var addEntity = _mapper.Map<User>(entity);
-            //entity.PasswordHash = SecurePasswordHasher.Hash(password);
             addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
             var id = _userRepository.Add(addEntity);            
             return id;

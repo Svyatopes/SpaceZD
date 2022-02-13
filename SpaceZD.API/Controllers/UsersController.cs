@@ -47,8 +47,8 @@ public class UsersController : ControllerBase
     public ActionResult AddUser(UserRegisterInputModel userModel)
     {
         var user = _mapper.Map<UserModel>(userModel);
-        var addEntity = _userService.Add(user, userModel.Password);
-        return StatusCode(StatusCodes.Status201Created, userModel);
+        var idAddedEntity = _userService.Add(user, userModel.Password);
+        return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
     [HttpPut("{id}")]
