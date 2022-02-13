@@ -163,6 +163,67 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
             }
         };
 
+        public static List<TripStation> GetShortTripStations() => new List<TripStation>
+        {
+            new()
+            {
+                Station = new Station()
+                {
+                    Name = "Rostov",
+                    Platforms = new List<Platform>
+                    {
+                        new() { Number = 1 },
+                        new() { Number = 2 }
+                    }
+                },
+                Platform = new Platform()
+                {
+                    Number = 1
+                },
+                ArrivalTime = new DateTime(2002, 12, 31, 22, 56, 59),
+
+                DepartingTime = new DateTime(2003, 12, 31, 22, 56, 59)
+            },
+            new()
+            {
+                Station = new Station()
+                {
+                    Name = "Vorcuta",
+                    Platforms = new List<Platform>
+                    {
+                        new() { Number = 1 },
+                        new() { Number = 2 }
+                    }
+                },
+                Platform = new Platform()
+                {
+                    Number = 1
+                },
+                ArrivalTime = new DateTime(2002, 12, 31, 22, 56, 59),
+
+                DepartingTime = new DateTime(2003, 12, 31, 22, 56, 59)
+            },
+            new()
+            {
+                Station = new Station()
+                {
+                    Name = "Yamaika",
+                    Platforms = new List<Platform>
+                    {
+                        new() { Number = 1 },
+                        new() { Number = 2 }
+                    }
+                },
+                Platform = new Platform()
+                {
+                    Number = 1
+                },
+                ArrivalTime = new DateTime(2002, 12, 31, 22, 56, 59),
+
+                DepartingTime = new DateTime(2003, 12, 31, 22, 56, 59)
+            }
+        };
+
         public static TripStation GetTripStation() => new TripStation
         {
             Station = new Station()

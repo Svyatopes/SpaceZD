@@ -84,15 +84,13 @@ namespace SpaceZD.DataLayer.Tests
         {
             // given
             var entityToEdit = _context.TripStations.FirstOrDefault(o => o.Id == id);
-            entityToEdit!.Station.Name = "Oredez";
+            var newEntity = TripStationRepositoryMocks.GetTripStation();
 
             // when 
-            bool edited = _repository.Update(entityToEdit);
+            _repository.Update(entityToEdit!, newEntity);
 
             // then
             var entityUpdated = _context.TripStations.FirstOrDefault(o => o.Id == entityToEdit.Id);
-
-            Assert.IsTrue(edited);
             Assert.AreEqual(entityToEdit, entityUpdated);
         }
     }
