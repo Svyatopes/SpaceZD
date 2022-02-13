@@ -42,6 +42,7 @@ namespace SpaceZD.BusinessLayer.Services
         {
             var addEntity = _mapper.Map<User>(entity);
             var id = _userRepository.Add(addEntity);
+            //TODO create password hash HERE with password from user
             return id;
         }
 
@@ -54,11 +55,11 @@ namespace SpaceZD.BusinessLayer.Services
 
         }
 
-        public void Update(int id)
+        public void Update(int id, bool isDeleted)
         {
             var entity = _userRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
-            _userRepository.Update(entity, false);
+            _userRepository.Update(entity, isDeleted);
 
         }
         private static void ThrowIfEntityNotFound<T>(T? entity, int id)

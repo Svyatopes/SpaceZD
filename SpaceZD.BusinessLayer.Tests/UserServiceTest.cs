@@ -169,7 +169,7 @@ public class UserServiceTest
         var service = new UserService(_repositoryMock.Object, _mapper);
 
         // when
-        service.Update(5);
+        service.Update(5, true);
 
         // then
         _repositoryMock.Verify(s => s.GetById(5), Times.Once);

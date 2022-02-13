@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SpaceZD.API.Configuration;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
@@ -14,18 +13,18 @@ public class UsersController : ControllerBase
 
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
-    public UsersController(IUserService userService, IMapper mapper) 
+    public UsersController(IUserService userService, IMapper mapper)
     {
         _userService = userService;
         _mapper = mapper;
     }
 
-    
+
     [HttpGet]
     public ActionResult<List<UserModel>> GetUsers()
     {
         var userModel = _userService.GetList();
-        var user = _mapper.Map<List<UserOutputModel>>(userModel);
+        var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
         if (user != null)
             return Ok(user);
         return BadRequest("Oh.....");
@@ -35,7 +34,7 @@ public class UsersController : ControllerBase
     public ActionResult<UserModel> GetUserById(int id)
     {
         var userModel = _userService.GetById(id);
-        var user = _mapper.Map<UserOutputModel>(userModel);
+        var user = _mapper.Map<UserFullOutputModel>(userModel);
         if (user != null)
             return Ok(user);
         else
@@ -56,8 +55,8 @@ public class UsersController : ControllerBase
 
     [HttpPut("{id}")]
     public ActionResult EditUser(int id, UserUpdateInputModel user)
-    {    
-        
+    {
+
         var userForEdit = _mapper.Map<UserModel>(user);
         _userService.Update(id, userForEdit);
         return Accepted();
@@ -67,9 +66,17 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public ActionResult DeleteUser(int id)
     {
-        _userService.Update(id);
+        _userService.Update(id, true);
         return Accepted();
-        
+
+    }
+
+    [HttpPatch("{id}")]
+    public ActionResult RestoreUser(int id)
+    {
+        _userService.Update(id, false);
+        return Accepted();
+
     }
 
 }
