@@ -1,4 +1,5 @@
-﻿using SpaceZD.DataLayer.DbContextes;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -7,8 +8,11 @@ namespace SpaceZD.DataLayer.Repositories;
 public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
 {
     public UserRepository(VeryVeryImportantContext context) : base(context) { }
-    
-    public User? GetById(int id) => _context.Users.FirstOrDefault(t => t.Id == id);
+
+    public User? GetById(int id) =>
+        _context.Users
+                .Include(u => u.Orders)
+                .FirstOrDefault(u => u.Id == id);
 
     public IEnumerable<User> GetList(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
 
@@ -28,7 +32,7 @@ public class UserRepository : BaseRepository, IRepositorySoftDelete<User>
 
         userInDb.Name = user.Name;
         userInDb.Login = user.Login;
-        userInDb.PasswordHash = user.PasswordHash;                      
+        userInDb.PasswordHash = user.PasswordHash;
 
         _context.SaveChanges();
         return true;

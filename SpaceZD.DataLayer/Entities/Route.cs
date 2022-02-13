@@ -10,4 +10,25 @@ public class Route
     public virtual Station EndStation { get; set; }
     public bool IsDeleted { get; set; }
     public virtual ICollection<Trip> Trips { get; set; }
+
+
+    private bool Equals(Route other)
+    {
+        return Code == other.Code &&
+            StartTime.Hour == other.StartTime.Hour &&
+            StartTime.Minute == other.StartTime.Minute &&
+            StartTime.Second == other.StartTime.Second &&
+            StartStation.Equals(other.StartStation) &&
+            EndStation.Equals(other.EndStation) &&
+            IsDeleted == other.IsDeleted;
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        return obj.GetType() == GetType() && Equals((Route)obj);
+    }
 }

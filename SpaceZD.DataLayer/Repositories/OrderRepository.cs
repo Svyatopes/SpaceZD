@@ -5,11 +5,11 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
+public class OrderRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Order>
 {
     public OrderRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Order? GetById(int id) => 
+    public Order? GetById(int id) =>
         _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.Trip)
@@ -18,9 +18,7 @@ public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
                 .Include(o => o.Tickets)
                 .FirstOrDefault(o => o.Id == id);
 
-    public IEnumerable<Order> GetList(bool includeAll = false) => 
-        _context.Orders
-                .Where(p => !p.IsDeleted || includeAll).ToList();
+    public IEnumerable<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
 
     public int Add(Order order)
     {
@@ -29,33 +27,17 @@ public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
         return order.Id;
     }
 
-    public bool Update(Order order)
+    public void Update(Order oldOrder, Order newOrder)
     {
-        var orderInDb = GetById(order.Id);
-
-        if (orderInDb == null)
-            return false;
-
-        orderInDb.Trip = order.Trip;
-        orderInDb.StartStation = order.StartStation;
-        orderInDb.EndStation = order.EndStation;
-
+        oldOrder.Trip = newOrder.Trip;
+        oldOrder.StartStation = newOrder.StartStation;
+        oldOrder.EndStation = newOrder.EndStation;
         _context.SaveChanges();
-
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Order order, bool isDeleted)
     {
-        var orderInDb = GetById(id);
-
-        if (orderInDb == null)
-            return false;
-
-        orderInDb.IsDeleted = isDeleted;
-
+        order.IsDeleted = isDeleted;
         _context.SaveChanges();
-
-        return true;
     }
 }
