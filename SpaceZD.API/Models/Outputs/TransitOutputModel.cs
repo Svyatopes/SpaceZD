@@ -1,10 +1,9 @@
-﻿namespace SpaceZD.API.Models
+﻿namespace SpaceZD.API.Models;
+
+public class TransitOutputModel
 {
-    public class TransitOutputModel
-    {
-        public int Id { get; set; }
-        public StationShortOutputModel StartStation { get; set; }
-        public StationShortOutputModel EndStation { get; set; }
-        public decimal? Price { get; set; }
-    }
+    public int Id { get; set; }
+    public int StartStationId { get; set; }
+    public int EndStationId { get; set; }
+    public decimal? Price { get; set; }
 }

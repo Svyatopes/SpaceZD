@@ -9,9 +9,9 @@ public class TicketApiMappingProfile : Profile
     public TicketApiMappingProfile()
     {
         CreateMap<TicketInputModel, TicketModel>()
-            .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new CarriageModel() { Id = tim.CarriageId }))
-            .ForMember(tm => tm.Order, opt => opt.MapFrom(tim => new OrderModel() { Id = tim.OrderId }))
-            .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel() { Id = tim.PersonId }));
+            .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new CarriageModel { Id = tim.CarriageId }))
+            .ForMember(tm => tm.Order, opt => opt.MapFrom(tim => new OrderModel { Id = tim.OrderId }))
+            .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel { Id = tim.PersonId }));
 
         CreateMap<TicketModel, TicketOutputModel>()
             .ForMember(tom => tom.CarriageId, opt => opt.MapFrom(tm => tm.Carriage.Id))

@@ -15,8 +15,9 @@ public class Route
     private bool Equals(Route other)
     {
         return Code == other.Code &&
-            Transits.Equals(other.Transits) &&
-            StartTime.Equals(other.StartTime) &&
+            StartTime.Hour == other.StartTime.Hour &&
+            StartTime.Minute == other.StartTime.Minute &&
+            StartTime.Second == other.StartTime.Second &&
             StartStation.Equals(other.StartStation) &&
             EndStation.Equals(other.EndStation) &&
             IsDeleted == other.IsDeleted;

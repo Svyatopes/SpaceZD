@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
+public class OrderRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Order>
 {
     public OrderRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -27,33 +27,17 @@ public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
         return order.Id;
     }
 
-    public bool Update(Order order)
+    public void Update(Order oldOrder, Order newOrder)
     {
-        var orderInDb = GetById(order.Id);
-
-        if (orderInDb == null)
-            return false;
-
-        orderInDb.Trip = order.Trip;
-        orderInDb.StartStation = order.StartStation;
-        orderInDb.EndStation = order.EndStation;
-
+        oldOrder.Trip = newOrder.Trip;
+        oldOrder.StartStation = newOrder.StartStation;
+        oldOrder.EndStation = newOrder.EndStation;
         _context.SaveChanges();
-
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Order order, bool isDeleted)
     {
-        var orderInDb = GetById(id);
-
-        if (orderInDb == null)
-            return false;
-
-        orderInDb.IsDeleted = isDeleted;
-
+        order.IsDeleted = isDeleted;
         _context.SaveChanges();
-
-        return true;
     }
 }

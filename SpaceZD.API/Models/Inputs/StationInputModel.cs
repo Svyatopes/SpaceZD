@@ -1,7 +1,6 @@
-﻿namespace SpaceZD.API.Models
+﻿namespace SpaceZD.API.Models;
+
+public class StationInputModel
 {
-    public class StationInputModel
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }
