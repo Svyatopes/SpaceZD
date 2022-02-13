@@ -50,7 +50,7 @@ namespace SpaceZD.DataLayer.Tests
         public void GetListTest()
         {
             // given
-            var expected = _context.Trips.ToList();
+            var expected = TripRepositoryMocks.GetShortTrips();
 
             // when
             var list = _repository.GetList();
@@ -81,7 +81,7 @@ namespace SpaceZD.DataLayer.Tests
         public void UpdateEntityTest(int id)
         {
             // given
-            var entityToEdit = _context.Transits.FirstOrDefault(o => o.Id == id);
+            var entityToEdit = _context.Trips.FirstOrDefault(o => o.Id == id);
             var newEntity = TripRepositoryMocks.GetTrip();
 
             // when 
@@ -100,7 +100,7 @@ namespace SpaceZD.DataLayer.Tests
             // given
             var entityToEdit = TripRepositoryMocks.GetTrip();
             entityToEdit.IsDeleted = !isDeleted;
-            _context.Transits.Add(entityToEdit);
+            _context.Trips.Add(entityToEdit);
             _context.SaveChanges();
 
             // when 
