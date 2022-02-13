@@ -2,14 +2,12 @@
 using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Exceptions;
+using SpaceZD.BusinessLayer.Helpers;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.Configuration;
-using SpaceZD.BusinessLayer.Tests.Helpers;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Principal;
-using System.Text;
 
 namespace SpaceZD.BusinessLayer.Tests;
 
@@ -82,7 +80,7 @@ public class AuthServiceTests
         var tokenHandler = new JwtSecurityTokenHandler();
 
         tokenHandler.ValidateToken(authToken, GetValidationParameters(), out _);
-        
+
         return true;
     }
 
