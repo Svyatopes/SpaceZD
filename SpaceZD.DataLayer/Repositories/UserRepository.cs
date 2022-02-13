@@ -19,6 +19,7 @@ public class UserRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Use
     public int Add(User user)
     {
         _context.Users.Add(user);
+
         _context.SaveChanges();
         return user.Id;
     }

@@ -151,7 +151,7 @@ public class UserServiceTest
         var service = new UserService(_repositoryMock.Object, _mapper);
 
         // when
-        int actual = service.Add(new UserModel());
+        int actual = service.Add(new UserModel(), "gtgt");
 
         // then
         _repositoryMock.Verify(s => s.Add(It.IsAny<User>()), Times.Once);

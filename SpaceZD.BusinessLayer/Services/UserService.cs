@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SpaceZD.BusinessLayer.Exceptions;
+using SpaceZD.BusinessLayer.Helpers;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
@@ -38,11 +39,12 @@ namespace SpaceZD.BusinessLayer.Services
         }
 
 
-        public int Add(UserModel entity)
+        public int Add(UserModel entity, string password)
         {
             var addEntity = _mapper.Map<User>(entity);
-            var id = _userRepository.Add(addEntity);
-            //TODO create password hash HERE with password from user
+            //entity.PasswordHash = SecurePasswordHasher.Hash(password);
+            addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
+            var id = _userRepository.Add(addEntity);            
             return id;
         }
 

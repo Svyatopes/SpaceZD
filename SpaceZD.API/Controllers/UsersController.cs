@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Models;
+using SpaceZD.BusinessLayer.Helpers;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 
@@ -46,11 +47,8 @@ public class UsersController : ControllerBase
     public ActionResult AddUser(UserRegisterInputModel userModel)
     {
         var user = _mapper.Map<UserModel>(userModel);
-        var addEntity = _userService.Add(user);
-        if (addEntity != null)
-            return BadRequest("User doesn't add");
-        else
-            return StatusCode(StatusCodes.Status201Created, userModel);
+        var addEntity = _userService.Add(user, userModel.Password);
+        return StatusCode(StatusCodes.Status201Created, userModel);
     }
 
     [HttpPut("{id}")]
