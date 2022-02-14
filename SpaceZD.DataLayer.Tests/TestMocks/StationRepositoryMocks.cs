@@ -67,7 +67,7 @@ public static class StationRepositoryMocks
 
     public static IEnumerable<TestCaseData> GetMockFromGetListTest()
     {
-        var notIncludeAll = new List<Station>()
+        var notIncludeAll = new List<Station>
         {
             new()
             {
@@ -84,7 +84,7 @@ public static class StationRepositoryMocks
         };
         yield return new TestCaseData(false, notIncludeAll);
 
-        var includeAll = new List<Station>()
+        var includeAll = new List<Station>
         {
             new()
             {
@@ -105,7 +105,7 @@ public static class StationRepositoryMocks
                 IsDeleted = false
             }
         };
-        yield return new TestCaseData(false, notIncludeAll);
+        yield return new TestCaseData(true, includeAll);
     }
 
     public static IEnumerable<TestCaseData> GetMockFromReadyPlatformsStation()

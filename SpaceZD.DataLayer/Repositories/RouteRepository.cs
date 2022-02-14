@@ -7,16 +7,33 @@ namespace SpaceZD.DataLayer.Repositories;
 
 public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Route>
 {
-    public RouteRepository(VeryVeryImportantContext context) : base(context) { }
+    public RouteRepository(VeryVeryImportantContext context) : base(context) {}
 
-    public Route? GetById(int id) =>
-        _context.Routes
-                .Include(r => r.Trips)
-                .Include(r => r.StartStation)
-                .Include(r => r.EndStation)
-                .FirstOrDefault(r => r.Id == id);
+    public Route? GetById(int id)
+    {
+        var entity = _context.Routes
+                             .Include(r => r.Transits.Where(t => !t.IsDeleted))
+                             .Include(r => r.StartStation)
+                             .Include(r => r.EndStation)
+                             .FirstOrDefault(r => r.Id == id);
+        if (entity is null)
+            return null;
+        entity.Transits = entity.Transits.Where(t => !t.IsDeleted).ToList();
+        return entity;
+    }
 
-    public List<Route> GetList(bool includeAll = false) => _context.Routes.Where(r => !r.IsDeleted || includeAll).ToList();
+    public List<Route> GetList(bool includeAll = false)
+    {
+        var entities = _context.Routes
+                               .Include(r => r.Transits.Where(t => !t.IsDeleted))
+                               .Include(r => r.StartStation)
+                               .Include(r => r.EndStation)
+                               .Where(r => !r.IsDeleted || includeAll).ToList();
+        foreach (var route in entities)
+            route.Transits = route.Transits.Where(t => !t.IsDeleted).ToList();
+        
+        return entities;
+    }
 
     public int Add(Route route)
     {
@@ -38,7 +55,7 @@ public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Ro
     public void Update(Route route, bool isDeleted)
     {
         route.IsDeleted = isDeleted;
-        
+
         _context.SaveChanges();
     }
 }
