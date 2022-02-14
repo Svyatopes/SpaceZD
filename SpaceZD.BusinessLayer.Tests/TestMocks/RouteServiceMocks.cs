@@ -113,8 +113,8 @@ internal static class RouteServiceMocks
             }
         };
 
-        yield return new TestCaseData(fistList, GetRouteModels(fistList));
-        yield return new TestCaseData(secondList, GetRouteModels(secondList));
+        yield return new TestCaseData(fistList, ConvertRoutesToRotesModels(fistList));
+        yield return new TestCaseData(secondList, ConvertRoutesToRotesModels(secondList));
     }
     
     internal static IEnumerable<TestCaseData> GetMockFromGetListDeletedTest()
@@ -171,12 +171,12 @@ internal static class RouteServiceMocks
             }
         };
 
-        yield return new TestCaseData(fistList, GetRouteModels(fistList, false));
-        yield return new TestCaseData(secondList, GetRouteModels(secondList, false));
+        yield return new TestCaseData(fistList, ConvertRoutesToRotesModels(fistList, false));
+        yield return new TestCaseData(secondList, ConvertRoutesToRotesModels(secondList, false));
     }
     
 
-    private static List<RouteModel> GetRouteModels(List<Route> routes, bool includeAll = true)
+    private static List<RouteModel> ConvertRoutesToRotesModels(List<Route> routes, bool includeAll = true)
     {
         return routes.Where(r => includeAll || r.IsDeleted)
                      .Select(route => new RouteModel

@@ -7,7 +7,7 @@ namespace SpaceZD.DataLayer.Tests.TestMocks;
 
 public static class StationRepositoryMocks
 {
-    public static List<Station> GetStations() => new List<Station>
+    internal static List<Station> GetStations() => new List<Station>
     {
         new()
         {
@@ -37,7 +37,7 @@ public static class StationRepositoryMocks
         }
     };
 
-    public static Station GetStation() => new()
+    internal static Station GetStation() => new()
     {
         Name = "Москва",
         Platforms = new List<Platform>
@@ -49,7 +49,7 @@ public static class StationRepositoryMocks
         IsDeleted = false
     };
 
-    public static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
+    internal static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
     {
         var stationFist = new Station { Name = GetStations()[0].Name, IsDeleted = false };
         stationFist.Platforms = new List<Platform> { new() { Number = 2, Station = stationFist, IsDeleted = false } };
@@ -65,7 +65,7 @@ public static class StationRepositoryMocks
         yield return new TestCaseData(4, null);
     }
 
-    public static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
     {
         var notIncludeAll = new List<Station>
         {
@@ -108,7 +108,7 @@ public static class StationRepositoryMocks
         yield return new TestCaseData(true, includeAll);
     }
 
-    public static IEnumerable<TestCaseData> GetMockFromReadyPlatformsStation()
+    internal static IEnumerable<TestCaseData> GetMockFromReadyPlatformsStation()
     {
         var allTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = false };
         var allTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = true };
@@ -171,7 +171,7 @@ public static class StationRepositoryMocks
             new List<Platform>());
     }
 
-    public static IEnumerable<TestCaseData> GetMockFromGetNearStations()
+    internal static IEnumerable<TestCaseData> GetMockFromGetNearStations()
     {
         var transitFirst = new Transit { EndStation = new Station { Name = "Москва", Platforms = new List<Platform>() } };
         var transitSecond = new Transit { EndStation = new Station { Name = "Челябинск", Platforms = new List<Platform>(), IsDeleted = true } };

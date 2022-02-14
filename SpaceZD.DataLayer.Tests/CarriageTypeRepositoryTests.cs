@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -5,6 +6,7 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestMocks;
 
 namespace SpaceZD.DataLayer.Tests;
 
@@ -26,64 +28,35 @@ public class CarriageTypeRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        var carriageTypes = new CarriageType[]
-        {
-            new()
-            {
-                Name = "Плацкарт",
-                NumberOfSeats = 5
-            },
-            new()
-            {
-                Name = "Ласточка",
-                NumberOfSeats = 7,
-                IsDeleted = true
-            },
-            new()
-            {
-                Name = "Сапсан",
-                NumberOfSeats = 8
-            }
-        };
-        _context.CarriageTypes.AddRange(carriageTypes);
+        _context.CarriageTypes.AddRange(CarriageTypeRepositoryMocks.GetCarriageTypes());
         _context.SaveChanges();
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public void GetByIdTest(int id)
+    [TestCaseSource(typeof(CarriageTypeRepositoryMocks), nameof(CarriageTypeRepositoryMocks.GetMockFromGetByIdTest))]
+    public void GetByIdTest(int id, CarriageType expected)
     {
-        // given
-        var expectedEntity = _context.CarriageTypes.Find(id);
-
         // when
-        var receivedEntity = _repository.GetById(id);
+        var actual = _repository.GetById(id);
 
         // then
-        Assert.AreEqual(expectedEntity, receivedEntity);
+        Assert.AreEqual(expected, actual);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void GetListTest(bool includeAll)
+    [TestCaseSource(typeof(CarriageTypeRepositoryMocks), nameof(CarriageTypeRepositoryMocks.GetMockFromGetListTest))]
+    public void GetListTest(bool includeAll, List<CarriageType> expected)
     {
-        // given
-        var expected = _context.CarriageTypes.Where(t => !t.IsDeleted || includeAll).ToList();
-
         // when
-        var list = _repository.GetList(includeAll);
+        var actual = _repository.GetList(includeAll);
 
         // then
-        CollectionAssert.AreEqual(expected, list);
+        CollectionAssert.AreEqual(expected, actual);
     }
 
     [Test]
     public void AddTest()
     {
         // given
-        var entityToAdd = TestEntity;
+        var entityToAdd = CarriageTypeRepositoryMocks.GetCarriageType();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -117,7 +90,7 @@ public class CarriageTypeRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = TestEntity;
+        var entityToEdit = CarriageTypeRepositoryMocks.GetCarriageType();
         entityToEdit.IsDeleted = !isDeleted;
         _context.CarriageTypes.Add(entityToEdit);
         _context.SaveChanges();
@@ -128,10 +101,4 @@ public class CarriageTypeRepositoryTests
         // then
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
-
-    private CarriageType TestEntity => new()
-    {
-        Name = "Купе",
-        NumberOfSeats = 4
-    };
 }

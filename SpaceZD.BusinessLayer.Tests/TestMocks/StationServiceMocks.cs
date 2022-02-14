@@ -7,7 +7,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestMocks;
 
 public static class StationServiceMocks
 {
-    public static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
     {
         yield return new TestCaseData(new List<Station>
             {
@@ -35,7 +35,7 @@ public static class StationServiceMocks
             });
     }
     
-    public static IEnumerable<TestCaseData> GetMockFromGetListDeletedTest()
+    internal static IEnumerable<TestCaseData> GetMockFromGetListDeletedTest()
     {
         yield return new TestCaseData(new List<Station>
             {

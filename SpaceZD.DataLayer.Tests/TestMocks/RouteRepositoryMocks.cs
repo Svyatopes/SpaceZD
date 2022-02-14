@@ -106,7 +106,7 @@ public static class RouteRepositoryMocks
         EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() }
     };
 
-    public static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
+    internal static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
     {
         var routeFist = new Route
         {
@@ -157,7 +157,7 @@ public static class RouteRepositoryMocks
         yield return new TestCaseData(4, null);
     }
 
-    public static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
     {
         var notIncludeAll = new List<Route>
         {
