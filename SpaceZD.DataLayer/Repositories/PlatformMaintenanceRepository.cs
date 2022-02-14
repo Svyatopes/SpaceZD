@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDelete<PlatformMaintenance>
+public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<PlatformMaintenance>
 {
     public PlatformMaintenanceRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -23,31 +23,20 @@ public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDele
         return platformMaintenance.Id;
     }
 
-    public bool Update(PlatformMaintenance platformMaintenance)
+    public void Update(PlatformMaintenance oldPlatformMaintenance, PlatformMaintenance newPlatformMaintenance)
     {
-        var entity = GetById(platformMaintenance.Id);
-        if (entity is null)
-            return false;
-
-        entity.Platform = platformMaintenance.Platform;
-        entity.StartTime = platformMaintenance.StartTime;
-        entity.EndTime = platformMaintenance.EndTime;
+        oldPlatformMaintenance.Platform = newPlatformMaintenance.Platform;
+        oldPlatformMaintenance.StartTime = newPlatformMaintenance.StartTime;
+        oldPlatformMaintenance.EndTime = newPlatformMaintenance.EndTime;
 
         _context.SaveChanges();
-
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(PlatformMaintenance oldPlatformMaintenance, bool isDeleted)
     {
-        var entity = GetById(id);
-        if (entity is null)
-            return false;
-
-        entity.IsDeleted = isDeleted;
+        oldPlatformMaintenance.IsDeleted = isDeleted;
 
         _context.SaveChanges();
 
-        return true;
     }
 }
