@@ -7,6 +7,7 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestMocks;
 
 namespace SpaceZD.DataLayer.Tests;
 
@@ -28,72 +29,35 @@ public class StationRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        var stations = new Station[]
-        {
-            new()
-            {
-                Name = "Челябинск",
-                Platforms = new List<Platform>
-                {
-                    new() { Number = 1 },
-                    new() { Number = 2 }
-                }
-            },
-            new()
-            {
-                Name = "41 км",
-                Platforms = new List<Platform>(),
-                IsDeleted = true
-            },
-            new()
-            {
-                Name = "Таганрог",
-                Platforms = new List<Platform>
-                {
-                    new() { Number = 2 },
-                    new() { Number = 3 }
-                }
-            }
-        };
-        _context.Stations.AddRange(stations);
+        _context.Stations.AddRange(StationRepositoryMocks.GetStations());
         _context.SaveChanges();
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public void GetByIdTest(int id)
+    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromGetByIdTest))]
+    public void GetByIdTest(int id, Station expected)
     {
-        // given
-        var expectedEntity = _context.Stations.Find(id);
-
         // when
-        var receivedEntity = _repository.GetById(id);
+        var actual = _repository.GetById(id);
 
         // then
-        Assert.AreEqual(expectedEntity, receivedEntity);
+        Assert.AreEqual(expected, actual);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void GetListTest(bool includeAll)
+    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromGetListTest))]
+    public void GetListTest(bool includeAll, List<Station> expected)
     {
-        // given
-        var expected = _context.Stations.Where(t => !t.IsDeleted || includeAll).ToList();
-
         // when
-        var list = _repository.GetList(includeAll);
+        var actual = _repository.GetList(includeAll);
 
         // then
-        CollectionAssert.AreEqual(expected, list);
+        CollectionAssert.AreEqual(expected, actual);
     }
 
     [Test]
     public void AddTest()
     {
         // given
-        var entityToAdd = TestEntity;
+        var entityToAdd = StationRepositoryMocks.GetStation();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -111,7 +75,7 @@ public class StationRepositoryTests
     {
         // given
         var entityToEdit = _context.Stations.FirstOrDefault(o => o.Id == id);
-        var entityUpdate = TestEntity;
+        var entityUpdate = StationRepositoryMocks.GetStation();
         entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
         foreach (var pl in entityUpdate.Platforms)
             pl.Station = entityUpdate;
@@ -130,7 +94,7 @@ public class StationRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = TestEntity;
+        var entityToEdit = StationRepositoryMocks.GetStation();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Stations.Add(entityToEdit);
         _context.SaveChanges();
@@ -142,89 +106,23 @@ public class StationRepositoryTests
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
-    [TestCaseSource(nameof(GetReadyPlatformsStation))]
-    public void GetReadyPlatformsStationTest(Station station)
+    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromReadyPlatformsStation))]
+    public void GetReadyPlatformsStationTest(Station station, List<Platform> expected)
     {
-        // given
-        var expected = new List<Platform>();
-        foreach (var pl in station.Platforms)
-        {
-            pl.Station = station;
-            if (pl.Number == 3)
-                expected.Add(pl);
-        }
-
         // when 
         var actual = _repository.GetReadyPlatformsStation(station, new DateTime(2022, 1, 1));
 
         // then
         CollectionAssert.AreEqual(expected, actual);
     }
-    public static IEnumerable<TestCaseData> GetReadyPlatformsStation()
+
+    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromGetNearStations))]
+    public void GetNearStations(Station station, List<Station> expected)
     {
-        var allTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = false };
-        var allTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = true };
-        var notTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = false };
-        var notTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = true };
+        // when 
+        var actual = _repository.GetNearStations(station);
 
-        var allTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MaxValue };
-        var notTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MinValue };
-
-        var notReadyPlatformFist = new Platform
-        {
-            Number = 1,
-            PlatformMaintenances = new List<PlatformMaintenance> { allTimeDeletedPM, notTimeDeletedPM },
-            TripStations = new List<TripStation> { allTimeTS, notTimeTS },
-            IsDeleted = false
-        };
-        var notReadyPlatformSecond = new Platform
-        {
-            Number = 5,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimePM, notTimeDeletedPM, allTimePM },
-            TripStations = new List<TripStation> { allTimeTS },
-            IsDeleted = false
-        };
-        var notReadyDeletedPlatform = new Platform
-        {
-            Number = 2,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimePM, notTimeDeletedPM, allTimePM },
-            TripStations = new List<TripStation> { allTimeTS },
-            IsDeleted = true
-        };
-        var readyPlatform = new Platform
-        {
-            Number = 3,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimeDeletedPM, allTimeDeletedPM },
-            TripStations = new List<TripStation> { notTimeTS },
-            IsDeleted = false
-        };
-        var readyDeletedPlatform = new Platform
-        {
-            Number = 4,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimeDeletedPM, allTimePM, allTimeDeletedPM },
-            TripStations = new List<TripStation> { notTimeTS },
-            IsDeleted = true
-        };
-
-        yield return new TestCaseData(new Station
-        {
-            Name = "Москва",
-            Platforms = new List<Platform> { notReadyPlatformFist, notReadyPlatformSecond, notReadyDeletedPlatform, readyPlatform, readyDeletedPlatform }
-        });
-        yield return new TestCaseData(new Station
-            { Name = "Выборг", Platforms = new List<Platform> { readyPlatform, readyPlatform, readyPlatform, notReadyPlatformSecond } });
-        yield return new TestCaseData(new Station
-            { Name = "Сочи", Platforms = new List<Platform> { readyDeletedPlatform, notReadyDeletedPlatform, notReadyPlatformSecond, notReadyPlatformFist } });
+        // then
+        CollectionAssert.AreEqual(expected, actual);
     }
-
-    private Station TestEntity => new()
-    {
-        Name = "Москва",
-        Platforms = new List<Platform>
-        {
-            new() { Number = 1, IsDeleted = false },
-            new() { Number = 2, IsDeleted = false },
-            new() { Number = 3, IsDeleted = true }
-        }
-    };
 }

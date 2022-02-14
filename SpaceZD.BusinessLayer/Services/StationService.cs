@@ -21,9 +21,7 @@ public class StationService : IStationService
     {
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-
-        entity!.Platforms = entity.Platforms.Where(x => !x.IsDeleted).ToList();
-
+        
         return _mapper.Map<StationModel>(entity);
     }
 
@@ -31,7 +29,7 @@ public class StationService : IStationService
     {
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        
+
         return _mapper.Map<List<PlatformModel>>(_repository.GetReadyPlatformsStation(entity!, moment));
     }
 
@@ -40,32 +38,11 @@ public class StationService : IStationService
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
-        return _mapper.Map<List<StationModel>>(
-            entity!.TransitsWithStartStation
-                   .Where(t => !t.IsDeleted)
-                   .Select(t => t.EndStation)
-                   .Where(t => !t.IsDeleted)
-                   .ToList());
+        return _mapper.Map<List<StationModel>>(_repository.GetNearStations(entity!));
     }
 
-    public List<StationModel> GetList()
-    {
-        var entities = _repository.GetList();
-        foreach (var station in entities)
-            station.Platforms = station.Platforms.Where(t => !t.IsDeleted).ToList();
-        
-        return _mapper.Map<List<StationModel>>(entities);
-    }
-    
-    public List<StationModel> GetListDeleted()
-    {
-        var entities = _repository.GetList(true).Where(t => t.IsDeleted);
-        foreach (var station in entities)
-            station.Platforms = station.Platforms.Where(t => !t.IsDeleted).ToList();
-        
-        return _mapper.Map<List<StationModel>>(entities);
-    }
-
+    public List<StationModel> GetList() => _mapper.Map<List<StationModel>>(_repository.GetList());
+    public List<StationModel> GetListDeleted() => _mapper.Map<List<StationModel>>(_repository.GetList(true).Where(t => t.IsDeleted));
     public int Add(StationModel stationModel) => _repository.Add(_mapper.Map<Station>(stationModel));
 
     public void Delete(int id)
