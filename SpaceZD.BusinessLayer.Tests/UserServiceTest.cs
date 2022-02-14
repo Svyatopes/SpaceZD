@@ -156,11 +156,14 @@ public class UserServiceTest
         // then
         _repositoryMock.Verify(s => s.Add(It.IsAny<User>()), Times.Once);
         Assert.AreEqual(expected, actual);
+        
+        
     }
 
             
-    [Test]
-    public void DeleteTest()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void DeleteTest(bool isDeleted)
     {
         // given
         var entity = new User();
@@ -169,11 +172,12 @@ public class UserServiceTest
         var service = new UserService(_repositoryMock.Object, _mapper);
 
         // when
-        service.Update(5, true);
+        service.Update(5, isDeleted);
 
         // then
         _repositoryMock.Verify(s => s.GetById(5), Times.Once);
-        _repositoryMock.Verify(s => s.Update(entity, false), Times.Once);
+        _repositoryMock.Verify(s => s.Update(entity, isDeleted), Times.Once);
+        
     }
 
        
