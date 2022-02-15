@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public class CarriageTypeService : ICarriageTypeService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDeleteNewUpdate<CarriageType> _repository;
+    private readonly IRepositorySoftDelete<CarriageType> _repository;
 
-    public CarriageTypeService(IMapper mapper, IRepositorySoftDeleteNewUpdate<CarriageType> repository)
+    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository)
     {
         _mapper = mapper;
         _repository = repository;

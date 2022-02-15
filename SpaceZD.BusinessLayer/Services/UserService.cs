@@ -9,10 +9,10 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public class UserService : IUserService
     {
-        private readonly IRepositorySoftDeleteNewUpdate<User> _userRepository;
+        private readonly IRepositorySoftDelete<User> _userRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IRepositorySoftDeleteNewUpdate<User> userRepository, IMapper mapper)
+        public UserService(IRepositorySoftDelete<User> userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;

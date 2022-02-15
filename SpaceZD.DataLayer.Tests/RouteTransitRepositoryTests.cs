@@ -12,7 +12,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class RouteTransitRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<RouteTransit> _repository;
+    private IRepositorySoftDelete<RouteTransit> _repository;
 
     [SetUp]
     public void Setup()

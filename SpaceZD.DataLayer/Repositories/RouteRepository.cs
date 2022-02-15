@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Route>
+public class RouteRepository : BaseRepository, IRepositorySoftDelete<Route>
 {
     public RouteRepository(VeryVeryImportantContext context) : base(context) {}
 
