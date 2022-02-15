@@ -6,7 +6,6 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using Route = SpaceZD.DataLayer.Entities.Route;
 
 namespace SpaceZD.API.Extensions;
 
