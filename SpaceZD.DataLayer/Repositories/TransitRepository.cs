@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class TransitRepository : BaseRepository, IRepositorySoftDelete<Transit>
+public class TransitRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Transit>
 {
     public TransitRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -15,7 +15,7 @@ public class TransitRepository : BaseRepository, IRepositorySoftDelete<Transit>
                 .Include(c => c.EndStation)
                 .FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<Transit> GetList(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
+    public List<Transit> GetList(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
 
     public int Add(Transit transit)
     {

@@ -1,7 +1,7 @@
-﻿using SpaceZD.DataLayer.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SpaceZD.DataLayer.Entities;
 
-namespace SpaceZD.DataLayer.Tests.TestCaseSources
+namespace SpaceZD.DataLayer.Tests.TestMocks
 {
     public class PersonRepositoryMocks
     {

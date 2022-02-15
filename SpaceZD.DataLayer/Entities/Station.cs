@@ -14,7 +14,9 @@ public class Station
 
     private bool Equals(Station other)
     {
-        return Name == other.Name && Platforms.SequenceEqual(other.Platforms) && IsDeleted == other.IsDeleted;
+        return Name == other.Name &&
+            Platforms.SequenceEqual(other.Platforms) &&
+            IsDeleted == other.IsDeleted;
     }
     public override bool Equals(object? obj)
     {

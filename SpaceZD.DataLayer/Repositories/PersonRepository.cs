@@ -10,7 +10,7 @@ public class PersonRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<P
 
     public Person? GetById(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
 
-    public IEnumerable<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
+    public List<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
 
     public int Add(Person person)
     {
