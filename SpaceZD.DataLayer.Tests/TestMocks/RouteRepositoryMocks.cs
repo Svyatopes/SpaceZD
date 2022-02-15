@@ -64,7 +64,7 @@ public static class RouteRepositoryMocks
                         EndStation = new Station { Name = "Сочи", Platforms = new List<Platform>() }
                     },
                     DepartingTime = new TimeSpan(4, 30, 0),
-                    ArrivalTime = new TimeSpan(10, 0, 0),
+                    ArrivalTime = new TimeSpan(1, 0, 0),
                     IsDeleted = true
                 }
             },
@@ -106,7 +106,7 @@ public static class RouteRepositoryMocks
         EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() }
     };
 
-    internal static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
+    internal static IEnumerable<TestCaseData> GetMockForGetByIdTest()
     {
         var routeFist = new Route
         {
@@ -157,7 +157,7 @@ public static class RouteRepositoryMocks
         yield return new TestCaseData(4, null);
     }
 
-    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetMockForGetListTest()
     {
         var notIncludeAll = new List<Route>
         {
@@ -217,5 +217,57 @@ public static class RouteRepositoryMocks
             }
         };
         yield return new TestCaseData(true, includeAll);
+    }
+
+
+    internal static IEnumerable<TestCaseData> GetMockForAddRouteTransitForRouteTest()
+    {
+        var routeTransit = new RouteTransit
+        {
+            Transit = new Transit
+            {
+                StartStation = new Station { Name = "С-Пб", Platforms = new List<Platform>() },
+                EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() }
+            },
+            DepartingTime = new TimeSpan(0, 0, 1),
+            ArrivalTime = new TimeSpan(0, 30, 0),
+            IsDeleted = false
+        };
+
+        var routeFist = new Route
+        {
+            Code = GetRoutes()[0].Code,
+            StartTime = GetRoutes()[0].StartTime,
+            StartStation = new Station { Name = "С-Пб", Platforms = new List<Platform>() },
+            EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() },
+            IsDeleted = true,
+            Transits = new List<RouteTransit>
+            {
+                new()
+                {
+                    Transit = new Transit
+                    {
+                        StartStation = new Station { Name = "С-Пб", Platforms = new List<Platform>() },
+                        EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() }
+                    },
+                    DepartingTime = new TimeSpan(0, 0, 1),
+                    ArrivalTime = new TimeSpan(2, 30, 0),
+                    IsDeleted = false
+                }
+                ,routeTransit
+            }
+        };
+        yield return new TestCaseData(GetRoutes()[0], routeTransit, routeFist);
+
+        var routeSecond = new Route
+        {
+            Code = GetRoutes()[1].Code,
+            StartTime = GetRoutes()[1].StartTime,
+            Transits = new List<RouteTransit> { routeTransit },
+            StartStation = new Station { Name = "Москва", Platforms = new List<Platform>() },
+            EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() },
+            IsDeleted = true
+        };
+        yield return new TestCaseData(GetRoutes()[1], routeTransit, routeSecond);
     }
 }
