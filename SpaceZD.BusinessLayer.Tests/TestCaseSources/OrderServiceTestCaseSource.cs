@@ -13,6 +13,14 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
             yield return new TestCaseData(GetOrders(), GetOrderModels(), true);
         }
 
+        public static IEnumerable<TestCaseData> GetByIdTestCases()
+        {
+            var orders = GetOrders();
+            var orderModels = GetOrderModels();
+            yield return new TestCaseData(orders[0], orderModels[0]);
+            yield return new TestCaseData(orders[1], orderModels[1]);
+        }
+
         private static List<Order> GetOrders() => new List<Order>
         {
             new Order
