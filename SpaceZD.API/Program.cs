@@ -59,8 +59,8 @@ builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<CarriageType>,Carriage
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Carriage>,CarriageRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Trip>,TripRepository>();
 builder.Services.AddScoped<ILoginUser, UserRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
 
 
 //Services
