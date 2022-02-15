@@ -35,8 +35,9 @@ public class OrderServiceTests
     public void GetListTest(List<Order> orders, List<OrderModel> expectedOrderModels, bool allIncluded)
     {
         // given
+        var ordersFiltredByIsDeletedProp = orders.Where(o => !o.IsDeleted || allIncluded).ToList();
         _orderRepositoryMock.Setup(x => x.GetList(It.IsAny<bool>()))
-            .Returns(orders.Where(o => !o.IsDeleted || allIncluded).ToList());
+            .Returns(ordersFiltredByIsDeletedProp);
 
         expectedOrderModels = expectedOrderModels.Where(o => !o.IsDeleted || allIncluded).ToList();
 
@@ -47,6 +48,7 @@ public class OrderServiceTests
 
         // then
         CollectionAssert.AreEqual(expectedOrderModels, orderModels);
+        _orderRepositoryMock.Verify(s => s.GetList(It.IsAny<bool>()), Times.Once);
     }
 
     [TestCaseSource(typeof(OrderServiceTestCaseSource), nameof(OrderServiceTestCaseSource.GetByIdTestCases))]
@@ -61,6 +63,8 @@ public class OrderServiceTests
 
         // then
         Assert.AreEqual(expected, actual);
+        _orderRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
     }
 
     [Test]
@@ -70,6 +74,7 @@ public class OrderServiceTests
         var service = new OrderService(_mapper, _orderRepositoryMock.Object);
         
         Assert.Throws<NotFoundException>(() => service.GetById(42));
+        _orderRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
     }
 
     [TestCase(42)]
@@ -142,10 +147,12 @@ public class OrderServiceTests
     [Test]
     public void DeleteNegativeTest()
     {
+        // given
         _orderRepositoryMock.Setup(x => x.Update(It.IsAny<Order>(), true));
         _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Order?)null);
         var service = new OrderService(_mapper, _orderRepositoryMock.Object);
 
+        // when then
         Assert.Throws<NotFoundException>(() => service.Delete(42));
         _orderRepositoryMock.Verify(s => s.GetById(42), Times.Once);
         _orderRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), true), Times.Never);
@@ -172,10 +179,12 @@ public class OrderServiceTests
     [Test]
     public void RestoreNegativeTest()
     {
+        // given
         _orderRepositoryMock.Setup(x => x.Update(It.IsAny<Order>(), false));
         _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Order?)null);
         var service = new OrderService(_mapper, _orderRepositoryMock.Object);
 
+        // when then
         Assert.Throws<NotFoundException>(() => service.Restore(42));
         _orderRepositoryMock.Verify(s => s.GetById(42), Times.Once);
         _orderRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), true), Times.Never);
