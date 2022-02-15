@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public class OrderService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDeleteNewUpdate<Order> _orderRepository;
+    private readonly IRepositorySoftDelete<Order> _orderRepository;
 
-    public OrderService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Order> orderRepository)
+    public OrderService(IMapper mapper, IRepositorySoftDelete<Order> orderRepository)
     {
         _mapper = mapper;
         _orderRepository = orderRepository;

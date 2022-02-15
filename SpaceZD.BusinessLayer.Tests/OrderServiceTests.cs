@@ -16,7 +16,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class OrderServiceTests
 {
-    private Mock<IRepositorySoftDeleteNewUpdate<Order>> _orderRepositoryMock;
+    private Mock<IRepositorySoftDelete<Order>> _orderRepositoryMock;
     private readonly IMapper _mapper;
 
     public OrderServiceTests()
@@ -27,7 +27,7 @@ public class OrderServiceTests
     [SetUp]
     public void SetUp()
     {
-        _orderRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Order>>();
+        _orderRepositoryMock = new Mock<IRepositorySoftDelete<Order>>();
     }
 
     //Add
