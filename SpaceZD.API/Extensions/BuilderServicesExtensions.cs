@@ -6,7 +6,6 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using Route = SpaceZD.DataLayer.Entities.Route;
 
 namespace SpaceZD.API.Extensions;
 
@@ -49,7 +48,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IRepositorySoftDelete<Ticket>, TicketRepository>();
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<IRepositorySoftDelete<RouteTransit>, RouteTransitRepository>();
-        services.AddScoped<IRepositorySoftDelete<Route>, RouteRepository>();
+        services.AddScoped<IRouteRepository, RouteRepository>();
         services.AddScoped<IRepositorySoftDelete<Platform>, PlatformRepository>();
         services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>, PlatformMaintenanceRepository>();
         services.AddScoped<IRepositorySoftDelete<Person>, PersonRepository>();

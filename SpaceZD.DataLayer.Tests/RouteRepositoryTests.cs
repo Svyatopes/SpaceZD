@@ -13,7 +13,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class RouteRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<Route> _repository;
+    private IRouteRepository _repository;
 
     [SetUp]
     public void Setup()
@@ -32,7 +32,7 @@ public class RouteRepositoryTests
         _context.SaveChanges();
     }
 
-    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockFromGetByIdTest))]
+    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockForGetByIdTest))]
     public void GetByIdTest(int id, Route expected)
     {
         // when
@@ -42,7 +42,7 @@ public class RouteRepositoryTests
         Assert.AreEqual(expected, actual);
     }
 
-    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockFromGetListTest))]
+    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockForGetListTest))]
     public void GetListTest(bool includeAll, List<Route> expected)
     {
         // when
@@ -106,5 +106,16 @@ public class RouteRepositoryTests
 
         // then
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
+    }
+
+
+    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockForAddRouteTransitForRouteTest))]
+    public void AddRouteTransitForRouteTest(Route route, RouteTransit routeTransit, Route expected)
+    {
+        // when 
+        _repository.AddRouteTransitForRoute(route, routeTransit);
+
+        // then
+        Assert.AreEqual(expected, route);
     }
 }

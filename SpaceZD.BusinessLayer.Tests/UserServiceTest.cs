@@ -4,7 +4,6 @@ using AutoMapper;
 using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Configuration;
-using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Entities;

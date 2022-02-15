@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
@@ -16,7 +14,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class RouteServiceTests
 {
-    private Mock<IRepositorySoftDelete<Route>> _routeRepositoryMock;
+    private Mock<IRouteRepository> _routeRepositoryMock;
     private Mock<IStationRepository> _stationRepositoryMock;
     private readonly IMapper _mapper;
 
@@ -28,7 +26,7 @@ public class RouteServiceTests
     [SetUp]
     public void SetUp()
     {
-        _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
+        _routeRepositoryMock = new Mock<IRouteRepository>();
         _stationRepositoryMock = new Mock<IStationRepository>();
     }
 
