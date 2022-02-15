@@ -14,7 +14,7 @@ public class StationRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<
                 .Include(s => s.Platforms)
                 .FirstOrDefault(s => s.Id == id);
 
-    public IEnumerable<Station> GetList(bool includeAll = false) => _context.Stations.Where(s => !s.IsDeleted || includeAll).ToList();
+    public List<Station> GetList(bool includeAll = false) => _context.Stations.Where(s => !s.IsDeleted || includeAll).ToList();
 
     public int Add(Station station)
     {
@@ -35,5 +35,17 @@ public class StationRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<
         station.IsDeleted = isDeleted;
         
         _context.SaveChanges();
+    }
+
+    public List<Platform> GetReadyPlatformsStation(Station station, DateTime moment)
+    {
+        return station.Platforms
+                      .Where(pl => !pl.IsDeleted &&
+                           !pl.PlatformMaintenances
+                              .Where(t => !t.IsDeleted)
+                              .Any(pm => pm.StartTime <= moment && pm.EndTime >= moment) &&
+                           !pl.TripStations
+                              .Any(ts => ts.ArrivalTime <= moment && ts.DepartingTime >= moment))
+                      .ToList();
     }
 }

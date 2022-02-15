@@ -10,7 +10,7 @@ public class CarriageTypeRepository : BaseRepository, IRepositorySoftDeleteNewUp
 
     public CarriageType? GetById(int id) => _context.CarriageTypes.FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<CarriageType> GetList(bool includeAll = false) => _context.CarriageTypes.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<CarriageType> GetList(bool includeAll = false) => _context.CarriageTypes.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public int Add(CarriageType carriageType)
     {
