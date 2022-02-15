@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SpaceZD.API.Middleware;
 using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Services;
@@ -19,16 +21,31 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+       .AddJwtBearer(opt =>
+       {
+           opt.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateIssuer = true,
+               ValidIssuer = AuthOptions.Issuer,
+               ValidateAudience = true,
+               ValidAudience = AuthOptions.Audience,
+               ValidateLifetime = true,
+               IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+               ValidateIssuerSigningKey = true,
+
+           };
+       });
+
+builder.Services.AddAuthorization();
+
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddDbContext<VeryVeryImportantContext>(op => op.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(BusinessLayerMapper).Assembly);
 
 //Repositories
-
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<User>,UserRepository>();
-builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
-builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Train>,TrainRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Ticket>,TicketRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Station>,StationRepository>();
@@ -40,11 +57,16 @@ builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Person>,PersonReposito
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Order>,OrderRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<CarriageType>,CarriageTypeRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Carriage>,CarriageRepository>();
+builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
+builder.Services.AddScoped<ILoginUser, UserRepository>();
+builder.Services.AddScoped<IRepositorySoftDelete<Trip>,TripRepository>();
+
 
 //Services
 builder.Services.AddScoped<ICarriageTypeService, CarriageTypeService>();
 builder.Services.AddScoped<IStationService, StationService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -60,9 +82,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<SpaceZdMiddleware>();
+app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<SpaceZdMiddleware>();
 
 app.MapControllers();
 

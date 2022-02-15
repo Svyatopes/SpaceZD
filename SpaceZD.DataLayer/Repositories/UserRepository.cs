@@ -39,4 +39,9 @@ public class UserRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Use
         _context.SaveChanges();
 
     }
+
+    public User? GetUserByLogin(string login)
+    {
+        return _context.Users.FirstOrDefault(u => u.Login == login);
+    }
 }
