@@ -8,4 +8,20 @@ public class RouteTransit
     public TimeSpan ArrivalTime { get; set; }
     public bool IsDeleted { get; set; }
     public virtual Route Route { get; set; }
+
+    private bool Equals(RouteTransit other)
+    {
+        return Transit.Equals(other.Transit) &&
+            DepartingTime.Equals(other.DepartingTime) &&
+            ArrivalTime.Equals(other.ArrivalTime) &&
+            IsDeleted == other.IsDeleted;
+    }
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        return obj.GetType() == GetType() && Equals((RouteTransit)obj);
+    }
 }

@@ -8,6 +8,7 @@ using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.BusinessLayer.Tests.TestMocks;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -16,7 +17,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 public class RouteServiceTests
 {
     private Mock<IRepositorySoftDeleteNewUpdate<Route>> _routeRepositoryMock;
-    private Mock<IRepositorySoftDeleteNewUpdate<Station>> _stationRepositoryMock;
+    private Mock<IStationRepository> _stationRepositoryMock;
     private readonly IMapper _mapper;
 
     public RouteServiceTests()
@@ -28,10 +29,10 @@ public class RouteServiceTests
     public void SetUp()
     {
         _routeRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Route>>();
-        _stationRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Station>>();
+        _stationRepositoryMock = new Mock<IStationRepository>();
     }
 
-    
+
     //Add
     [TestCase(45)]
     public void AddTest(int expected)
@@ -53,8 +54,8 @@ public class RouteServiceTests
 
 
     // GetById
-    [TestCaseSource(nameof(GetRoute))]
-    public void GetByIdTest(Route route)
+    [TestCaseSource(typeof(RouteServiceMocks), nameof(RouteServiceMocks.GetMockFromGetByIdTest))]
+    public void GetByIdTest(Route route, RouteModel expected)
     {
         // given
         _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(route);
@@ -64,33 +65,8 @@ public class RouteServiceTests
         var actual = service.GetById(5);
 
         // then
-        Assert.AreEqual(new RouteModel
-            {
-                Code = route.Code,
-                StartStation = new StationModel { Name = route.StartStation.Name },
-                EndStation = new StationModel { Name = route.EndStation.Name },
-                StartTime = route.StartTime,
-                IsDeleted = route.IsDeleted
-            },
-            actual);
-    }
-    public static IEnumerable<TestCaseData> GetRoute()
-    {
-        var startStation = new Station { Name = "Москва" };
-        var endStation = new Station { Name = "Санкт-Петербург" };
-
-        yield return new TestCaseData(new Route
-            { Code = "V468", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = true });
-        yield return new TestCaseData(new Route
-            { Code = "О875", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 14, 30, 0), IsDeleted = false });
-        yield return new TestCaseData(new Route
-            { Code = "Г465", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 4, 4, 0), IsDeleted = false });
-        yield return new TestCaseData(new Route
-            { Code = "Q784", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 5, 20, 0), IsDeleted = false });
-        yield return new TestCaseData(new Route
-            { Code = "T982", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 13, 0, 50), IsDeleted = false });
-        yield return new TestCaseData(new Route
-            { Code = "Y554", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = true });
+        _routeRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        Assert.AreEqual(expected, actual);
     }
     [Test]
     public void GetByIdNegativeTest()
@@ -103,87 +79,33 @@ public class RouteServiceTests
 
 
     // GetList
-    [TestCaseSource(nameof(GetListRouteNotDeleted))]
-    public void GetListTest(List<Route> routes)
+    [TestCaseSource(typeof(RouteServiceMocks), nameof(RouteServiceMocks.GetMockFromGetListTest))]
+    public void GetListTest(List<Route> routes, List<RouteModel> expected)
     {
         // given
         _routeRepositoryMock.Setup(x => x.GetList(false)).Returns(routes);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
-        var expected = routes.Select(route => new RouteModel
-                             {
-                                 Code = route.Code,
-                                 StartStation = new StationModel { Name = route.StartStation.Name },
-                                 EndStation = new StationModel { Name = route.EndStation.Name },
-                                 StartTime = route.StartTime,
-                                 IsDeleted = route.IsDeleted
-                             })
-                             .ToList();
 
         // when
         var actual = service.GetList();
 
         // then
+        _routeRepositoryMock.Verify(s => s.GetList(false), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    public static IEnumerable<TestCaseData> GetListRouteNotDeleted()
-    {
-        var startStation = new Station { Name = "Москва" };
-        var endStation = new Station { Name = "Санкт-Петербург" };
-
-        yield return new TestCaseData(new List<Route>
-        {
-            new() { Code = "V468", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false },
-            new() { Code = "О875", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 14, 30, 0), IsDeleted = false },
-            new() { Code = "Q784", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 5, 20, 0), IsDeleted = false },
-            new() { Code = "Y554", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = false }
-        });
-        yield return new TestCaseData(new List<Route>
-        {
-            new() { Code = "V468", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false },
-            new() { Code = "Y554", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = false }
-        });
-    }
-    [TestCaseSource(nameof(GetListRouteDeleted))]
-    public void GetListDeletedTest(List<Route> routes)
+    [TestCaseSource(typeof(RouteServiceMocks), nameof(RouteServiceMocks.GetMockFromGetListDeletedTest))]
+    public void GetListDeletedTest(List<Route> routes, List<RouteModel> expected)
     {
         // given
         _routeRepositoryMock.Setup(x => x.GetList(true)).Returns(routes);
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
-        var expected = routes.Where(t => t.IsDeleted).Select(route => new RouteModel
-                             {
-                                 Code = route.Code,
-                                 StartStation = new StationModel { Name = route.StartStation.Name },
-                                 EndStation = new StationModel { Name = route.EndStation.Name },
-                                 StartTime = route.StartTime,
-                                 IsDeleted = route.IsDeleted
-                             })
-                             .ToList();
 
         // when
         var actual = service.GetListDeleted();
 
         // then
+        _routeRepositoryMock.Verify(s => s.GetList(true), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
-    }
-    public static IEnumerable<TestCaseData> GetListRouteDeleted()
-    {
-        var startStation = new Station { Name = "Москва" };
-        var endStation = new Station { Name = "Санкт-Петербург" };
-
-        yield return new TestCaseData(new List<Route>
-        {
-            new() { Code = "V468", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false },
-            new() { Code = "T982", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 13, 0, 50), IsDeleted = true },
-            new() { Code = "Y554", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = false }
-        });
-        yield return new TestCaseData(new List<Route>
-        {
-            new() { Code = "V468", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false },
-            new() { Code = "О875", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 14, 30, 0), IsDeleted = true },
-            new() { Code = "Г465", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 4, 4, 0), IsDeleted = false },
-            new() { Code = "Q784", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 5, 20, 0), IsDeleted = true },
-            new() { Code = "T982", StartStation = startStation, EndStation = endStation, StartTime = new DateTime(1970, 1, 1, 13, 0, 50), IsDeleted = true }
-        });
     }
 
 
