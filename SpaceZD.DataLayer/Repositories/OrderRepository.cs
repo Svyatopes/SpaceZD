@@ -9,16 +9,31 @@ public class OrderRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Or
 {
     public OrderRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Order? GetById(int id) =>
-        _context.Orders
+    public Order? GetById(int id)
+    {
+        var order = _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.Trip)
                 .Include(o => o.StartStation)
                 .Include(o => o.EndStation)
-                .Include(o => o.Tickets)
+                .Include(o => o.Tickets.Where(t => !t.IsDeleted))
                 .FirstOrDefault(o => o.Id == id);
+        if (order == null)
+            return null;
+        order.Tickets = order.Tickets.Where(t => !t.IsDeleted).ToList();
+        return order;
+    }
 
-    public List<Order> GetList(bool includeAll = false) => _context.Orders.Where(p => !p.IsDeleted || includeAll).ToList();
+    public List<Order> GetList(bool includeAll = false) =>
+        _context.Orders
+        .Include(o => o.User)
+        .Include(o => o.Trip)
+        .Include(o => o.StartStation)
+        .Include(o => o.EndStation)
+        .Where(p => !p.IsDeleted || includeAll)
+        .ToList();
+
+
 
     public int Add(Order order)
     {
