@@ -9,10 +9,10 @@ namespace SpaceZD.BusinessLayer.Services;
 public class RouteService : IRouteService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDeleteNewUpdate<Route> _routeRepository;
+    private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IStationRepository _stationRepository;
 
-    public RouteService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Route> routeRepository, IStationRepository stationRepository)
+    public RouteService(IMapper mapper, IRepositorySoftDelete<Route> routeRepository, IStationRepository stationRepository)
     {
         _mapper = mapper;
         _routeRepository = routeRepository;

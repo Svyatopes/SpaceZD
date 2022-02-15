@@ -13,7 +13,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class PlatformMaintenanceTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<PlatformMaintenance> _repository;
+    private IRepositorySoftDelete<PlatformMaintenance> _repository;
 
     [SetUp]
     public void Setup()

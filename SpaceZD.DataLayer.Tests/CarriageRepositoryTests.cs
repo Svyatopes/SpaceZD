@@ -13,7 +13,7 @@ internal class CarriageRepositoryTests
 {
 
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<Carriage> _repository;
+    private IRepositorySoftDelete<Carriage> _repository;
 
     [SetUp]
     public void Setup()

@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class OrderRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Order>
+public class OrderRepository : BaseRepository, IRepositorySoftDelete<Order>
 {
     public OrderRepository(VeryVeryImportantContext context) : base(context) { }
 

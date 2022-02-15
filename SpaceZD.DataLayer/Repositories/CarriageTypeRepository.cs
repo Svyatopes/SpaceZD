@@ -4,7 +4,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class CarriageTypeRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<CarriageType>
+public class CarriageTypeRepository : BaseRepository, IRepositorySoftDelete<CarriageType>
 {
     public CarriageTypeRepository(VeryVeryImportantContext context) : base(context) { }
 

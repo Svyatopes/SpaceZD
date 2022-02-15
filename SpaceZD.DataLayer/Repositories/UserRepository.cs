@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class UserRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<User>, ILoginUser
+public class UserRepository : BaseRepository, IRepositorySoftDelete<User>, ILoginUser
 {
     public UserRepository(VeryVeryImportantContext context) : base(context) { }
 

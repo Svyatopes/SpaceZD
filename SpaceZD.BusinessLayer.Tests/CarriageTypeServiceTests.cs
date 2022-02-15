@@ -15,7 +15,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class CarriageTypeServiceTests
 {
-    private Mock<IRepositorySoftDeleteNewUpdate<CarriageType>> _carriageTypeRepositoryMock;
+    private Mock<IRepositorySoftDelete<CarriageType>> _carriageTypeRepositoryMock;
     private readonly IMapper _mapper;
 
     public CarriageTypeServiceTests()
@@ -25,7 +25,7 @@ public class CarriageTypeServiceTests
     [SetUp]
     public void Setup()
     {
-        _carriageTypeRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<CarriageType>>();
+        _carriageTypeRepositoryMock = new Mock<IRepositorySoftDelete<CarriageType>>();
     }
 
     // Add

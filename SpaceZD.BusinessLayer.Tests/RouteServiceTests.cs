@@ -16,7 +16,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class RouteServiceTests
 {
-    private Mock<IRepositorySoftDeleteNewUpdate<Route>> _routeRepositoryMock;
+    private Mock<IRepositorySoftDelete<Route>> _routeRepositoryMock;
     private Mock<IStationRepository> _stationRepositoryMock;
     private readonly IMapper _mapper;
 
@@ -28,7 +28,7 @@ public class RouteServiceTests
     [SetUp]
     public void SetUp()
     {
-        _routeRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Route>>();
+        _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
         _stationRepositoryMock = new Mock<IStationRepository>();
     }
 

@@ -13,7 +13,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class CarriageTypeRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<CarriageType> _repository;
+    private IRepositorySoftDelete<CarriageType> _repository;
 
     [SetUp]
     public void Setup()
