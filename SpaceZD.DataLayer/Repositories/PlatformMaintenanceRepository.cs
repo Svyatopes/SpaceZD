@@ -14,7 +14,7 @@ public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDele
                 .Include(p => p.Platform)
                 .FirstOrDefault(p => p.Id == id);
 
-    public IEnumerable<PlatformMaintenance> GetList(bool includeAll = false) => _context.PlatformMaintenances.Where(p => !p.IsDeleted || includeAll).ToList();
+    public List<PlatformMaintenance> GetList(bool includeAll = false) => _context.PlatformMaintenances.Where(p => !p.IsDeleted || includeAll).ToList();
 
     public int Add(PlatformMaintenance platformMaintenance)
     {

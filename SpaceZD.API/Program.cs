@@ -48,7 +48,6 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(BusinessLayerMap
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<User>,UserRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Train>,TrainRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Ticket>,TicketRepository>();
-builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Station>,StationRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Route>,RouteRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<RouteTransit>,RouteTransitRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Platform>,PlatformRepository>();
@@ -60,6 +59,7 @@ builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Carriage>,CarriageRepo
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Transit>,TransitRepository>();
 builder.Services.AddScoped<IRepository<TripStation>,TripStationRepository>();
 builder.Services.AddScoped<IRepositorySoftDeleteNewUpdate<Trip>,TripRepository>();
+builder.Services.AddScoped<IStationRepository, StationRepository>();
 builder.Services.AddScoped<ILoginUser, UserRepository>();
 
 

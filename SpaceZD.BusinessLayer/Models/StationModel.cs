@@ -10,7 +10,9 @@ public class StationModel
 
     private bool Equals(StationModel other)
     {
-        return Name == other.Name && IsDeleted == other.IsDeleted;
+        return Name == other.Name &&
+            Platforms.SequenceEqual(other.Platforms) &&
+            IsDeleted == other.IsDeleted;
     }
     public override bool Equals(object? obj)
     {
@@ -18,6 +20,6 @@ public class StationModel
             return false;
         if (ReferenceEquals(this, obj))
             return true;
-        return obj.GetType() == this.GetType() && Equals((StationModel)obj);
+        return obj.GetType() == GetType() && Equals((StationModel)obj);
     }
 }

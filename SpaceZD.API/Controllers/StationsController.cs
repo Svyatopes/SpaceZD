@@ -1,6 +1,8 @@
-﻿using SpaceZD.API.Models;
+﻿using AutoMapper;
+using SpaceZD.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.BusinessLayer.Models;
+using SpaceZD.BusinessLayer.Services;
 
 namespace SpaceZD.API.Controllers;
 
@@ -8,39 +10,85 @@ namespace SpaceZD.API.Controllers;
 [Route("api/[controller]")]
 public class StationsController : ControllerBase
 {
-    [HttpGet("{id}")]
-    public ActionResult<StationFullOutputModel> GetStationById(int id)
+    private readonly IMapper _mapper;
+    private readonly IStationService _stationService;
+    public StationsController(IMapper mapper, IStationService stationService)
     {
-        return Ok(new StationModel());
+        _mapper = mapper;
+        _stationService = stationService;
     }
 
+    //api/Stations
     [HttpGet]
     public ActionResult<List<StationShortOutputModel>> GetStations()
     {
-        return Ok(new List<StationShortOutputModel> { new StationShortOutputModel() });
+        return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetList()));
     }
 
+    //api/Stations/deleted
+    [HttpGet("deleted")]
+    public ActionResult<List<StationShortOutputModel>> GetDeletedStations()
+    {
+        return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetListDeleted()));
+    }
+
+    //api/Stations/42
+    [HttpGet("{id}")]
+    public ActionResult<StationFullOutputModel> GetStationById(int id)
+    {
+        return Ok(_mapper.Map<StationFullOutputModel>(_stationService.GetById(id)));
+    }
+    
+    //api/Stations/42/near-stations
+    [HttpGet("{id}/near-stations")]
+    public ActionResult<List<StationShortOutputModel>> GetNearStationsById(int id)
+    {
+        return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetNearStations(id)));
+    }
+    
+    //api/Stations/42/work-platforms
+    [HttpGet("{id}/ready-platforms")]
+    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsByStationId(int id)
+    {
+        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsByStationId(id, DateTime.Now)));
+    }
+    
+    //api/Stations/42/work-platforms/2022-10-05
+    [HttpGet("{id}/ready-platforms/{date}")]
+    public ActionResult<List<PlatformOutputModel>> GetReadyPlatformsByStationId(int id, DateTime date)
+    {
+        return Ok(_mapper.Map<List<PlatformOutputModel>>(_stationService.GetReadyPlatformsByStationId(id, date)));
+    }
+
+    //api/Stations
     [HttpPost]
     public ActionResult AddStation(StationInputModel station)
     {
-        return StatusCode(StatusCodes.Status201Created, station);
+        _stationService.Add(_mapper.Map<StationModel>(station));
+        return StatusCode(StatusCodes.Status201Created);
     }
 
-    [HttpDelete("{id}")]
-    public ActionResult DeleteStation(int id)
-    {
-        return Accepted();
-    }
-
+    //api/Stations/42
     [HttpPut("{id}")]
     public ActionResult EditStation(int id, StationInputModel station)
     {
-        return BadRequest();
+        _stationService.Update(id, _mapper.Map<StationModel>(station));
+        return Accepted();
     }
 
+    //api/Stations/42
+    [HttpDelete("{id}")]
+    public ActionResult DeleteStation(int id)
+    {
+        _stationService.Delete(id);
+        return Accepted();
+    }
+
+    //api/Stations/42
     [HttpPatch("{id}")]
     public ActionResult RestoreStation(int id)
     {
+        _stationService.Restore(id);
         return Accepted();
     }
 }

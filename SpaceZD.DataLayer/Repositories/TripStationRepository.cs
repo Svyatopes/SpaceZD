@@ -15,7 +15,7 @@ public class TripStationRepository : BaseRepository, IRepository<TripStation>
                 .Include(c => c.Station)
                 .FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<TripStation> GetList() => _context.TripStations.ToList();
+    public List<TripStation> GetList() => _context.TripStations.ToList();
 
     public int Add(TripStation tripStation)
     {

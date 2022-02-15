@@ -16,7 +16,7 @@ public class TicketRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<T
                 .Include(t => t.Person)
                 .FirstOrDefault(t => t.Id == id);
 
-    public IEnumerable<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
+    public List<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 
     public int Add(Ticket ticket)
     {

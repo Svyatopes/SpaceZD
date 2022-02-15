@@ -14,7 +14,7 @@ public class UserRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Use
                 .Include(u => u.Orders)
                 .FirstOrDefault(u => u.Id == id);
 
-    public IEnumerable<User> GetList(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<User> GetList(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public int Add(User user)
     {

@@ -14,7 +14,7 @@ public class TrainRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Tr
                 .Include(t => t.Carriages)
                 .FirstOrDefault(t => t.Id == id);
 
-    public IEnumerable<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public int Add(Train train)
     {

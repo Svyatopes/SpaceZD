@@ -15,7 +15,7 @@ public class TransitRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<
                 .Include(c => c.EndStation)
                 .FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<Transit> GetList(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
+    public List<Transit> GetList(bool includeAll = false) => _context.Transits.Where(t => !t.IsDeleted || includeAll).ToList();
 
     public int Add(Transit transit)
     {

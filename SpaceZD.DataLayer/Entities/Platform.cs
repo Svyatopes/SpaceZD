@@ -12,7 +12,7 @@ public class Platform
     private bool Equals(Platform other)
     {
         return Number == other.Number && 
-            Station.Equals(other.Station) && 
+            Station.Name == other.Station.Name && 
             IsDeleted == other.IsDeleted;
     }
     public override bool Equals(object? obj)
