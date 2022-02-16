@@ -241,12 +241,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
             {
                 Train = new Train()
                 {
-                    Id = 1,
                     IsDeleted = false
                 },
                 Route = new Route()
                 {
-                    Id = 1,
                     Code = "F400",
                     Transits = new List<RouteTransit>
                     {
