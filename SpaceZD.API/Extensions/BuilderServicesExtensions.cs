@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.DbContextes;
@@ -66,5 +67,39 @@ public static class BuilderServicesExtensions
         services.AddScoped<IStationService, StationService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRouteService, RouteService>();
+        services.AddScoped<IUserService, UserService>();
+    }
+
+    public static void AddSwaggerGenWithOptions(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Test01", Version = "v1" });
+
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "JWT Authorization header using the Bearer scheme."
+
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                          {
+                              Reference = new OpenApiReference
+                              {
+                                  Type = ReferenceType.SecurityScheme,
+                                  Id = "Bearer"
+                              }
+                          },
+                         new string[] {}
+                    }
+                });
+        });
     }
 }

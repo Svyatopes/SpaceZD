@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using SpaceZD.API.Extensions;
 using SpaceZD.API.Middleware;
 using SpaceZD.BusinessLayer.Configuration;
@@ -11,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGenWithOptions();
 
 builder.Services.AddAuthenticationExtension(JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization();
