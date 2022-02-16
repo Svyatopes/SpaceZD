@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SpaceZD.DataLayer.Entities;
 
-namespace SpaceZD.DataLayer.Tests.TestMocks;
+namespace SpaceZD.DataLayer.Tests.TestCaseSources;
 
-public static class StationRepositoryMocks
+public static class StationRepositoryTestCaseSource
 {
     internal static List<Station> GetStations() => new List<Station>
     {
@@ -49,13 +49,14 @@ public static class StationRepositoryMocks
         IsDeleted = false
     };
 
-    internal static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetByIdTest()
     {
         var stationFist = new Station { Name = GetStations()[0].Name, IsDeleted = false };
         stationFist.Platforms = new List<Platform> { new() { Number = 2, Station = stationFist, IsDeleted = false } };
         yield return new TestCaseData(1, stationFist);
 
-        var stationSecond = new Station { Name = GetStations()[1].Name, Platforms = new List<Platform>(), IsDeleted = true };
+        var stationSecond = new Station
+            { Name = GetStations()[1].Name, Platforms = new List<Platform>(), IsDeleted = true };
         yield return new TestCaseData(2, stationSecond);
 
         var stationThird = new Station { Name = GetStations()[2].Name, IsDeleted = false };
@@ -65,7 +66,7 @@ public static class StationRepositoryMocks
         yield return new TestCaseData(4, null);
     }
 
-    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
     {
         var notIncludeAll = new List<Station>
         {
@@ -108,12 +109,16 @@ public static class StationRepositoryMocks
         yield return new TestCaseData(true, includeAll);
     }
 
-    internal static IEnumerable<TestCaseData> GetMockFromReadyPlatformsStation()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForReadyPlatformsStation()
     {
-        var allTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = false };
-        var allTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = true };
-        var notTimePM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = false };
-        var notTimeDeletedPM = new PlatformMaintenance { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = true };
+        var allTimePM = new PlatformMaintenance
+            { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = false };
+        var allTimeDeletedPM = new PlatformMaintenance
+            { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = true };
+        var notTimePM = new PlatformMaintenance
+            { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = false };
+        var notTimeDeletedPM = new PlatformMaintenance
+            { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = true };
 
         var allTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MaxValue };
         var notTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MinValue };
@@ -157,32 +162,48 @@ public static class StationRepositoryMocks
         yield return new TestCaseData(new Station
             {
                 Name = "Москва",
-                Platforms = new List<Platform> { notReadyPlatformFist, notReadyPlatformSecond, notReadyDeletedPlatform, readyPlatform, readyDeletedPlatform }
+                Platforms = new List<Platform>
+                {
+                    notReadyPlatformFist, notReadyPlatformSecond, notReadyDeletedPlatform, readyPlatform,
+                    readyDeletedPlatform
+                }
             },
             new List<Platform> { readyPlatform });
         yield return new TestCaseData(new Station
-                { Name = "Выборг", Platforms = new List<Platform> { readyPlatform, readyPlatform, readyPlatform, notReadyPlatformSecond } },
+            {
+                Name = "Выборг",
+                Platforms = new List<Platform> { readyPlatform, readyPlatform, readyPlatform, notReadyPlatformSecond }
+            },
             new List<Platform>
             {
                 readyPlatform, readyPlatform, readyPlatform
             });
         yield return new TestCaseData(new Station
-                { Name = "Сочи", Platforms = new List<Platform> { readyDeletedPlatform, notReadyDeletedPlatform, notReadyPlatformSecond, notReadyPlatformFist } },
+            {
+                Name = "Сочи",
+                Platforms = new List<Platform>
+                    { readyDeletedPlatform, notReadyDeletedPlatform, notReadyPlatformSecond, notReadyPlatformFist }
+            },
             new List<Platform>());
     }
 
-    internal static IEnumerable<TestCaseData> GetMockFromGetNearStations()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetNearStations()
     {
-        var transitFirst = new Transit { EndStation = new Station { Name = "Москва", Platforms = new List<Platform>() } };
-        var transitSecond = new Transit { EndStation = new Station { Name = "Челябинск", Platforms = new List<Platform>(), IsDeleted = true } };
+        var transitFirst = new Transit
+            { EndStation = new Station { Name = "Москва", Platforms = new List<Platform>() } };
+        var transitSecond = new Transit
+            { EndStation = new Station { Name = "Челябинск", Platforms = new List<Platform>(), IsDeleted = true } };
         var transitThird = new Transit { EndStation = new Station { Name = "Омск", Platforms = new List<Platform>() } };
-        var transitFourth = new Transit { EndStation = new Station { Name = "48 км", Platforms = new List<Platform>() }, IsDeleted = true };
-        var transitFifth = new Transit { EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() } };
+        var transitFourth = new Transit
+            { EndStation = new Station { Name = "48 км", Platforms = new List<Platform>() }, IsDeleted = true };
+        var transitFifth = new Transit
+            { EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() } };
 
 
         var station = new Station
         {
-            Name = "0 км", TransitsWithStartStation = new List<Transit> { transitFirst, transitSecond, transitThird, transitFourth },
+            Name = "0 км",
+            TransitsWithStartStation = new List<Transit> { transitFirst, transitSecond, transitThird, transitFourth },
             Platforms = new List<Platform>()
         };
         yield return new TestCaseData(station,
@@ -195,7 +216,8 @@ public static class StationRepositoryMocks
 
         var station2 = new Station
         {
-            Name = "10 км", TransitsWithStartStation = new List<Transit> { transitFirst, transitSecond, transitThird, transitFifth },
+            Name = "10 км",
+            TransitsWithStartStation = new List<Transit> { transitFirst, transitSecond, transitThird, transitFifth },
             Platforms = new List<Platform>()
         };
         yield return new TestCaseData(station2,

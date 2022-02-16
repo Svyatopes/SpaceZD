@@ -4,11 +4,11 @@ using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 
-namespace SpaceZD.BusinessLayer.Tests.TestMocks;
+namespace SpaceZD.BusinessLayer.Tests.TestCaseSources;
 
-public class CarriageTypeServiceMocks
+public class CarriageTypeServiceTestCaseSource
 {
-    internal static IEnumerable<TestCaseData> GetMockFromGetByIdTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetByIdTest()
     {
         yield return new TestCaseData(new CarriageType { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true });
         yield return new TestCaseData(new CarriageType { Name = "Купе", NumberOfSeats = 3, IsDeleted = false });
@@ -18,7 +18,7 @@ public class CarriageTypeServiceMocks
         yield return new TestCaseData(new CarriageType { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true });
     }
 
-    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
     {
         var fistList = new List<CarriageType>
         {
@@ -32,12 +32,12 @@ public class CarriageTypeServiceMocks
             new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = false },
             new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = false }
         };
-        
+
         yield return new TestCaseData(fistList, ConvertCarriageTypesToCarriageTypeModels(fistList));
         yield return new TestCaseData(secondList, ConvertCarriageTypesToCarriageTypeModels(secondList));
     }
-    
-    internal static IEnumerable<TestCaseData> GetMockFromGetListDeletedTest()
+
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListDeletedTest()
     {
         var fistList = new List<CarriageType>
         {
@@ -51,7 +51,7 @@ public class CarriageTypeServiceMocks
             new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true },
             new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true }
         };
-        
+
         yield return new TestCaseData(fistList, ConvertCarriageTypesToCarriageTypeModels(fistList, false));
         yield return new TestCaseData(secondList, ConvertCarriageTypesToCarriageTypeModels(secondList, false));
     }
@@ -59,11 +59,13 @@ public class CarriageTypeServiceMocks
     private static List<CarriageTypeModel> ConvertCarriageTypesToCarriageTypeModels(List<CarriageType> carriageTypes, bool includeAll = true)
     {
         return carriageTypes
-            .Where(t => includeAll || t.IsDeleted)
-            .Select(carriageType => new CarriageTypeModel
-            {
-                Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted
-            })
-            .ToList();
+               .Where(t => includeAll || t.IsDeleted)
+               .Select(carriageType => new CarriageTypeModel
+               {
+                   Name = carriageType.Name,
+                   NumberOfSeats = carriageType.NumberOfSeats,
+                   IsDeleted = carriageType.IsDeleted
+               })
+               .ToList();
     }
 }

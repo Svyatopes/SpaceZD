@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SpaceZD.DataLayer.Entities;
 
-namespace SpaceZD.DataLayer.Tests.TestMocks;
+namespace SpaceZD.DataLayer.Tests.TestCaseSources;
 
-public static class RouteRepositoryMocks
+public static class RouteRepositoryTestCaseSource
 {
     internal static List<Route> GetRoutes() => new List<Route>
     {
@@ -106,7 +106,7 @@ public static class RouteRepositoryMocks
         EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() }
     };
 
-    internal static IEnumerable<TestCaseData> GetMockForGetByIdTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetByIdTest()
     {
         var routeFist = new Route
         {
@@ -157,7 +157,7 @@ public static class RouteRepositoryMocks
         yield return new TestCaseData(4, null);
     }
 
-    internal static IEnumerable<TestCaseData> GetMockForGetListTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
     {
         var notIncludeAll = new List<Route>
         {
@@ -220,7 +220,7 @@ public static class RouteRepositoryMocks
     }
 
 
-    internal static IEnumerable<TestCaseData> GetMockForAddRouteTransitForRouteTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForAddRouteTransitForRouteTest()
     {
         var routeTransit = new RouteTransit
         {
@@ -253,8 +253,8 @@ public static class RouteRepositoryMocks
                     DepartingTime = new TimeSpan(0, 0, 1),
                     ArrivalTime = new TimeSpan(2, 30, 0),
                     IsDeleted = false
-                }
-                ,routeTransit
+                },
+                routeTransit
             }
         };
         yield return new TestCaseData(GetRoutes()[0], routeTransit, routeFist);

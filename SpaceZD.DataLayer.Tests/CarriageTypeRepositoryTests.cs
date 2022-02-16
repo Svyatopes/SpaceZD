@@ -6,7 +6,7 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using SpaceZD.DataLayer.Tests.TestMocks;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 
 namespace SpaceZD.DataLayer.Tests;
 
@@ -28,11 +28,12 @@ public class CarriageTypeRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        _context.CarriageTypes.AddRange(CarriageTypeRepositoryMocks.GetCarriageTypes());
+        _context.CarriageTypes.AddRange(CarriageTypeRepositoryTestCaseSource.GetCarriageTypes());
         _context.SaveChanges();
     }
 
-    [TestCaseSource(typeof(CarriageTypeRepositoryMocks), nameof(CarriageTypeRepositoryMocks.GetMockFromGetByIdTest))]
+    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource),
+        nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
     public void GetByIdTest(int id, CarriageType expected)
     {
         // when
@@ -42,7 +43,8 @@ public class CarriageTypeRepositoryTests
         Assert.AreEqual(expected, actual);
     }
 
-    [TestCaseSource(typeof(CarriageTypeRepositoryMocks), nameof(CarriageTypeRepositoryMocks.GetMockFromGetListTest))]
+    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource),
+        nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(bool includeAll, List<CarriageType> expected)
     {
         // when
@@ -56,7 +58,7 @@ public class CarriageTypeRepositoryTests
     public void AddTest()
     {
         // given
-        var entityToAdd = CarriageTypeRepositoryMocks.GetCarriageType();
+        var entityToAdd = CarriageTypeRepositoryTestCaseSource.GetCarriageType();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -74,7 +76,8 @@ public class CarriageTypeRepositoryTests
     {
         // given
         var entityToEdit = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
-        var entityUpdate = new CarriageType { Name = "qwertyuiop", NumberOfSeats = 3, IsDeleted = !entityToEdit!.IsDeleted };
+        var entityUpdate = new CarriageType
+            { Name = "qwertyuiop", NumberOfSeats = 3, IsDeleted = !entityToEdit!.IsDeleted };
 
         // when 
         _repository.Update(entityToEdit, entityUpdate);
@@ -90,7 +93,7 @@ public class CarriageTypeRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = CarriageTypeRepositoryMocks.GetCarriageType();
+        var entityToEdit = CarriageTypeRepositoryTestCaseSource.GetCarriageType();
         entityToEdit.IsDeleted = !isDeleted;
         _context.CarriageTypes.Add(entityToEdit);
         _context.SaveChanges();
