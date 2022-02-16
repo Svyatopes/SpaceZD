@@ -69,17 +69,7 @@ public class TicketServiceTests
         
     }
 
-    //[Test]
-    //public void GetByIdNegativeTest()
-    //{
-    //    _ticketRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Order?)null);
-    //    var service = new OrderService(_mapper, _ticketRepositoryMock.Object);
-
-    //    Assert.Throws<NotFoundException>(() => service.GetById(42));
-    //    _ticketRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
-    //}
-
-
+    
     [TestCase(5)]
     public void AddTest(int expected)
     {
@@ -117,20 +107,6 @@ public class TicketServiceTests
         _ticketRepositoryMock.Verify(s => s.Update(ticket, It.IsAny<Ticket>()), Times.Once);
     }
 
-    //[Test]
-    //public void UpdateNegativeTest()
-    //{
-    //    // given
-    //    var order = new Order();
-    //    _ticketRepositoryMock.Setup(x => x.Update(It.IsAny<Order>(), It.IsAny<Order>()));
-    //    var service = new OrderService(_mapper, _ticketRepositoryMock.Object);
-
-    //    // when then
-    //    Assert.Throws<NotFoundException>(() => service.Update(42, new OrderModel()));
-    //    _ticketRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-    //    _ticketRepositoryMock.Verify(s => s.Update(order, It.IsAny<Order>()), Times.Never);
-    //}
-
 
     [Test]
     public void DeleteTest()
@@ -150,22 +126,8 @@ public class TicketServiceTests
     }
 
 
-    //[Test]
-    //public void DeleteNegativeTest()
-    //{
-    //    // given
-    //    _ticketRepositoryMock.Setup(x => x.Update(It.IsAny<Order>(), true));
-    //    _ticketRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Order?)null);
-    //    var service = new OrderService(_mapper, _ticketRepositoryMock.Object);
 
-    //    // when then
-    //    Assert.Throws<NotFoundException>(() => service.Delete(42));
-    //    _ticketRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-    //    _ticketRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), true), Times.Never);
-    //}
-
-
-    //Restore
+    
     [Test]
     public void RestoreTest()
     {
@@ -183,18 +145,4 @@ public class TicketServiceTests
         _ticketRepositoryMock.Verify(s => s.Update(ticket, false), Times.Once);
     }
 
-
-    //[Test]
-    //public void RestoreNegativeTest()
-    //{
-    //    // given
-    //    _ticketRepositoryMock.Setup(x => x.Update(It.IsAny<Order>(), false));
-    //    _ticketRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Order?)null);
-    //    var service = new OrderService(_mapper, _ticketRepositoryMock.Object);
-
-    //    // when then
-    //    Assert.Throws<NotFoundException>(() => service.Restore(42));
-    //    _ticketRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-    //    _ticketRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), true), Times.Never);
-    //}
 }
