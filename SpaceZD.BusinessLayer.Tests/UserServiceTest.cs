@@ -29,7 +29,7 @@ public class UserServiceTest
     public static IEnumerable<TestCaseData> GetUser()
     {
         yield return new TestCaseData(new User { Id = 1, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = DataLayer.Enums.Role.StationManager, IsDeleted = false });
-        yield return new TestCaseData(new User { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.Anonymous, IsDeleted = true });
+        yield return new TestCaseData(new User { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.User, IsDeleted = true });
         yield return new TestCaseData(new User { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = DataLayer.Enums.Role.Admin, IsDeleted = false });
         yield return new TestCaseData(new User { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = false });
     }
@@ -39,7 +39,7 @@ public class UserServiceTest
         yield return new TestCaseData(new List<User>
         {
             new() { Id = 1, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = DataLayer.Enums.Role.StationManager, IsDeleted = false },
-            new() { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.Anonymous, IsDeleted = false },
+            new() { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.User, IsDeleted = false },
             new() { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = DataLayer.Enums.Role.Admin, IsDeleted = false },
             new() { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = false }
 
@@ -58,7 +58,7 @@ public class UserServiceTest
         yield return new TestCaseData(new List<User>
         {
             new() { Id = 9, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = DataLayer.Enums.Role.StationManager, IsDeleted = true },
-            new() { Id = 10, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.Anonymous, IsDeleted = true },
+            new() { Id = 10, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.User, IsDeleted = true },
             new() { Id = 11, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = DataLayer.Enums.Role.Admin, IsDeleted = false },
             new() { Id = 12, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = true }
 
