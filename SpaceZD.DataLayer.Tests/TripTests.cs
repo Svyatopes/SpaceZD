@@ -88,7 +88,7 @@ namespace SpaceZD.DataLayer.Tests
             _repository.Update(entityToEdit!, newEntity);
 
             // then
-            var entityUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit!.Id);
+            var entityUpdated = _context.Trips.FirstOrDefault(o => o.Id == entityToEdit!.Id);
             Assert.AreEqual(entityToEdit, entityUpdated);
         }
 
@@ -107,7 +107,7 @@ namespace SpaceZD.DataLayer.Tests
             _repository.Update(entityToEdit, isDeleted);
 
             // then
-            var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
+            var entityToUpdated = _context.Trips.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.AreEqual(entityToEdit, entityToUpdated);
         }
