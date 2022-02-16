@@ -6,27 +6,27 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class PlatformMaintenanceServices : IPlatformMaintenanceServices
+    public class PlatformMaintenanceService : IPlatformMaintenanceServices
     {
         private readonly IMapper _mapper;
         private readonly IRepositorySoftDelete<PlatformMaintenance> _platformMaintenanceRepository;
 
-        public PlatformMaintenanceServices(IMapper mapper, IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository)
+        public PlatformMaintenanceService(IMapper mapper, IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository)
         {
             _mapper = mapper;
             _platformMaintenanceRepository = platformMaintenanceRepository;
         }
 
-        public PlatformMaintenance GetById(int id)
+        public PlatformMaintenanceModel GetById(int id)
         {
             var platformMaintenance = GetPlatformMaintenanceById(id);
-            return _mapper.Map<PlatformMaintenance>(platformMaintenance);
+            return _mapper.Map<PlatformMaintenanceModel>(platformMaintenance);
         }
 
-        public List<PlatformMaintenance> GetList(bool allIncluded)
+        public List<PlatformMaintenanceModel> GetList(bool allIncluded)
         {
             var platformsMaintenance = _platformMaintenanceRepository.GetList(allIncluded);
-            return _mapper.Map<List<PlatformMaintenance>>(platformsMaintenance);
+            return _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
         }
 
         public int Add(PlatformMaintenanceModel platformMaintenance)
@@ -43,13 +43,13 @@ namespace SpaceZD.BusinessLayer.Services
             _platformMaintenanceRepository.Update(platformMaintenanceEntity, newPlatformMaintenanceEntity);
         }
 
-        public void Reastore(int id)
+        public void Restore(int id)
         {
             var platformMaintenance = GetPlatformMaintenanceById(id);
             _platformMaintenanceRepository.Update(platformMaintenance, false);
         }
 
-        public void Deleted(int id)
+        public void Delete(int id)
         {
             var platformMaintenance = GetPlatformMaintenanceById(id);
             _platformMaintenanceRepository.Update(platformMaintenance, true);
