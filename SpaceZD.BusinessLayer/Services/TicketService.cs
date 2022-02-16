@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public class TicketService : ITicketService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDeleteNewUpdate<Ticket> _ticketRepository;
+    private readonly IRepositorySoftDelete<Ticket> _ticketRepository;
 
-    public TicketService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Ticket> ticketRepository)
+    public TicketService(IMapper mapper, IRepositorySoftDelete<Ticket> ticketRepository)
     {
         _mapper = mapper;
         _ticketRepository = ticketRepository;

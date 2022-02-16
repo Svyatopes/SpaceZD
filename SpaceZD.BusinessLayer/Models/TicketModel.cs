@@ -11,5 +11,25 @@
         public PersonModel Person { get; set; }
         public decimal Price { get; set; }
         public bool IsDeleted { get; set; }
+
+        public bool Equals(TicketModel other)
+        {
+            return other is TicketModel model &&
+                   Person.Equals(model.Person) &&
+                   Order.StartStation.Platform.Number == model.Order.StartStation.Platform.Number &&
+                   Carriage.Number == model.Carriage.Number &&
+                   SeatNumber == model.SeatNumber &&
+                   Price == model.Price &&
+                   IsDeleted == model.IsDeleted;
+        }
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            return obj.GetType() == GetType() && Equals((TicketModel)obj);
+        }
     }
+
 }
