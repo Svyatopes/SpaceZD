@@ -47,26 +47,41 @@ namespace SpaceZD.BusinessLayer.Services
             return _transitRepository.Add(transit);
         }
 
+        //public void Delete(int id)
+        //{
+        //    if (!_transitRepository.Update(id, true))
+        //        NotFound(nameof(Transit), id);
+        //}
+
+        //public void Restore(int id)
+        //{
+        //    if (!_transitRepository.Update(id, false))
+        //        NotFound(nameof(Transit), id);
+        //}
+
+        //public void Update(int id, TransitModel transitModel)
+        //{
+        //    transitModel.Id = id;
+        //    if (!_transitRepository.Update(_mapper.Map<Transit>(transitModel)))
+        //        NotFound(nameof(Transit), id);
+        //}
+
+        private static void NotFound(string name, int id) => throw new NotFoundException($"{name} c Id = {id} не найден");
+
         public void Delete(int id)
         {
-            if (!_transitRepository.Update(id, true))
-                NotFound(nameof(Transit), id);
+            throw new NotImplementedException();
         }
 
         public void Restore(int id)
         {
-            if (!_transitRepository.Update(id, false))
-                NotFound(nameof(Transit), id);
+            throw new NotImplementedException();
         }
 
         public void Update(int id, TransitModel transitModel)
         {
-            transitModel.Id = id;
-            if (!_transitRepository.Update(_mapper.Map<Transit>(transitModel)))
-                NotFound(nameof(Transit), id);
+            throw new NotImplementedException();
         }
-
-        private static void NotFound(string name, int id) => throw new NotFoundException($"{name} c Id = {id} не найден");
     }
 }
 
