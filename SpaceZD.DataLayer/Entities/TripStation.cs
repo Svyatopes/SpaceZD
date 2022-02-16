@@ -14,8 +14,11 @@ public class TripStation
 
     private bool Equals(TripStation other)
     {
-        return Station.Equals(other.Station) && Platform.Equals(other.Platform) && 
-            ArrivalTime == other.ArrivalTime && DepartingTime == other.DepartingTime && Trip.Id == other.Trip.Id;
+        return Station.Equals(other.Station) &&
+            Platform.Equals(other.Platform) &&
+            ArrivalTime == other.ArrivalTime &&
+            DepartingTime == other.DepartingTime &&
+            Trip.Equals(other.Trip);
     }
 
     public override bool Equals(object? obj)
