@@ -8,7 +8,7 @@ public class AuthorizeRole : AuthorizeAttribute
 
     public AuthorizeRole(params Role[] roles) : base()
     {
-        Roles = String.Join(",", Enum.GetNames(typeof(Role)));
+        Roles = String.Join(",", roles);
     }
 
 }
