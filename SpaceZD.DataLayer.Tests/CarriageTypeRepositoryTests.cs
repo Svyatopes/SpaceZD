@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -5,13 +6,14 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 
 namespace SpaceZD.DataLayer.Tests;
 
 public class CarriageTypeRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<CarriageType> _repository;
+    private IRepositorySoftDelete<CarriageType> _repository;
 
     [SetUp]
     public void Setup()
@@ -26,64 +28,37 @@ public class CarriageTypeRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        var carriageTypes = new CarriageType[]
-        {
-            new()
-            {
-                Name = "Плацкарт",
-                NumberOfSeats = 5
-            },
-            new()
-            {
-                Name = "Ласточка",
-                NumberOfSeats = 7,
-                IsDeleted = true
-            },
-            new()
-            {
-                Name = "Сапсан",
-                NumberOfSeats = 8
-            }
-        };
-        _context.CarriageTypes.AddRange(carriageTypes);
+        _context.CarriageTypes.AddRange(CarriageTypeRepositoryTestCaseSource.GetCarriageTypes());
         _context.SaveChanges();
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public void GetByIdTest(int id)
+    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource),
+        nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
+    public void GetByIdTest(int id, CarriageType expected)
     {
-        // given
-        var expectedEntity = _context.CarriageTypes.Find(id);
-
         // when
-        var receivedEntity = _repository.GetById(id);
+        var actual = _repository.GetById(id);
 
         // then
-        Assert.AreEqual(expectedEntity, receivedEntity);
+        Assert.AreEqual(expected, actual);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void GetListTest(bool includeAll)
+    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource),
+        nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
+    public void GetListTest(bool includeAll, List<CarriageType> expected)
     {
-        // given
-        var expected = _context.CarriageTypes.Where(t => !t.IsDeleted || includeAll).ToList();
-
         // when
-        var list = _repository.GetList(includeAll);
+        var actual = _repository.GetList(includeAll);
 
         // then
-        CollectionAssert.AreEqual(expected, list);
+        CollectionAssert.AreEqual(expected, actual);
     }
 
     [Test]
     public void AddTest()
     {
         // given
-        var entityToAdd = TestEntity;
+        var entityToAdd = CarriageTypeRepositoryTestCaseSource.GetCarriageType();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -101,7 +76,8 @@ public class CarriageTypeRepositoryTests
     {
         // given
         var entityToEdit = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
-        var entityUpdate = new CarriageType { Name = "qwertyuiop", NumberOfSeats = 3, IsDeleted = !entityToEdit!.IsDeleted };
+        var entityUpdate = new CarriageType
+            { Name = "qwertyuiop", NumberOfSeats = 3, IsDeleted = !entityToEdit!.IsDeleted };
 
         // when 
         _repository.Update(entityToEdit, entityUpdate);
@@ -117,7 +93,7 @@ public class CarriageTypeRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = TestEntity;
+        var entityToEdit = CarriageTypeRepositoryTestCaseSource.GetCarriageType();
         entityToEdit.IsDeleted = !isDeleted;
         _context.CarriageTypes.Add(entityToEdit);
         _context.SaveChanges();
@@ -128,10 +104,4 @@ public class CarriageTypeRepositoryTests
         // then
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
-
-    private CarriageType TestEntity => new()
-    {
-        Name = "Купе",
-        NumberOfSeats = 4
-    };
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -6,19 +7,20 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 
 namespace SpaceZD.DataLayer.Tests;
 
 public class StationRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<Station> _repository;
+    private IStationRepository _repository;
 
     [SetUp]
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                      .UseInMemoryDatabase(databaseName: "Test")
+                      .UseInMemoryDatabase("Test")
                       .Options;
 
         _context = new VeryVeryImportantContext(options);
@@ -27,72 +29,37 @@ public class StationRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        var stations = new Station[]
-        {
-            new()
-            {
-                Name = "Челябинск",
-                Platforms = new List<Platform>
-                {
-                    new() { Number = 1 },
-                    new() { Number = 2 }
-                }
-            },
-            new()
-            {
-                Name = "41 км",
-                Platforms = new List<Platform>(),
-                IsDeleted = true
-            },
-            new()
-            {
-                Name = "Таганрог",
-                Platforms = new List<Platform>
-                {
-                    new() { Number = 2 },
-                    new() { Number = 3 }
-                }
-            }
-        };
-        _context.Stations.AddRange(stations);
+        _context.Stations.AddRange(StationRepositoryTestCaseSource.GetStations());
         _context.SaveChanges();
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public void GetByIdTest(int id)
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
+    public void GetByIdTest(int id, Station expected)
     {
-        // given
-        var expectedEntity = _context.Stations.Find(id);
-
         // when
-        var receivedEntity = _repository.GetById(id);
+        var actual = _repository.GetById(id);
 
         // then
-        Assert.AreEqual(expectedEntity, receivedEntity);
+        Assert.AreEqual(expected, actual);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void GetListTest(bool includeAll)
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
+    public void GetListTest(bool includeAll, List<Station> expected)
     {
-        // given
-        var expected = _context.Stations.Where(t => !t.IsDeleted || includeAll).ToList();
-
         // when
-        var list = _repository.GetList(includeAll);
+        var actual = _repository.GetList(includeAll);
 
         // then
-        CollectionAssert.AreEqual(expected, list);
+        CollectionAssert.AreEqual(expected, actual);
     }
 
     [Test]
     public void AddTest()
     {
         // given
-        var entityToAdd = TestEntity;
+        var entityToAdd = StationRepositoryTestCaseSource.GetStation();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -110,7 +77,7 @@ public class StationRepositoryTests
     {
         // given
         var entityToEdit = _context.Stations.FirstOrDefault(o => o.Id == id);
-        var entityUpdate = TestEntity;
+        var entityUpdate = StationRepositoryTestCaseSource.GetStation();
         entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
         foreach (var pl in entityUpdate.Platforms)
             pl.Station = entityUpdate;
@@ -129,7 +96,7 @@ public class StationRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = TestEntity;
+        var entityToEdit = StationRepositoryTestCaseSource.GetStation();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Stations.Add(entityToEdit);
         _context.SaveChanges();
@@ -141,14 +108,25 @@ public class StationRepositoryTests
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
-    private Station TestEntity => new()
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForReadyPlatformsStation))]
+    public void GetReadyPlatformsStationTest(Station station, List<Platform> expected)
     {
-        Name = "Москва",
-        Platforms = new List<Platform>
-        {
-            new() { Number = 1, IsDeleted = false },
-            new() { Number = 2, IsDeleted = false },
-            new() { Number = 3, IsDeleted = true }
-        }
-    };
+        // when 
+        var actual = _repository.GetReadyPlatformsStation(station, new DateTime(2022, 1, 1));
+
+        // then
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForGetNearStations))]
+    public void GetNearStations(Station station, List<Station> expected)
+    {
+        // when 
+        var actual = _repository.GetNearStations(station);
+
+        // then
+        CollectionAssert.AreEqual(expected, actual);
+    }
 }

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
@@ -7,6 +7,7 @@ using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -14,7 +15,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class StationServiceTests
 {
-    private Mock<IRepositorySoftDeleteNewUpdate<Station>> _stationRepositoryMock;
+    private Mock<IStationRepository> _stationRepositoryMock;
     private readonly IMapper _mapper;
 
     public StationServiceTests()
@@ -25,7 +26,7 @@ public class StationServiceTests
     [SetUp]
     public void SetUp()
     {
-        _stationRepositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<Station>>();
+        _stationRepositoryMock = new Mock<IStationRepository>();
     }
 
     // Add
@@ -46,71 +47,46 @@ public class StationServiceTests
 
 
     //GetNearStations
-    [TestCaseSource(nameof(GetNearStations))]
-    public void GetNearStationsTest(Station station, List<StationModel> expected)
+    [Test]
+    public void GetNearStationsTest()
     {
         // given
+        var station = new Station();
+        var stations = new List<Station> { new() { Name = "Владивосток", Platforms = new List<Platform>() } };
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
+        _stationRepositoryMock.Setup(x => x.GetNearStations(It.IsAny<Station>())).Returns(stations);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         // when
         var actual = service.GetNearStations(45);
 
         // then
-        CollectionAssert.AreEqual(expected, actual);
-    }
-    public static IEnumerable<TestCaseData> GetNearStations()
-    {
-        var transitFirst = new Transit { EndStation = new Station { Name = "Москва" } };
-        var transitSecond = new Transit { EndStation = new Station { Name = "Челябинск", IsDeleted = true } };
-        var transitThird = new Transit { EndStation = new Station { Name = "Омск" } };
-        var transitFourth = new Transit { EndStation = new Station { Name = "48 км" }, IsDeleted = true };
-        var transitFifth = new Transit { EndStation = new Station { Name = "Выборг"} };
-
-
-        var station = new Station { Name = "0 км", TransitsWithStartStation = new List<Transit> { transitFirst, transitSecond, transitThird, transitFourth } };
-        yield return new TestCaseData(station,
-            new List<StationModel>
-            {
-                new() { Name = transitFirst.EndStation.Name },
-                new() { Name = transitThird.EndStation.Name }
-            });
-        
-        
-        var station2 = new Station { Name = "10 км", TransitsWithStartStation = new List<Transit> { transitFirst, transitSecond, transitThird, transitFifth } };
-        yield return new TestCaseData(station2,
-            new List<StationModel>
-            {
-                new() { Name = transitFirst.EndStation.Name },
-                new() { Name = transitThird.EndStation.Name },
-                new() { Name = transitFifth.EndStation.Name }
-            });
+        _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _stationRepositoryMock.Verify(s => s.GetNearStations(station), Times.Once);
+        CollectionAssert.AreEqual(
+            new List<StationModel> { new() { Name = "Владивосток", Platforms = new List<PlatformModel>() } }, actual);
     }
 
 
     // GetById
-    [TestCaseSource(nameof(GetStation))]
-    public void GetByIdTest(Station station)
+    [Test]
+    public void GetByIdTest()
     {
         // given
+        var station = new Station { Name = "Владивосток", Platforms = new List<Platform>(), IsDeleted = true };
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         // when
-        var actual = service.GetById(5);
+        StationModel actual = service.GetById(5);
 
         // then
-        Assert.AreEqual(new StationModel { Name = station.Name, IsDeleted = station.IsDeleted }, actual);
+        _stationRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        Assert.AreEqual(
+            new StationModel
+                { Name = station.Name, Platforms = new List<PlatformModel>(), IsDeleted = station.IsDeleted }, actual);
     }
-    public static IEnumerable<TestCaseData> GetStation()
-    {
-        yield return new TestCaseData(new Station { Name = "Москва", IsDeleted = true });
-        yield return new TestCaseData(new Station { Name = "Челябинск", IsDeleted = false });
-        yield return new TestCaseData(new Station { Name = "Омск", IsDeleted = false });
-        yield return new TestCaseData(new Station { Name = "48 км", IsDeleted = false });
-        yield return new TestCaseData(new Station { Name = "Выборг", IsDeleted = false });
-        yield return new TestCaseData(new Station { Name = "Красное село", IsDeleted = true });
-    }
+
     [Test]
     public void GetByIdNegativeTest()
     {
@@ -122,72 +98,69 @@ public class StationServiceTests
 
 
     // GetList
-    [TestCaseSource(nameof(GetListStationNotDeleted))]
-    public void GetListTest(List<Station> stations)
+    [TestCaseSource(typeof(StationServiceTestCaseSource),
+        nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListTest))]
+    public void GetListTest(List<Station> stations, List<StationModel> expected)
     {
         // given
         _stationRepositoryMock.Setup(x => x.GetList(false)).Returns(stations);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
-        var expected = stations.Select(station => new StationModel
-                               {
-                                   Name = station.Name, IsDeleted = station.IsDeleted
-                               })
-                               .ToList();
 
         // when
         var actual = service.GetList();
 
         // then
+        _stationRepositoryMock.Verify(s => s.GetList(false), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    public static IEnumerable<TestCaseData> GetListStationNotDeleted()
-    {
-        yield return new TestCaseData(new List<Station>
-        {
-            new() { Name = "Челябинск", IsDeleted = false },
-            new() { Name = "Омск", IsDeleted = false },
-            new() { Name = "48 км", IsDeleted = false },
-            new() { Name = "Выборг", IsDeleted = false }
-        });
-        yield return new TestCaseData(new List<Station>
-        {
-            new() { Name = "Москва", IsDeleted = false },
-            new() { Name = "Красное село", IsDeleted = false }
-        });
-    }
-    [TestCaseSource(nameof(GetListStationDeleted))]
-    public void GetListDeletedTest(List<Station> stations)
+
+    [TestCaseSource(typeof(StationServiceTestCaseSource),
+        nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
+    public void GetListDeletedTest(List<Station> stations, List<StationModel> expected)
     {
         // given
         _stationRepositoryMock.Setup(x => x.GetList(true)).Returns(stations);
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
-        var expected = stations.Where(t => t.IsDeleted).Select(station => new StationModel
-                               {
-                                   Name = station.Name, IsDeleted = station.IsDeleted
-                               })
-                               .ToList();
 
         // when
         var actual = service.GetListDeleted();
 
         // then
+        _stationRepositoryMock.Verify(s => s.GetList(true), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    public static IEnumerable<TestCaseData> GetListStationDeleted()
+
+
+    //ReadyPlatforms
+    [Test]
+    public void GetReadyPlatformsByStationIdTest()
     {
-        yield return new TestCaseData(new List<Station>
-        {
-            new() { Name = "Москва", IsDeleted = true },
-            new() { Name = "Челябинск", IsDeleted = false },
-            new() { Name = "Омск", IsDeleted = false },
-            new() { Name = "Красное село", IsDeleted = true }
-        });
-        yield return new TestCaseData(new List<Station>
-        {
-            new() { Name = "Москва", IsDeleted = false },
-            new() { Name = "Омск", IsDeleted = true },
-            new() { Name = "48 км", IsDeleted = true },
-        });
+        // given
+        var moment = new DateTime(2022, 1, 1);
+        var station = new Station { Name = "Санкт-Петербург" };
+        var platforms = new List<Platform> { new() { Number = 2, Station = station } };
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
+        _stationRepositoryMock.Setup(x => x.GetReadyPlatformsStation(station, moment)).Returns(platforms);
+        var service = new StationService(_mapper, _stationRepositoryMock.Object);
+
+        // when
+        var actual = service.GetReadyPlatformsByStationId(20, moment);
+
+        // then
+        _stationRepositoryMock.Verify(s => s.GetById(20), Times.Once);
+        _stationRepositoryMock.Verify(s => s.GetReadyPlatformsStation(station, moment), Times.Once);
+        CollectionAssert.AreEqual(
+            new List<PlatformModel> { new() { Number = 2, Station = new StationModel { Name = station.Name } } },
+            actual);
+    }
+
+    [Test]
+    public void GetReadyPlatformsByStationIdNegativeTest()
+    {
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
+        var service = new StationService(_mapper, _stationRepositoryMock.Object);
+
+        Assert.Throws<NotFoundException>(() => service.GetReadyPlatformsByStationId(10, DateTime.Today));
     }
 
 
@@ -208,6 +181,7 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(stations, true), Times.Once);
     }
+
     [Test]
     public void DeleteNegativeTest()
     {
@@ -236,6 +210,7 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(stations, false), Times.Once);
     }
+
     [Test]
     public void RestoreNegativeTest()
     {
@@ -264,6 +239,7 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(station, It.IsAny<Station>()), Times.Once);
     }
+
     [Test]
     public void UpdateNegativeTest()
     {

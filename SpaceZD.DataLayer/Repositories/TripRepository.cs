@@ -16,7 +16,7 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
                 .Include(t => t.Stations)
                 .FirstOrDefault(t => t.Id == id);
 
-    public IEnumerable<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
+    public List<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
 
     public int Add(Trip trip)
     {
@@ -25,28 +25,20 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
         return trip.Id;
     }
 
-    public bool Update(Trip trip)
+    public void Update(Trip entityToEdit, Trip newEntity)
     {
-        var entity = GetById(trip.Id);
-        if (entity == null) return false;
-
-        entity.Train = trip.Train;
-        entity.Route = trip.Route;
-        entity.Stations = trip.Stations;
-        entity.StartTime = trip.StartTime;
+        entityToEdit.Train = newEntity.Train;
+        entityToEdit.Route = newEntity.Route;
+        entityToEdit.Stations = newEntity.Stations;
+        entityToEdit.StartTime = newEntity.StartTime;
 
         _context.SaveChanges();
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Trip entity, bool isDeleted)
     {
-        var entity = GetById(id);
-        if (entity == null) return false;
-
         entity.IsDeleted = isDeleted;
 
         _context.SaveChanges();
-        return true;
     }
 }

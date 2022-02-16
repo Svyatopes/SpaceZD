@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public class StationService : IStationService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDeleteNewUpdate<Station> _repository;
+    private readonly IStationRepository _repository;
 
-    public StationService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Station> repository)
+    public StationService(IMapper mapper, IStationRepository repository)
     {
         _mapper = mapper;
         _repository = repository;
@@ -25,17 +25,20 @@ public class StationService : IStationService
         return _mapper.Map<StationModel>(entity);
     }
 
+    public List<PlatformModel> GetReadyPlatformsByStationId(int id, DateTime moment)
+    {
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        return _mapper.Map<List<PlatformModel>>(_repository.GetReadyPlatformsStation(entity!, moment));
+    }
+
     public List<StationModel> GetNearStations(int id)
     {
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        
-        return _mapper.Map<List<StationModel>>(
-            entity!.TransitsWithStartStation
-                   .Where(t => !t.IsDeleted)
-                   .Select(t => t.EndStation)
-                   .Where(t => !t.IsDeleted)
-                   .ToList());
+
+        return _mapper.Map<List<StationModel>>(_repository.GetNearStations(entity!));
     }
 
     public List<StationModel> GetList() => _mapper.Map<List<StationModel>>(_repository.GetList());

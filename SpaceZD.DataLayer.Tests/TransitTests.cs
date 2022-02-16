@@ -131,7 +131,7 @@ namespace SpaceZD.DataLayer.Tests
             _repository.Update(entityToEdit, isDeleted);
 
             // then
-            var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
+            var entityToUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.AreEqual(entityToEdit, entityToUpdated);
         }

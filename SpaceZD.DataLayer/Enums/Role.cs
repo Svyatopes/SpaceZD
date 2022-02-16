@@ -2,8 +2,7 @@
 
 public enum Role
 {
-    Anonymous = 1,
-    User,
+    User = 1,
     StationManager,
     TrainRouteManager,
     Admin

@@ -14,7 +14,7 @@ public class RouteTransitRepository : BaseRepository, IRepositorySoftDelete<Rout
                 .Include(rt => rt.Transit)
                 .FirstOrDefault(rt => rt.Id == id);
 
-    public IEnumerable<RouteTransit> GetList(bool includeAll = false) => _context.RouteTransits.Where(r => !r.IsDeleted || includeAll).ToList();
+    public List<RouteTransit> GetList(bool includeAll = false) => _context.RouteTransits.Where(r => !r.IsDeleted || includeAll).ToList();
 
     public int Add(RouteTransit routeTransit)
     {
@@ -23,29 +23,19 @@ public class RouteTransitRepository : BaseRepository, IRepositorySoftDelete<Rout
         return routeTransit.Id;
     }
 
-    public bool Update(RouteTransit routeTransit)
+    public void Update(RouteTransit oldRouteTransit, RouteTransit newRouteTransit)
     {
-        var entity = GetById(routeTransit.Id);
-        if (entity is null)
-            return false;
-
-        entity.Transit = routeTransit.Transit;
-        entity.DepartingTime = routeTransit.DepartingTime;
-        entity.ArrivalTime = routeTransit.ArrivalTime;
-        entity.Route = routeTransit.Route;
+        oldRouteTransit.Transit = newRouteTransit.Transit;
+        oldRouteTransit.DepartingTime = newRouteTransit.DepartingTime;
+        oldRouteTransit.ArrivalTime = newRouteTransit.ArrivalTime;
+        oldRouteTransit.Route = newRouteTransit.Route;
 
         _context.SaveChanges();
-        return true;
     }
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(RouteTransit routeTransit, bool isDeleted)
     {
-        var entity = GetById(id);
-        if (entity is null)
-            return false;
-
-        entity.IsDeleted = isDeleted;
+        routeTransit.IsDeleted = isDeleted;
         _context.SaveChanges();
-        return true;
     }
 }

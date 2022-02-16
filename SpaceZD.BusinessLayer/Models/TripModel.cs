@@ -9,5 +9,14 @@
         public DateTime StartTime { get; set; }
         public List<OrderModel> Orders { get; set; }
         public bool IsDeleted { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is TripModel model &&
+                   Train.Equals(model.Train) &&
+                   Route.Equals(model.Route) &&
+                   StartTime == model.StartTime &&
+                   IsDeleted == model.IsDeleted;
+        }
     }
 }

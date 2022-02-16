@@ -13,6 +13,7 @@ public class RouteModel
     private bool Equals(RouteModel other)
     {
         return Code == other.Code &&
+            Transits.SequenceEqual(other.Transits) &&
             StartTime.Hour == other.StartTime.Hour &&
             StartTime.Minute == other.StartTime.Minute &&
             StartTime.Second == other.StartTime.Second &&

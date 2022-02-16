@@ -15,7 +15,7 @@ public class TripStationRepository : BaseRepository, IRepository<TripStation>
                 .Include(c => c.Station)
                 .FirstOrDefault(c => c.Id == id);
 
-    public IEnumerable<TripStation> GetList() => _context.TripStations.ToList();
+    public List<TripStation> GetList() => _context.TripStations.ToList();
 
     public int Add(TripStation tripStation)
     {
@@ -24,16 +24,12 @@ public class TripStationRepository : BaseRepository, IRepository<TripStation>
         return tripStation.Id;
     }
 
-    public bool Update(TripStation tripStation)
+    public void Update(TripStation entityToEdit, TripStation newEntity)
     {
-        var entity = GetById(tripStation.Id);
-        if (entity == null) return false;
-
-        entity.Platform = tripStation.Platform;
-        entity.ArrivalTime = tripStation.ArrivalTime;
-        entity.DepartingTime = tripStation.DepartingTime;
+        entityToEdit.Platform = newEntity.Platform;
+        entityToEdit.ArrivalTime = newEntity.ArrivalTime;
+        entityToEdit.DepartingTime = newEntity.DepartingTime;
 
         _context.SaveChanges();
-        return true;
     }
 }

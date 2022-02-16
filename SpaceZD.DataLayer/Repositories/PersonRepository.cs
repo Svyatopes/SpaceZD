@@ -4,13 +4,13 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PersonRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Person>
+public class PersonRepository : BaseRepository, IRepositorySoftDelete<Person>
 {
     public PersonRepository(VeryVeryImportantContext context) : base(context) { }
 
     public Person? GetById(int id) => _context.Persons.FirstOrDefault(x => x.Id == id);
 
-    public IEnumerable<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
+    public List<Person> GetList(bool includeAll = false) => _context.Persons.Where(p => !p.IsDeleted || includeAll).ToList();
 
     public int Add(Person person)
     {

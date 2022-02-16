@@ -14,7 +14,7 @@ public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
                 .Include(t => t.Carriages)
                 .FirstOrDefault(t => t.Id == id);
 
-    public IEnumerable<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
 
     public int Add(Train train)
     {
@@ -23,29 +23,19 @@ public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
         return train.Id;
     }
 
-    public bool Update(Train train)
+    public void Update(Train trainOld, Train trainNew)
     {
-        var trainInDb = GetById(train.Id);
-
-        if (trainInDb == null)
-            return false;
-
-        if (trainInDb.Carriages != null && trainInDb.Carriages != train.Carriages)
-            trainInDb.Carriages = train.Carriages;
-
+        trainOld.Carriages = trainNew.Carriages;
         _context.SaveChanges();
-        return false;
-    }
+        
+    }    
 
-    public bool Update(int id, bool isDeleted)
+    public void Update(Train train, bool isDeleted)
     {
-        var train = GetById(id);
-        if (train is null)
-            return false;
-
+        
         train.IsDeleted = isDeleted;
         _context.SaveChanges();
 
-        return true;
     }
+    
 }

@@ -12,4 +12,5 @@ public interface IStationService
     void Delete(int id);
     void Restore(int id);
     void Update(int id, StationModel stationModel);
+    List<PlatformModel> GetReadyPlatformsByStationId(int id, DateTime moment);
 }

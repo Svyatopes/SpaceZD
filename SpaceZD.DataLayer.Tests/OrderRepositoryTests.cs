@@ -3,9 +3,9 @@ using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
-using SpaceZD.DataLayer.Tests.TestCaseSources;
 using System.Collections.Generic;
 using System.Linq;
+using SpaceZD.DataLayer.Tests.TestMocks;
 
 namespace SpaceZD.DataLayer.Tests;
 
@@ -52,10 +52,15 @@ public class OrderRepositoryTests
     public void GetListAllIncludedTest(bool allIncluded)
     {
         //given
-        var orders = _context.Orders.Where(o => !o.IsDeleted || allIncluded);
+        var orders = _context.Orders
+        .Include(o => o.User)
+        .Include(o => o.Trip)
+        .Include(o => o.StartStation)
+        .Include(o => o.EndStation)
+        .Where(p => !p.IsDeleted || allIncluded).ToList();
 
         //when
-        var ordersInDB = (List<Order>)_repository.GetList(allIncluded);
+        var ordersInDB = _repository.GetList(allIncluded);
 
         //then
         Assert.AreEqual(orders, ordersInDB);
@@ -76,7 +81,7 @@ public class OrderRepositoryTests
 
         Assert.AreEqual(orderToAdd, createdOrder);
     }
-    
+
     [Test]
     public void UpdateEntityTest()
     {
@@ -105,7 +110,7 @@ public class OrderRepositoryTests
         var orderToEdit = _context.Orders.First();
 
         //when 
-       _repository.Update(orderToEdit, order);
+        _repository.Update(orderToEdit, order);
 
         //then
         var updatedOrder = _context.Orders.FirstOrDefault(o => o.Id == orderToEdit.Id);
@@ -130,10 +135,10 @@ public class OrderRepositoryTests
         _repository.Update(orderToEdit, isDeleted);
 
         //then
-        
+
         var updatedOrder = _context.Orders.FirstOrDefault(o => o.Id == orderToEdit.Id);
 
         Assert.AreEqual(isDeleted, updatedOrder!.IsDeleted);
         Assert.AreEqual(orderToEdit, updatedOrder);
-    } 
+    }
 }
