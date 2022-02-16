@@ -4,7 +4,6 @@ using AutoMapper;
 using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Configuration;
-using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Entities;
@@ -14,7 +13,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class UserServiceTest
 {
-    private Mock<IRepositorySoftDeleteNewUpdate<User>> _repositoryMock;
+    private Mock<IRepositorySoftDelete<User>> _repositoryMock;
     private readonly IMapper _mapper;
 
     public UserServiceTest()
@@ -24,7 +23,7 @@ public class UserServiceTest
     [SetUp]
     public void Setup()
     {
-        _repositoryMock = new Mock<IRepositorySoftDeleteNewUpdate<User>>();
+        _repositoryMock = new Mock<IRepositorySoftDelete<User>>();
     }
 
     public static IEnumerable<TestCaseData> GetUser()

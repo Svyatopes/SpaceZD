@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<PlatformMaintenance>
+public class PlatformMaintenanceRepository : BaseRepository, IRepositorySoftDelete<PlatformMaintenance>
 {
     public PlatformMaintenanceRepository(VeryVeryImportantContext context) : base(context) { }
 

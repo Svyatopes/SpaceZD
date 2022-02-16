@@ -9,10 +9,10 @@ namespace SpaceZD.BusinessLayer.Services;
 public class RouteService : IRouteService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDeleteNewUpdate<Route> _routeRepository;
+    private readonly IRouteRepository _routeRepository;
     private readonly IStationRepository _stationRepository;
 
-    public RouteService(IMapper mapper, IRepositorySoftDeleteNewUpdate<Route> routeRepository, IStationRepository stationRepository)
+    public RouteService(IMapper mapper, IRouteRepository routeRepository, IStationRepository stationRepository)
     {
         _mapper = mapper;
         _routeRepository = routeRepository;
@@ -28,7 +28,9 @@ public class RouteService : IRouteService
     }
 
     public List<RouteModel> GetList() => _mapper.Map<List<RouteModel>>(_routeRepository.GetList());
-    public List<RouteModel> GetListDeleted() => _mapper.Map<List<RouteModel>>(_routeRepository.GetList(true).Where(t => t.IsDeleted));
+
+    public List<RouteModel> GetListDeleted() =>
+        _mapper.Map<List<RouteModel>>(_routeRepository.GetList(true).Where(t => t.IsDeleted));
 
     public int Add(RouteModel routeModel)
     {

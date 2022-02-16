@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class TripRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Trip>
+public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
 {
     public TripRepository(VeryVeryImportantContext context) : base(context) { }
 

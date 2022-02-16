@@ -4,8 +4,6 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SpaceZD.DataLayer.Tests;
@@ -13,7 +11,7 @@ internal class CarriageRepositoryTests
 {
 
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDeleteNewUpdate<Carriage> _repository;
+    private IRepositorySoftDelete<Carriage> _repository;
 
     [SetUp]
     public void Setup()

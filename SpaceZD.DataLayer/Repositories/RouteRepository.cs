@@ -5,33 +5,40 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Route>
+public class RouteRepository : BaseRepository, IRouteRepository
 {
     public RouteRepository(VeryVeryImportantContext context) : base(context) {}
 
     public Route? GetById(int id)
     {
         var entity = _context.Routes
-                             .Include(r => r.Transits.Where(t => !t.IsDeleted))
+                             .Include(r => r.Transits.Where(t => !t.IsDeleted).OrderBy(g => g.ArrivalTime))
                              .Include(r => r.StartStation)
                              .Include(r => r.EndStation)
                              .FirstOrDefault(r => r.Id == id);
         if (entity is null)
             return null;
-        entity.Transits = entity.Transits.Where(t => !t.IsDeleted).ToList();
+        entity.Transits = entity.Transits
+                                .Where(t => !t.IsDeleted)
+                                .OrderBy(g => g.ArrivalTime)
+                                .ToList();
+
         return entity;
     }
 
     public List<Route> GetList(bool includeAll = false)
     {
         var entities = _context.Routes
-                               .Include(r => r.Transits.Where(t => !t.IsDeleted))
+                               .Include(r => r.Transits.Where(t => !t.IsDeleted).OrderBy(g => g.ArrivalTime))
                                .Include(r => r.StartStation)
                                .Include(r => r.EndStation)
                                .Where(r => !r.IsDeleted || includeAll).ToList();
         foreach (var route in entities)
-            route.Transits = route.Transits.Where(t => !t.IsDeleted).ToList();
-        
+            route.Transits = route.Transits
+                                  .Where(t => !t.IsDeleted)
+                                  .OrderBy(g => g.ArrivalTime)
+                                  .ToList();
+
         return entities;
     }
 
@@ -56,6 +63,13 @@ public class RouteRepository : BaseRepository, IRepositorySoftDeleteNewUpdate<Ro
     {
         route.IsDeleted = isDeleted;
 
+        _context.SaveChanges();
+    }
+
+    public void AddRouteTransitForRoute(Route route, RouteTransit routeTransit)
+    {
+        route.Transits.Add(routeTransit);
+        
         _context.SaveChanges();
     }
 }
