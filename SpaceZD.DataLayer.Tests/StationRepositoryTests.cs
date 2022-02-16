@@ -113,7 +113,7 @@ public class StationRepositoryTests
     public void GetReadyPlatformsStationTest(Station station, List<Platform> expected)
     {
         // when 
-        var actual = _repository.GetReadyPlatformsStation(station, new DateTime(2022, 1, 1));
+        var actual = _repository.GetReadyPlatformsStation(station, new DateTime(2022, 1, 1),new DateTime(2022, 1, 1));
 
         // then
         CollectionAssert.AreEqual(expected, actual);

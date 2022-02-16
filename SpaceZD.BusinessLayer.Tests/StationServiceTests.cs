@@ -131,7 +131,7 @@ public class StationServiceTests
     }
 
 
-    //ReadyPlatforms
+    /*//ReadyPlatforms
     [Test]
     public void GetReadyPlatformsByStationIdTest()
     {
@@ -161,7 +161,7 @@ public class StationServiceTests
         var service = new StationService(_mapper, _stationRepositoryMock.Object);
 
         Assert.Throws<NotFoundException>(() => service.GetReadyPlatformsByStationId(10, DateTime.Today));
-    }
+    }*/
 
 
     //Delete

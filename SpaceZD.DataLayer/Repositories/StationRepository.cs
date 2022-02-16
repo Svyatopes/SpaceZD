@@ -50,15 +50,15 @@ public class StationRepository : BaseRepository, IStationRepository
         _context.SaveChanges();
     }
 
-    public List<Platform> GetReadyPlatformsStation(Station station, DateTime moment)
+    public List<Platform> GetReadyPlatformsStation(Station station, DateTime startMoment, DateTime endMoment)
     {
         return station.Platforms
                       .Where(pl => !pl.IsDeleted &&
                            !pl.PlatformMaintenances
                               .Where(t => !t.IsDeleted)
-                              .Any(pm => pm.StartTime <= moment && pm.EndTime >= moment) &&
+                              .Any(pm => endMoment >= pm.StartTime && startMoment >= pm.EndTime) &&
                            !pl.TripStations
-                              .Any(ts => ts.ArrivalTime <= moment && ts.DepartingTime >= moment))
+                              .Any(ts => endMoment >= ts.ArrivalTime && startMoment >= ts.DepartingTime))
                       .ToList();
     }
 

@@ -21,17 +21,10 @@ public class StationService : IStationService
     {
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        
+
         return _mapper.Map<StationModel>(entity);
     }
 
-    public List<PlatformModel> GetReadyPlatformsByStationId(int id, DateTime moment)
-    {
-        var entity = _repository.GetById(id);
-        ThrowIfEntityNotFound(entity, id);
-
-        return _mapper.Map<List<PlatformModel>>(_repository.GetReadyPlatformsStation(entity!, moment));
-    }
 
     public List<StationModel> GetNearStations(int id)
     {
