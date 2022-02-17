@@ -77,7 +77,7 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Id = 1,
                     Code = "F789",
-                    Transits = new List<RouteTransit>
+                    RouteTransits = new List<RouteTransit>
                     {
                         new()
                         {
@@ -108,7 +108,7 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                         Id = 2,
                         Code = "F799",
-                        Transits = new List<RouteTransit>
+                        RouteTransits = new List<RouteTransit>
                         {
                         new()
                         {
@@ -139,7 +139,7 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                         Id = 3,
                         Code = "F710",
-                        Transits = new List<RouteTransit>
+                        RouteTransits = new List<RouteTransit>
                         {
                         new()
                         {
@@ -172,7 +172,7 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
             {
                 Id = 1,
                 Code = "F700",
-                Transits = new List<RouteTransit>
+                RouteTransits = new List<RouteTransit>
                     {
                         new()
                         {

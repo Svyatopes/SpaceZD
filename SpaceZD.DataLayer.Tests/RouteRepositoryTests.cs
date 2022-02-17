@@ -78,7 +78,7 @@ public class RouteRepositoryTests
         var entityToEdit = _context.Routes.FirstOrDefault(o => o.Id == id);
         var entityUpdate = RouteRepositoryTestCaseSource.GetRoute();
         entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
-        foreach (var rt in entityUpdate.Transits)
+        foreach (var rt in entityUpdate.RouteTransits)
             rt.Route = entityUpdate;
 
         // when 
@@ -90,7 +90,7 @@ public class RouteRepositoryTests
         Assert.AreEqual(entityUpdate.StartStation, entityToEdit.StartStation);
         Assert.AreEqual(entityUpdate.EndStation, entityToEdit.EndStation);
         Assert.AreNotEqual(entityUpdate.IsDeleted, entityToEdit.IsDeleted);
-        CollectionAssert.AreNotEqual(entityUpdate.Transits, entityToEdit.Transits);
+        CollectionAssert.AreNotEqual(entityUpdate.RouteTransits, entityToEdit.RouteTransits);
     }
 
     [TestCase(true)]
