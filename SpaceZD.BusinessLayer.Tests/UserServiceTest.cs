@@ -7,6 +7,7 @@ using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Tests;
@@ -28,28 +29,27 @@ public class UserServiceTest
 
     public static IEnumerable<TestCaseData> GetUser()
     {
-        yield return new TestCaseData(new User { Id = 1, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = DataLayer.Enums.Role.StationManager, IsDeleted = false });
-        yield return new TestCaseData(new User { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.User, IsDeleted = true });
-        yield return new TestCaseData(new User { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = DataLayer.Enums.Role.Admin, IsDeleted = false });
-        yield return new TestCaseData(new User { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = false });
+        yield return new TestCaseData(new User { Id = 1, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = Role.StationManager, IsDeleted = false });
+        yield return new TestCaseData(new User { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = Role.User, IsDeleted = true });
+        yield return new TestCaseData(new User { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = Role.Admin, IsDeleted = false });
+        yield return new TestCaseData(new User { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = Role.TrainRouteManager, IsDeleted = false });
     }
 
     public static IEnumerable<TestCaseData> GetListUsersNotDeleted()
     {
         yield return new TestCaseData(new List<User>
         {
-            new() { Id = 1, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = DataLayer.Enums.Role.StationManager, IsDeleted = false },
-            new() { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.User, IsDeleted = false },
-            new() { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = DataLayer.Enums.Role.Admin, IsDeleted = false },
-            new() { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = false }
-
+            new() { Id = 1, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = Role.StationManager, IsDeleted = false },
+            new() { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = Role.User, IsDeleted = false },
+            new() { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = Role.Admin, IsDeleted = false },
+            new() { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = Role.TrainRouteManager, IsDeleted = false }
     });
         yield return new TestCaseData(new List<User>
         {
-            new() { Id = 5, Name = "Natasha", Login = "Natashaaa", PasswordHash = "fgbhnjngfd", Role = DataLayer.Enums.Role.User, IsDeleted = false },
-            new() { Id = 6, Name = "Lesha", Login = "Leshaaa", PasswordHash = "rtbethhah", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = false },
-            new() { Id = 7, Name = "Misha", Login = "Mishaaa", PasswordHash = "dfvgbtredfvgbtr", Role = DataLayer.Enums.Role.User, IsDeleted = false },
-            new() { Id = 8, Name = "Grisha", Login = "Grishaaa", PasswordHash = "kmjhytgfbnhjytr", Role = DataLayer.Enums.Role.StationManager, IsDeleted = false }
+            new() { Id = 5, Name = "Natasha", Login = "Natashaaa", PasswordHash = "fgbhnjngfd", Role = Role.User, IsDeleted = false },
+            new() { Id = 6, Name = "Lesha", Login = "Leshaaa", PasswordHash = "rtbethhah", Role = Role.TrainRouteManager, IsDeleted = false },
+            new() { Id = 7, Name = "Misha", Login = "Mishaaa", PasswordHash = "dfvgbtredfvgbtr", Role = Role.User, IsDeleted = false },
+            new() { Id = 8, Name = "Grisha", Login = "Grishaaa", PasswordHash = "kmjhytgfbnhjytr", Role = Role.StationManager, IsDeleted = false }
 
         });
     }
@@ -57,18 +57,18 @@ public class UserServiceTest
     {
         yield return new TestCaseData(new List<User>
         {
-            new() { Id = 9, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = DataLayer.Enums.Role.StationManager, IsDeleted = true },
-            new() { Id = 10, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = DataLayer.Enums.Role.User, IsDeleted = true },
-            new() { Id = 11, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = DataLayer.Enums.Role.Admin, IsDeleted = false },
-            new() { Id = 12, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = true }
+            new() { Id = 9, Name = "Sasha", Login = "Sashaaa", PasswordHash = "ierhkjdfhds", Role = Role.StationManager, IsDeleted = true },
+            new() { Id = 10, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = Role.User, IsDeleted = true },
+            new() { Id = 11, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = Role.Admin, IsDeleted = false },
+            new() { Id = 12, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = Role.TrainRouteManager, IsDeleted = true }
 
     });
         yield return new TestCaseData(new List<User>
         {
-            new() { Id = 13, Name = "Natasha", Login = "Natashaaa", PasswordHash = "fgbhnjngfd", Role = DataLayer.Enums.Role.User, IsDeleted = false },
-            new() { Id = 14, Name = "Lesha", Login = "Leshaaa", PasswordHash = "rtbethhah", Role = DataLayer.Enums.Role.TrainRouteManager, IsDeleted = true },
-            new() { Id = 15, Name = "Misha", Login = "Mishaaa", PasswordHash = "dfvgbtredfvgbtr", Role = DataLayer.Enums.Role.User, IsDeleted = true },
-            new() { Id = 16, Name = "Grisha", Login = "Grishaaa", PasswordHash = "kmjhytgfbnhjytr", Role = DataLayer.Enums.Role.StationManager, IsDeleted = false }
+            new() { Id = 13, Name = "Natasha", Login = "Natashaaa", PasswordHash = "fgbhnjngfd", Role = Role.User, IsDeleted = false },
+            new() { Id = 14, Name = "Lesha", Login = "Leshaaa", PasswordHash = "rtbethhah", Role = Role.TrainRouteManager, IsDeleted = true },
+            new() { Id = 15, Name = "Misha", Login = "Mishaaa", PasswordHash = "dfvgbtredfvgbtr", Role = Role.User, IsDeleted = true },
+            new() { Id = 16, Name = "Grisha", Login = "Grishaaa", PasswordHash = "kmjhytgfbnhjytr", Role = Role.StationManager, IsDeleted = false }
 
         });
     }
