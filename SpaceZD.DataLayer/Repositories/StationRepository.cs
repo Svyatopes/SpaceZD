@@ -56,9 +56,9 @@ public class StationRepository : BaseRepository, IStationRepository
                       .Where(pl => !pl.IsDeleted &&
                            !pl.PlatformMaintenances
                               .Where(t => !t.IsDeleted)
-                              .Any(pm => endMoment >= pm.StartTime && startMoment >= pm.EndTime) &&
+                              .Any(pm => endMoment >= pm.StartTime && startMoment <= pm.EndTime) &&
                            !pl.TripStations
-                              .Any(ts => endMoment >= ts.ArrivalTime && startMoment >= ts.DepartingTime))
+                              .Any(ts => endMoment >= ts.ArrivalTime && startMoment <= ts.DepartingTime))
                       .ToList();
     }
 
