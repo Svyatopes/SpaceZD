@@ -7,7 +7,7 @@ namespace SpaceZD.DataLayer.Repositories;
 
 public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
 {
-    public TripRepository(VeryVeryImportantContext context) : base(context) { }
+    public TripRepository(VeryVeryImportantContext context) : base(context) {}
 
     public Trip? GetById(int id) =>
         _context.Trips
@@ -16,7 +16,13 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
                 .Include(t => t.Stations)
                 .FirstOrDefault(t => t.Id == id);
 
-    public List<Trip> GetList(bool includeAll = false) => _context.Trips.Where(t => !t.IsDeleted || includeAll).ToList();
+    public List<Trip> GetList(bool includeAll = false) =>
+        _context.Trips
+                .Where(t => !t.IsDeleted || includeAll)
+                .Include(t => t.Route)
+                .Include(t => t.Train)
+                .Include(t => t.Stations)
+                .ToList();
 
     public int Add(Trip trip)
     {
@@ -28,9 +34,6 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
     public void Update(Trip entityToEdit, Trip newEntity)
     {
         entityToEdit.Train = newEntity.Train;
-        entityToEdit.Route = newEntity.Route;
-        entityToEdit.Stations = newEntity.Stations;
-        entityToEdit.StartTime = newEntity.StartTime;
 
         _context.SaveChanges();
     }
