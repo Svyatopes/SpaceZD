@@ -23,5 +23,8 @@ public class BusinessLayerMapper : Profile
         CreateMap<Trip, TripModel>().ReverseMap();
         CreateMap<TripStation, TripStationModel>().ReverseMap();
         CreateMap<User, UserModel>().ReverseMap();
+        
+        CreateMap<CarriageSeats, CarriageSeatsModel>().ReverseMap();
+        CreateMap<Seat, SeatModel>().ReverseMap();
     }
 }
