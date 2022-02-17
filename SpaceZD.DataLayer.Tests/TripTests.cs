@@ -1,26 +1,23 @@
-﻿using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 using System.Linq;
-using SpaceZD.DataLayer.Entities;
-using SpaceZD.DataLayer.Interfaces;
-using SpaceZD.DataLayer.Tests.TestMocks;
 
 namespace SpaceZD.DataLayer.Tests
 {
     public class TripTests
     {
         private VeryVeryImportantContext _context;
-        private ITripRepository _repository;
+        private TripRepository _repository;
 
         [SetUp]
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                         .UseInMemoryDatabase(databaseName: "Test")
-                         .Options;
+                          .UseInMemoryDatabase(databaseName: "Test")
+                          .Options;
 
             _context = new VeryVeryImportantContext(options);
             _context.Database.EnsureDeleted();
@@ -113,17 +110,6 @@ namespace SpaceZD.DataLayer.Tests
             var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.AreEqual(entityToEdit, entityToUpdated);
-        }
-
-
-        [TestCaseSource(typeof(TripRepositoryMocks), nameof(TripRepositoryMocks.GetTestCaseDataForMarkNonFreeSeatsInListAllSeatsTest))]
-        public void MarkNonFreeSeatsInListAllSeatsTest(Trip trip, Station startStation, Station endStation, List<CarriageSeats> allPlaces, List<CarriageSeats> expected)
-        {
-            // when
-            var actual = _repository.MarkNonFreeSeatsInListAllSeats(trip, startStation, endStation, allPlaces);
-
-            // then
-            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }
