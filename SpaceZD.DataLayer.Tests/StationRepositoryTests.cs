@@ -7,7 +7,7 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using SpaceZD.DataLayer.Tests.TestMocks;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 
 namespace SpaceZD.DataLayer.Tests;
 
@@ -20,8 +20,8 @@ public class StationRepositoryTests
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                     .UseInMemoryDatabase("Test")
-                     .Options;
+                      .UseInMemoryDatabase("Test")
+                      .Options;
 
         _context = new VeryVeryImportantContext(options);
         _repository = new StationRepository(_context);
@@ -29,11 +29,12 @@ public class StationRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        _context.Stations.AddRange(StationRepositoryMocks.GetStations());
+        _context.Stations.AddRange(StationRepositoryTestCaseSource.GetStations());
         _context.SaveChanges();
     }
 
-    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromGetByIdTest))]
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
     public void GetByIdTest(int id, Station expected)
     {
         // when
@@ -43,7 +44,8 @@ public class StationRepositoryTests
         Assert.AreEqual(expected, actual);
     }
 
-    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromGetListTest))]
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(bool includeAll, List<Station> expected)
     {
         // when
@@ -57,7 +59,7 @@ public class StationRepositoryTests
     public void AddTest()
     {
         // given
-        var entityToAdd = StationRepositoryMocks.GetStation();
+        var entityToAdd = StationRepositoryTestCaseSource.GetStation();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -75,7 +77,7 @@ public class StationRepositoryTests
     {
         // given
         var entityToEdit = _context.Stations.FirstOrDefault(o => o.Id == id);
-        var entityUpdate = StationRepositoryMocks.GetStation();
+        var entityUpdate = StationRepositoryTestCaseSource.GetStation();
         entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
         foreach (var pl in entityUpdate.Platforms)
             pl.Station = entityUpdate;
@@ -94,7 +96,7 @@ public class StationRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = StationRepositoryMocks.GetStation();
+        var entityToEdit = StationRepositoryTestCaseSource.GetStation();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Stations.Add(entityToEdit);
         _context.SaveChanges();
@@ -106,7 +108,8 @@ public class StationRepositoryTests
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
     }
 
-    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromReadyPlatformsStation))]
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForReadyPlatformsStation))]
     public void GetReadyPlatformsStationTest(Station station, List<Platform> expected)
     {
         // when 
@@ -116,7 +119,8 @@ public class StationRepositoryTests
         CollectionAssert.AreEqual(expected, actual);
     }
 
-    [TestCaseSource(typeof(StationRepositoryMocks), nameof(StationRepositoryMocks.GetMockFromGetNearStations))]
+    [TestCaseSource(typeof(StationRepositoryTestCaseSource),
+        nameof(StationRepositoryTestCaseSource.GetTestCaseDataForGetNearStations))]
     public void GetNearStations(Station station, List<Station> expected)
     {
         // when 

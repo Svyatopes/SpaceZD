@@ -7,7 +7,7 @@ using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
-using SpaceZD.BusinessLayer.Tests.TestMocks;
+using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -63,7 +63,8 @@ public class StationServiceTests
         // then
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.GetNearStations(station), Times.Once);
-        CollectionAssert.AreEqual(new List<StationModel> { new() { Name = "Владивосток", Platforms = new List<PlatformModel>() } }, actual);
+        CollectionAssert.AreEqual(
+            new List<StationModel> { new() { Name = "Владивосток", Platforms = new List<PlatformModel>() } }, actual);
     }
 
 
@@ -81,8 +82,11 @@ public class StationServiceTests
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(5), Times.Once);
-        Assert.AreEqual(new StationModel { Name = station.Name, Platforms = new List<PlatformModel>(), IsDeleted = station.IsDeleted }, actual);
+        Assert.AreEqual(
+            new StationModel
+                { Name = station.Name, Platforms = new List<PlatformModel>(), IsDeleted = station.IsDeleted }, actual);
     }
+
     [Test]
     public void GetByIdNegativeTest()
     {
@@ -94,7 +98,8 @@ public class StationServiceTests
 
 
     // GetList
-    [TestCaseSource(typeof(StationServiceMocks), nameof(StationServiceMocks.GetMockFromGetListTest))]
+    [TestCaseSource(typeof(StationServiceTestCaseSource),
+        nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(List<Station> stations, List<StationModel> expected)
     {
         // given
@@ -108,7 +113,9 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetList(false), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    [TestCaseSource(typeof(StationServiceMocks), nameof(StationServiceMocks.GetMockFromGetListDeletedTest))]
+
+    [TestCaseSource(typeof(StationServiceTestCaseSource),
+        nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
     public void GetListDeletedTest(List<Station> stations, List<StationModel> expected)
     {
         // given
@@ -142,8 +149,11 @@ public class StationServiceTests
         // then
         _stationRepositoryMock.Verify(s => s.GetById(20), Times.Once);
         _stationRepositoryMock.Verify(s => s.GetReadyPlatformsStation(station, moment), Times.Once);
-        CollectionAssert.AreEqual(new List<PlatformModel> { new() { Number = 2, Station = new StationModel { Name = station.Name } } }, actual);
+        CollectionAssert.AreEqual(
+            new List<PlatformModel> { new() { Number = 2, Station = new StationModel { Name = station.Name } } },
+            actual);
     }
+
     [Test]
     public void GetReadyPlatformsByStationIdNegativeTest()
     {
@@ -171,6 +181,7 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(stations, true), Times.Once);
     }
+
     [Test]
     public void DeleteNegativeTest()
     {
@@ -199,6 +210,7 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(stations, false), Times.Once);
     }
+
     [Test]
     public void RestoreNegativeTest()
     {
@@ -227,6 +239,7 @@ public class StationServiceTests
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(station, It.IsAny<Station>()), Times.Once);
     }
+
     [Test]
     public void UpdateNegativeTest()
     {
