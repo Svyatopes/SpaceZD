@@ -6,14 +6,12 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class CarriageTypeService : ICarriageTypeService
+public class CarriageTypeService : BaseService, ICarriageTypeService
 {
-    private readonly IMapper _mapper;
     private readonly IRepositorySoftDelete<CarriageType> _repository;
 
-    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository)
+    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository) : base(mapper)
     {
-        _mapper = mapper;
         _repository = repository;
     }
 
@@ -51,11 +49,5 @@ public class CarriageTypeService : ICarriageTypeService
         ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, _mapper.Map<CarriageType>(carriageTypeModel));
-    }
-
-    private static void ThrowIfEntityNotFound(CarriageType? entity, int id)
-    {
-        if (entity is null)
-            throw new NotFoundException(nameof(CarriageType), id);
     }
 }

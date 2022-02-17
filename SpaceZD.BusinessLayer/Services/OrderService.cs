@@ -6,14 +6,12 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class OrderService
+public class OrderService : BaseService
 {
-    private readonly IMapper _mapper;
     private readonly IRepositorySoftDelete<Order> _orderRepository;
 
-    public OrderService(IMapper mapper, IRepositorySoftDelete<Order> orderRepository)
+    public OrderService(IMapper mapper, IRepositorySoftDelete<Order> orderRepository) : base(mapper)
     {
-        _mapper = mapper;
         _orderRepository = orderRepository;
     }
 
@@ -64,4 +62,3 @@ public class OrderService
         return orderEntity;
     }
 }
-

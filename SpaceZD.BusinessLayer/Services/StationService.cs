@@ -6,14 +6,12 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class StationService : IStationService
+public class StationService : BaseService, IStationService
 {
-    private readonly IMapper _mapper;
     private readonly IStationRepository _repository;
 
-    public StationService(IMapper mapper, IStationRepository repository)
+    public StationService(IMapper mapper, IStationRepository repository) : base(mapper)
     {
-        _mapper = mapper;
         _repository = repository;
     }
 
@@ -67,11 +65,5 @@ public class StationService : IStationService
         ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, _mapper.Map<Station>(stationModel));
-    }
-
-    private static void ThrowIfEntityNotFound(Station? entity, int id)
-    {
-        if (entity is null)
-            throw new NotFoundException(nameof(Station), id);
     }
 }
