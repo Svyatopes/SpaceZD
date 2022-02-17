@@ -43,7 +43,7 @@ public static class BuilderServicesExtensions
     {
         //Repositories
         services.AddScoped<IRepositorySoftDelete<User>, UserRepository>();
-        services.AddScoped<IRepositorySoftDelete<Trip>, TripRepository>();
+        services.AddScoped<ITripRepository, TripRepository>();
         services.AddScoped<IRepositorySoftDelete<Transit>, TransitRepository>();
         services.AddScoped<IRepositorySoftDelete<Train>, TrainRepository>();
         services.AddScoped<IRepositorySoftDelete<Ticket>, TicketRepository>();

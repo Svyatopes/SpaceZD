@@ -5,9 +5,9 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
+public class TripRepository : BaseRepository, ITripRepository
 {
-    public TripRepository(VeryVeryImportantContext context) : base(context) { }
+    public TripRepository(VeryVeryImportantContext context) : base(context) {}
 
     public Trip? GetById(int id) =>
         _context.Trips
@@ -40,5 +40,41 @@ public class TripRepository : BaseRepository, IRepositorySoftDelete<Trip>
         entity.IsDeleted = isDeleted;
 
         _context.SaveChanges();
+    }
+
+    public List<CarriageSeats> MarkNonFreeSeatsInListAllSeats(Trip trip, Station startStation, Station endStation, List<CarriageSeats> allPlaces)
+    {
+        int start = 0;
+        int count = 0;
+        var stations = new List<TripStation>(trip.Stations);
+
+        for (int i = 0; i < stations.Count; i++)
+        {
+            if (stations[i].Station.Equals(startStation))
+                start = i;
+
+            if (stations[i].Station.Equals(endStation))
+            {
+                count = i - start;
+                break;
+            }
+        }
+        var stationsToTheEnd = stations.Take(start + count).ToList();
+        var stationsAfterTheStart = stations.Skip(start + 1).Take(stations.Count - start - 1).ToList();
+
+        foreach (var order in trip.Orders)
+        {
+            if (stationsToTheEnd.Contains(order.StartStation) && stationsAfterTheStart.Contains(order.EndStation))
+                foreach (var ticket in order.Tickets)
+                {
+                    allPlaces
+                       .Single(g => g.Carriage.Equals(ticket.Carriage))
+                       .Seats
+                       .Single(g => g.NumberOfSeats == ticket.SeatNumber)
+                       .IsFree = false;
+                }
+        }
+
+        return allPlaces;
     }
 }
