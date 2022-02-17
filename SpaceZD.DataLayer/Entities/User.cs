@@ -9,6 +9,7 @@ public class User
     public string Login { get; set; }
     public string PasswordHash { get; set; }
     public virtual ICollection<Order> Orders { get; set; }
+    public virtual ICollection<Person> Persons { get; set; }
     public Role Role { get; set; }
     public bool IsDeleted { get; set; }
 
