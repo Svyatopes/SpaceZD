@@ -77,25 +77,23 @@ namespace SpaceZD.BusinessLayer.Tests
             _platformMaintenanceRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
         }
 
-        //[TestCase(42)]
-        //public void AddTest(int expected)
-        //{
-        //    // given
-        //    _platformMaintenanceRepositoryMock.Setup(x => x.Add(It.IsAny<PlatformMaintenance>())).Returns(expected);
-        //    var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+        [TestCase(10)]
+        public void AddTest(int expected)
+        {
+            // given
+            _platformMaintenanceRepositoryMock.Setup(x => x.Add(It.IsAny<PlatformMaintenance>())).Returns(expected);
+            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
 
-        //    // when
-        //    int actual = service.Add(new PlatformMaintenanceModel
-        //    {
-        //        User = new UserModel { Id = 1 },
-        //        StartStation = new TripStationModel { Id = 2 },
-        //        EndStation = new TripStationModel { Id = 3 },
-        //    });
+            // when
+            int actual = service.Add(new PlatformMaintenanceModel
+            {
+                Platform = new PlatformModel { Id = 1 }
+            });
 
-        //    // then
-        //    _platformMaintenanceRepositoryMock.Verify(s => s.Add(It.IsAny<PlatformMaintenance>()), Times.Once);
-        //    Assert.AreEqual(expected, actual);
-        //}
+            // then
+            _platformMaintenanceRepositoryMock.Verify(s => s.Add(It.IsAny<PlatformMaintenance>()), Times.Once);
+            Assert.AreEqual(expected, actual);
+        }
 
         [Test]
         public void UpdateTest()
@@ -107,10 +105,10 @@ namespace SpaceZD.BusinessLayer.Tests
             var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
 
             // when
-            service.Update(45, new PlatformMaintenanceModel());
+            service.Update(10, new PlatformMaintenanceModel());
 
             // then
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(10), Times.Once);
             _platformMaintenanceRepositoryMock.Verify(s => s.Update(order, It.IsAny<PlatformMaintenance>()), Times.Once);
         }
 
