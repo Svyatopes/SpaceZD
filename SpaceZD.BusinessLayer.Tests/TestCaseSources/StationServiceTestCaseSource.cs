@@ -3,11 +3,11 @@ using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 
-namespace SpaceZD.BusinessLayer.Tests.TestMocks;
+namespace SpaceZD.BusinessLayer.Tests.TestCaseSources;
 
-public static class StationServiceMocks
+public static class StationServiceTestCaseSource
 {
-    internal static IEnumerable<TestCaseData> GetMockFromGetListTest()
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
     {
         yield return new TestCaseData(new List<Station>
             {
@@ -34,8 +34,8 @@ public static class StationServiceMocks
                 new() { Name = "Красное село", Platforms = new List<PlatformModel>(), IsDeleted = false }
             });
     }
-    
-    internal static IEnumerable<TestCaseData> GetMockFromGetListDeletedTest()
+
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListDeletedTest()
     {
         yield return new TestCaseData(new List<Station>
             {

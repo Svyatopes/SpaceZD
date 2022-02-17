@@ -6,7 +6,7 @@ using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
-using SpaceZD.BusinessLayer.Tests.TestMocks;
+using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -21,6 +21,7 @@ public class CarriageTypeServiceTests
     {
         _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<BusinessLayerMapper>()));
     }
+
     [SetUp]
     public void Setup()
     {
@@ -45,7 +46,8 @@ public class CarriageTypeServiceTests
 
 
     // GetById
-    [TestCaseSource(typeof(CarriageTypeServiceMocks), nameof(CarriageTypeServiceMocks.GetMockFromGetByIdTest))]
+    [TestCaseSource(typeof(CarriageTypeServiceTestCaseSource),
+        nameof(CarriageTypeServiceTestCaseSource.GetTestCaseDataForGetByIdTest))]
     public void GetByIdTest(CarriageType carriageType)
     {
         // given
@@ -58,9 +60,13 @@ public class CarriageTypeServiceTests
         // then
         _carriageTypeRepositoryMock.Verify(s => s.GetById(5), Times.Once);
         Assert.AreEqual(
-            new CarriageTypeModel { Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted },
+            new CarriageTypeModel
+            {
+                Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, IsDeleted = carriageType.IsDeleted
+            },
             actual);
     }
+
     [Test]
     public void GetByIdNegativeTest()
     {
@@ -72,7 +78,8 @@ public class CarriageTypeServiceTests
 
 
     // GetList
-    [TestCaseSource(typeof(CarriageTypeServiceMocks), nameof(CarriageTypeServiceMocks.GetMockFromGetListTest))]
+    [TestCaseSource(typeof(CarriageTypeServiceTestCaseSource),
+        nameof(CarriageTypeServiceTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(List<CarriageType> carriageTypes, List<CarriageTypeModel> expected)
     {
         // given
@@ -86,13 +93,15 @@ public class CarriageTypeServiceTests
         _carriageTypeRepositoryMock.Verify(s => s.GetList(false), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    [TestCaseSource(typeof(CarriageTypeServiceMocks), nameof(CarriageTypeServiceMocks.GetMockFromGetListDeletedTest))]
+
+    [TestCaseSource(typeof(CarriageTypeServiceTestCaseSource),
+        nameof(CarriageTypeServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
     public void GetListDeletedTest(List<CarriageType> carriageTypes, List<CarriageTypeModel> expected)
     {
         // given
         _carriageTypeRepositoryMock.Setup(x => x.GetList(true)).Returns(carriageTypes);
         var service = new CarriageTypeService(_mapper, _carriageTypeRepositoryMock.Object);
-        
+
         // when
         var actual = service.GetListDeleted();
 
@@ -119,6 +128,7 @@ public class CarriageTypeServiceTests
         _carriageTypeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _carriageTypeRepositoryMock.Verify(s => s.Update(carriageType, true), Times.Once);
     }
+
     [Test]
     public void DeleteNegativeTest()
     {
@@ -147,6 +157,7 @@ public class CarriageTypeServiceTests
         _carriageTypeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _carriageTypeRepositoryMock.Verify(s => s.Update(carriageType, false), Times.Once);
     }
+
     [Test]
     public void RestoreNegativeTest()
     {
@@ -175,6 +186,7 @@ public class CarriageTypeServiceTests
         _carriageTypeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _carriageTypeRepositoryMock.Verify(s => s.Update(carriageType, It.IsAny<CarriageType>()), Times.Once);
     }
+
     [Test]
     public void UpdateNegativeTest()
     {
