@@ -1,20 +1,17 @@
 using AutoMapper;
-using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class TripService : ITripService
+public class TripService : BaseService, ITripService
 {
-    private IMapper _mapper;
-    private IRepositorySoftDelete<Trip> _repository;
-    private IStationRepository _stationRepository;
+    private readonly IRepositorySoftDelete<Trip> _repository;
+    private readonly IStationRepository _stationRepository;
 
-    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository)
+    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository) : base(mapper)
     {
-        _mapper = mapper;
         _repository = repository;
         _stationRepository = stationRepository;
     }
@@ -83,12 +80,5 @@ public class TripService : ITripService
         }
 
         return allPlacesModels;
-    }
-
-
-    private static void ThrowIfEntityNotFound<T>(T? entity, int id)
-    {
-        if (entity is null)
-            throw new NotFoundException(typeof(T).Name, id);
     }
 }
