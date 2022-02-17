@@ -1,6 +1,6 @@
-﻿using SpaceZD.DataLayer.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using SpaceZD.DataLayer.Entities;
 
 namespace SpaceZD.DataLayer.Tests.TestCaseSources
 {
@@ -36,7 +36,7 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 Route = new Route()
                 {
                     Id = 2,
-                    Code = "F799",                        
+                    Code = "F799",
                     StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
                     StartStation = new Station { Name = "С-Пб" },
                     EndStation = new Station { Name = "Выборг" }
@@ -77,22 +77,22 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Id = 1,
                     Code = "F789",
-                    Transits = new List<RouteTransit>
+                    RouteTransits = new List<RouteTransit>
                     {
                         new()
                         {
                             Transit = new Transit
-                                {
-                                    StartStation = new Station { Name = "С-Пб" },
-                                    EndStation = new Station { Name = "Выборг" }
-                                 },
+                            {
+                                StartStation = new Station { Name = "С-Пб" },
+                                EndStation = new Station { Name = "Выборг" }
+                            },
                             DepartingTime = new TimeSpan(0, 0, 1),
                             ArrivalTime = new TimeSpan(2, 30, 0)
                         }
                     },
-                StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
-                StartStation = new Station { Name = "С-Пб" },
-                EndStation = new Station { Name = "Выборг" }
+                    StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
+                    StartStation = new Station { Name = "С-Пб" },
+                    EndStation = new Station { Name = "Выборг" }
                 },
                 StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
                 IsDeleted = false
@@ -106,24 +106,24 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 },
                 Route = new Route()
                 {
-                        Id = 2,
-                        Code = "F799",
-                        Transits = new List<RouteTransit>
-                        {
+                    Id = 2,
+                    Code = "F799",
+                    RouteTransits = new List<RouteTransit>
+                    {
                         new()
                         {
-                        Transit = new Transit
+                            Transit = new Transit
                             {
                                 StartStation = new Station { Name = "С-Пб" },
                                 EndStation = new Station { Name = "Выборг" }
                             },
-                        DepartingTime = new TimeSpan(0, 0, 1),
-                        ArrivalTime = new TimeSpan(2, 30, 0)
+                            DepartingTime = new TimeSpan(0, 0, 1),
+                            ArrivalTime = new TimeSpan(2, 30, 0)
                         }
-                        },
-                StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
-                StartStation = new Station { Name = "С-Пб" },
-                EndStation = new Station { Name = "Выборг" }
+                    },
+                    StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
+                    StartStation = new Station { Name = "С-Пб" },
+                    EndStation = new Station { Name = "Выборг" }
                 },
                 StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
                 IsDeleted = false
@@ -137,24 +137,24 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 },
                 Route = new Route()
                 {
-                        Id = 3,
-                        Code = "F710",
-                        Transits = new List<RouteTransit>
-                        {
+                    Id = 3,
+                    Code = "F710",
+                    RouteTransits = new List<RouteTransit>
+                    {
                         new()
                         {
-                        Transit = new Transit
+                            Transit = new Transit
                             {
                                 StartStation = new Station { Name = "С-Пб" },
                                 EndStation = new Station { Name = "Выборг" }
                             },
-                        DepartingTime = new TimeSpan(0, 0, 1),
-                        ArrivalTime = new TimeSpan(2, 30, 0)
+                            DepartingTime = new TimeSpan(0, 0, 1),
+                            ArrivalTime = new TimeSpan(2, 30, 0)
                         }
-                        },
-                StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
-                StartStation = new Station { Name = "С-Пб" },
-                EndStation = new Station { Name = "Выборг" }
+                    },
+                    StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
+                    StartStation = new Station { Name = "С-Пб" },
+                    EndStation = new Station { Name = "Выборг" }
                 },
                 StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
                 IsDeleted = false
@@ -172,19 +172,19 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
             {
                 Id = 1,
                 Code = "F700",
-                Transits = new List<RouteTransit>
+                RouteTransits = new List<RouteTransit>
+                {
+                    new()
                     {
-                        new()
+                        Transit = new Transit
                         {
-                            Transit = new Transit
-                                {
-                                    StartStation = new Station { Name = "С-Пб" },
-                                    EndStation = new Station { Name = "Выборг" }
-                                 },
-                            DepartingTime = new TimeSpan(0, 0, 1),
-                            ArrivalTime = new TimeSpan(2, 30, 0)
-                        }
-                    },
+                            StartStation = new Station { Name = "С-Пб" },
+                            EndStation = new Station { Name = "Выборг" }
+                        },
+                        DepartingTime = new TimeSpan(0, 0, 1),
+                        ArrivalTime = new TimeSpan(2, 30, 0)
+                    }
+                },
                 StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
                 StartStation = new Station { Name = "С-Пб" },
                 EndStation = new Station { Name = "Выборг" }

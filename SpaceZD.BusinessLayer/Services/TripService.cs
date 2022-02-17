@@ -9,11 +9,106 @@ public class TripService : BaseService, ITripService
 {
     private readonly IRepositorySoftDelete<Trip> _repository;
     private readonly IStationRepository _stationRepository;
+    private readonly IRepositorySoftDelete<Route> _routeRepository;
+    private readonly IRepositorySoftDelete<Train> _trainRepository;
 
-    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository) : base(mapper)
+    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository, IRepositorySoftDelete<Route> routeRepository,
+                       IRepositorySoftDelete<Train> trainRepository) : base(mapper)
     {
         _repository = repository;
         _stationRepository = stationRepository;
+        _routeRepository = routeRepository;
+        _trainRepository = trainRepository;
+    }
+
+
+    public TripModel GetById(int id)
+    {
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        return _mapper.Map<TripModel>(entity);
+    }
+
+    public List<TripModel> GetList() => _mapper.Map<List<TripModel>>(_repository.GetList());
+
+    public List<TripModel> GetListDeleted() => _mapper.Map<List<TripModel>>(_repository.GetList(true).Where(t => t.IsDeleted));
+
+    public void Delete(int id)
+    {
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _repository.Update(entity!, true);
+    }
+
+    public void Restore(int id)
+    {
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _repository.Update(entity!, false);
+    }
+
+    public void Update(int id, TripModel tripModel)
+    {
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _repository.Update(entity!, _mapper.Map<Trip>(tripModel));
+    }
+
+    public int Add(TripModel tripModel)
+    {
+        var route = _routeRepository.GetById(tripModel.Route.Id);
+        ThrowIfEntityNotFound(route, tripModel.Route.Id);
+        var train = _trainRepository.GetById(tripModel.Train.Id);
+        ThrowIfEntityNotFound(train, tripModel.Train.Id);
+
+        tripModel.StartTime = new DateTime(tripModel.StartTime.Year,
+            tripModel.StartTime.Month,
+            tripModel.StartTime.Day,
+            route!.StartTime.Hour,
+            route.StartTime.Minute,
+            route.StartTime.Second);
+        tripModel.IsDeleted = false;
+
+        var routeModel = _mapper.Map<RouteModel>(route);
+        var trainModel = _mapper.Map<TrainModel>(train);
+
+        tripModel.Route = routeModel;
+        tripModel.Train = trainModel;
+
+        if (!routeModel.RouteTransits.Any())
+            throw new InvalidDataException("У выбранного маршрута отсутствуют перегоны между станциями.");
+        
+        
+        tripModel.Stations.Add(new TripStationModel
+        {
+            ArrivalTime = new DateTime(),
+            DepartingTime = tripModel.StartTime,
+            Station = routeModel.RouteTransits[0].Transit.StartStation
+        });
+
+        for (int i = 0; i < routeModel.RouteTransits.Count - 1; i++)
+        {
+            tripModel.Stations.Add(new TripStationModel
+            {
+                ArrivalTime = tripModel.StartTime.Add(routeModel.RouteTransits[i].ArrivalTime),
+                DepartingTime = tripModel.StartTime.Add(routeModel.RouteTransits[i + 1].DepartingTime),
+                Station = routeModel.RouteTransits[i].Transit.EndStation
+            });
+        }
+
+        tripModel.Stations.Add(new TripStationModel
+        {
+            ArrivalTime = tripModel.StartTime.Add(routeModel.RouteTransits[^1].ArrivalTime),
+            DepartingTime = new DateTime(),
+            Station = routeModel.RouteTransits[^1].Transit.EndStation
+        });
+        
+        var trip = _mapper.Map<Trip>(tripModel);
+        return _repository.Add(trip);
     }
 
     public List<CarriageSeatsModel> GetFreeSeat(int idTrip, int idStartStation, int idEndStation)

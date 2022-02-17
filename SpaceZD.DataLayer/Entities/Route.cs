@@ -4,7 +4,7 @@ public class Route
 {
     public int Id { get; set; }
     public string Code { get; set; }
-    public virtual ICollection<RouteTransit> Transits { get; set; }
+    public virtual ICollection<RouteTransit> RouteTransits { get; set; }
     public DateTime StartTime { get; set; }
     public virtual Station StartStation { get; set; }
     public virtual Station EndStation { get; set; }
@@ -15,7 +15,7 @@ public class Route
     private bool Equals(Route other)
     {
         return Code == other.Code &&
-            Transits.SequenceEqual(other.Transits) &&
+            RouteTransits.SequenceEqual(other.RouteTransits) &&
             StartTime.Hour == other.StartTime.Hour &&
             StartTime.Minute == other.StartTime.Minute &&
             StartTime.Second == other.StartTime.Second &&
