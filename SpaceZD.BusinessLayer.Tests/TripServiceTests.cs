@@ -256,6 +256,7 @@ public class TripServiceTests
         var trip = new Trip();
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), It.IsAny<Trip>()));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip);
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
         var service = new TripService(_mapper,
             _tripRepositoryMock.Object,
             _stationRepositoryMock.Object,
@@ -263,10 +264,11 @@ public class TripServiceTests
             _trainRepositoryMock.Object);
 
         // when
-        service.Update(45, new TripModel());
+        service.Update(45, new TripModel { Train = new TrainModel { Id = 10 } });
 
         // then
         _tripRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _trainRepositoryMock.Verify(s => s.GetById(10), Times.Once);
         _tripRepositoryMock.Verify(s => s.Update(trip, It.IsAny<Trip>()), Times.Once);
     }
 

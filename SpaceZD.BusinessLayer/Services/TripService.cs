@@ -54,6 +54,10 @@ public class TripService : BaseService, ITripService
     {
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
+        var train = _trainRepository.GetById(tripModel.Train.Id);
+        ThrowIfEntityNotFound(train, tripModel.Train.Id);
+
+        tripModel.Train = _mapper.Map<TrainModel>(train);
 
         _repository.Update(entity!, _mapper.Map<Trip>(tripModel));
     }
@@ -81,8 +85,8 @@ public class TripService : BaseService, ITripService
 
         if (!routeModel.RouteTransits.Any())
             throw new InvalidDataException("У выбранного маршрута отсутствуют перегоны между станциями.");
-        
-        
+
+
         tripModel.Stations.Add(new TripStationModel
         {
             ArrivalTime = new DateTime(), //TODO поменять после миграций
@@ -106,7 +110,7 @@ public class TripService : BaseService, ITripService
             DepartingTime = new DateTime(), //TODO поменять после миграций
             Station = routeModel.RouteTransits[^1].Transit.EndStation
         });
-        
+
         var trip = _mapper.Map<Trip>(tripModel);
         return _repository.Add(trip);
     }
