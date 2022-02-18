@@ -111,80 +111,115 @@ public static class StationRepositoryTestCaseSource
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForReadyPlatformsStation()
     {
-        var allTimePM = new PlatformMaintenance
-            { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = false };
-        var allTimeDeletedPM = new PlatformMaintenance
-            { StartTime = DateTime.MinValue, EndTime = DateTime.MaxValue, IsDeleted = true };
-        var notTimePM = new PlatformMaintenance
-            { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = false };
-        var notTimeDeletedPM = new PlatformMaintenance
-            { StartTime = DateTime.MinValue, EndTime = DateTime.MinValue, IsDeleted = true };
+        var station = new Station
+             {
+                 Name = "Москва",
+                 
+             };
+        
+        var platformMaintenance = new PlatformMaintenance { StartTime = new DateTime(2000, 1, 1), EndTime = new DateTime(2001, 1, 1), IsDeleted = false };
+        var deletedPlatformMaintenance = new PlatformMaintenance { StartTime = new DateTime(2000, 1, 1), EndTime = new DateTime(2001, 1, 1), IsDeleted = true };
 
-        var allTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MaxValue };
-        var notTimeTS = new TripStation { ArrivalTime = DateTime.MinValue, DepartingTime = DateTime.MinValue };
+        var tripStation = new TripStation { ArrivalTime = new DateTime(1998, 1, 1), DepartingTime = new DateTime(1999, 1, 1) };
 
-        var notReadyPlatformFist = new Platform
+        var platformTripStation = new Platform
         {
             Number = 1,
-            PlatformMaintenances = new List<PlatformMaintenance> { allTimeDeletedPM, notTimeDeletedPM },
-            TripStations = new List<TripStation> { allTimeTS, notTimeTS },
+            Station = station,
+            PlatformMaintenances = new List<PlatformMaintenance>(),
+            TripStations = new List<TripStation> { tripStation },
             IsDeleted = false
         };
-        var notReadyPlatformSecond = new Platform
-        {
-            Number = 5,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimePM, notTimeDeletedPM, allTimePM },
-            TripStations = new List<TripStation> { allTimeTS },
-            IsDeleted = false
-        };
-        var notReadyDeletedPlatform = new Platform
+        var platformPlatformMaintenance = new Platform
         {
             Number = 2,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimePM, notTimeDeletedPM, allTimePM },
-            TripStations = new List<TripStation> { allTimeTS },
-            IsDeleted = true
-        };
-        var readyPlatform = new Platform
-        {
-            Number = 3,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimeDeletedPM, allTimeDeletedPM },
-            TripStations = new List<TripStation> { notTimeTS },
+            Station = station,
+            PlatformMaintenances = new List<PlatformMaintenance> { platformMaintenance },
+            TripStations = new List<TripStation>(),
             IsDeleted = false
         };
-        var readyDeletedPlatform = new Platform
+        var platformDeletedPlatformMaintenance = new Platform
+        {
+            Number = 3,
+            Station = station,
+            PlatformMaintenances = new List<PlatformMaintenance> { deletedPlatformMaintenance },
+            TripStations = new List<TripStation>(),
+            IsDeleted = false
+        };
+        var deletedPlatform = new Platform
         {
             Number = 4,
-            PlatformMaintenances = new List<PlatformMaintenance> { notTimeDeletedPM, allTimePM, allTimeDeletedPM },
-            TripStations = new List<TripStation> { notTimeTS },
+            Station = station,
+            PlatformMaintenances = new List<PlatformMaintenance>(),
+            TripStations = new List<TripStation>(),
             IsDeleted = true
         };
 
-        yield return new TestCaseData(new Station
-            {
-                Name = "Москва",
-                Platforms = new List<Platform>
-                {
-                    notReadyPlatformFist, notReadyPlatformSecond, notReadyDeletedPlatform, readyPlatform,
-                    readyDeletedPlatform
-                }
-            },
-            new List<Platform> { readyPlatform });
-        yield return new TestCaseData(new Station
-            {
-                Name = "Выборг",
-                Platforms = new List<Platform> { readyPlatform, readyPlatform, readyPlatform, notReadyPlatformSecond }
-            },
-            new List<Platform>
-            {
-                readyPlatform, readyPlatform, readyPlatform
-            });
-        yield return new TestCaseData(new Station
-            {
-                Name = "Сочи",
-                Platforms = new List<Platform>
-                    { readyDeletedPlatform, notReadyDeletedPlatform, notReadyPlatformSecond, notReadyPlatformFist }
-            },
-            new List<Platform>());
+        station.Platforms = new List<Platform>
+        {
+            platformTripStation, platformPlatformMaintenance, platformDeletedPlatformMaintenance, deletedPlatform
+        };
+
+        yield return new TestCaseData(station,
+            new DateTime(1977, 1, 1),
+            new DateTime(1988, 1, 1),
+            new List<Platform> { platformTripStation, platformPlatformMaintenance, platformDeletedPlatformMaintenance, });
+        yield return new TestCaseData(station,
+            new DateTime(1977, 1, 1),
+            new DateTime(2200, 1, 1),
+            new List<Platform> { platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1977, 1, 1),
+            new DateTime(1998, 2, 1),
+            new List<Platform> { platformPlatformMaintenance, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1977, 1, 1),
+            new DateTime(1999, 2, 1),
+            new List<Platform> { platformPlatformMaintenance, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1977, 1, 1),
+            new DateTime(2000, 2, 1),
+            new List<Platform> { platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1998, 2, 1),
+            new DateTime(1998, 3, 1),
+            new List<Platform> { platformPlatformMaintenance, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1998, 2, 1),
+            new DateTime(1999, 2, 1),
+            new List<Platform> { platformPlatformMaintenance, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1998, 2, 1),
+            new DateTime(2000, 2, 1),
+            new List<Platform> { platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1998, 2, 1),
+            new DateTime(2200, 1, 1),
+            new List<Platform> { platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1999, 2, 1),
+            new DateTime(1999, 3, 1),
+            new List<Platform> { platformTripStation, platformPlatformMaintenance, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1999, 2, 1),
+            new DateTime(2000, 3, 1),
+            new List<Platform> { platformTripStation, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(1999, 2, 1),
+            new DateTime(2200, 1, 1),
+            new List<Platform> { platformTripStation, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(2000, 2, 1),
+            new DateTime(2000, 3, 1),
+            new List<Platform> { platformTripStation, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(2000, 2, 1),
+            new DateTime(2200, 1, 1),
+            new List<Platform> { platformTripStation, platformDeletedPlatformMaintenance });
+        yield return new TestCaseData(station,
+            new DateTime(2100, 1, 1),
+            new DateTime(2200, 1, 1),
+            new List<Platform> { platformTripStation, platformPlatformMaintenance, platformDeletedPlatformMaintenance, });
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetNearStations()
