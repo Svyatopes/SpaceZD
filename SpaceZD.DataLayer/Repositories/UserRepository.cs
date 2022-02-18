@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class UserRepository : BaseRepository, IRepositorySoftDelete<User>, ILoginUser
+public class UserRepository : BaseRepository, IUserRepository, ILoginUser
 {
     public UserRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -14,6 +14,17 @@ public class UserRepository : BaseRepository, IRepositorySoftDelete<User>, ILogi
         var entity = _context.Users
                              .Include(u => u.Orders.Where(o => !o.IsDeleted))
                              .FirstOrDefault(u => u.Id == id);
+        if (entity is null)
+            return null;
+        entity.Orders = entity.Orders.Where(o => !o.IsDeleted).ToList();
+        return entity;
+        
+    }
+    public User? GetByLogin(string login)
+    {
+        var entity = _context.Users
+                             .Include(u => u.Orders.Where(o => !o.IsDeleted))
+                             .FirstOrDefault(u => u.Login == login);
         if (entity is null)
             return null;
         entity.Orders = entity.Orders.Where(o => !o.IsDeleted).ToList();

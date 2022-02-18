@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.DataLayer.Enums;
+using System.Security.Claims;
 
 namespace SpaceZD.API.Controllers;
 
@@ -13,10 +17,12 @@ public class UsersController : ControllerBase
 
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
+
     public UsersController(IUserService userService, IMapper mapper)
     {
         _userService = userService;
         _mapper = mapper;
+       
     }
 
 
@@ -33,6 +39,7 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<UserModel> GetUserById(int id)
     {
+        
         var userModel = _userService.GetById(id);
         var user = _mapper.Map<UserFullOutputModel>(userModel);
         if (user != null)
@@ -40,22 +47,35 @@ public class UsersController : ControllerBase
         else
             return BadRequest("User doesn't exist");
     }
-
+    
+    [HttpGet("login")]
+    public ActionResult<UserModel> GetUserByLogin()
+    {
+        var login = HttpContext.User.Identity.Name;
+        var userModel = _userService.GetByLogin(login);
+        var user = _mapper.Map<UserFullOutputModel>(userModel);
+        return Ok(user);
+        
+    }
+    
 
     [HttpPost]
     public ActionResult AddUser(UserRegisterInputModel userModel)
     {
         var user = _mapper.Map<UserModel>(userModel);
+        user.Role = Role.User;
         var idAddedEntity = _userService.Add(user, userModel.Password);
+        
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
-    [HttpPut("{id}")]
-    public ActionResult EditUser(int id, UserUpdateInputModel user)
+    [HttpPut("login")]
+    public ActionResult EditUser(UserUpdateInputModel user)
     {
-
+        var login = HttpContext.User.Identity.Name;
+        var userModel = _userService.GetByLogin(login);
         var userForEdit = _mapper.Map<UserModel>(user);
-        _userService.Update(id, userForEdit);
+        _userService.Update(userModel.Id, userForEdit);
         return Accepted();
 
     }

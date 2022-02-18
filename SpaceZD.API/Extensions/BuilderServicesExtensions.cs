@@ -42,7 +42,7 @@ public static class BuilderServicesExtensions
     public static void AddRepositoriesScoped(this IServiceCollection services)
     {
         //Repositories
-        services.AddScoped<IRepositorySoftDelete<User>, UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRepositorySoftDelete<Trip>, TripRepository>();
         services.AddScoped<IRepositorySoftDelete<Transit>, TransitRepository>();
         services.AddScoped<IRepositorySoftDelete<Train>, TrainRepository>();
