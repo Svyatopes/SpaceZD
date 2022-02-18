@@ -9,12 +9,28 @@ public class UserRepository : BaseRepository, IRepositorySoftDelete<User>, ILogi
 {
     public UserRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public User? GetById(int id) =>
-        _context.Users
-                .Include(u => u.Orders)
-                .FirstOrDefault(u => u.Id == id);
+    public User? GetById(int id)
+    {
+        var entity = _context.Users
+                             .Include(u => u.Orders.Where(o => !o.IsDeleted))
+                             .FirstOrDefault(u => u.Id == id);
+        if (entity is null)
+            return null;
+        entity.Orders = entity.Orders.Where(o => !o.IsDeleted).ToList();
+        return entity;
+        
+    }
 
-    public List<User> GetList(bool includeAll = false) => _context.Users.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<User> GetList(bool includeAll = false)
+    { 
+        var entities = _context.Users
+                               .Include(u => u.Orders.Where(o => !o.IsDeleted))                               
+                               .Where(u => !u.IsDeleted || includeAll).ToList();
+
+        foreach (var user in entities)
+            user.Orders = user.Orders.Where(o => !o.IsDeleted).ToList();
+        return entities;
+    }
 
     public int Add(User user)
     {

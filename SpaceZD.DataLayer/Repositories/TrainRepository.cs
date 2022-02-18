@@ -9,12 +9,29 @@ public class TrainRepository : BaseRepository, IRepositorySoftDelete<Train>
 {
     public TrainRepository(VeryVeryImportantContext context) : base(context) { }
 
-    public Train? GetById(int id) =>
-        _context.Trains
-                .Include(t => t.Carriages)
-                .FirstOrDefault(t => t.Id == id);
+    public Train? GetById(int id)
+    {
+        var entity = _context.Trains
+                             .Include(t => t.Carriages.Where(c => !c.IsDeleted))
+                             .FirstOrDefault(t => t.Id == id);
+        if (entity is null)
+            return null;
+        entity.Carriages = entity.Carriages.Where(c => !c.IsDeleted).ToList();
+        return entity;
+    }
 
-    public List<Train> GetList(bool includeAll = false) => _context.Trains.Where(c => !c.IsDeleted || includeAll).ToList();
+    public List<Train> GetList(bool includeAll = false)
+    {
+        var entities = _context.Trains
+                               .Include(t => t.Carriages.Where(c => !c.IsDeleted))
+                               .Where(t => !t.IsDeleted || includeAll).ToList();
+
+        foreach (var train in entities)
+            train.Carriages = train.Carriages.Where(c => !c.IsDeleted).ToList();
+        return entities;      
+
+
+    }
 
     public int Add(Train train)
     {
