@@ -1,21 +1,18 @@
 ﻿using AutoMapper;
 using SpaceZD.BusinessLayer.Exceptions;
-using SpaceZD.BusinessLayer.Helpers;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class TrainService : ITrainService
+    public class TrainService : BaseService, ITrainService
     {
         private readonly IRepositorySoftDelete<Train> _trainRepository;
-        private readonly IMapper _mapper;
 
-        public TrainService(IRepositorySoftDelete<Train> trainRepository, IMapper mapper)
+        public TrainService(IRepositorySoftDelete<Train> trainRepository, IMapper mapper) : base(mapper)
         {
             _trainRepository = trainRepository;
-            _mapper = mapper;
         }
 
         public TrainModel GetById(int id)
@@ -37,7 +34,6 @@ namespace SpaceZD.BusinessLayer.Services
             return _mapper.Map<List<TrainModel>>(entities);
 
         }
-
 
         public int Add(TrainModel entity)
         {

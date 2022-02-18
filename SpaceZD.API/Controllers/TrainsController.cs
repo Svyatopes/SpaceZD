@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
+using SpaceZD.BusinessLayer.Services;
 
 namespace SpaceZD.API.Controllers;
 
@@ -7,35 +10,74 @@ namespace SpaceZD.API.Controllers;
 [Route("api/[controller]")]
 public class TrainsController : ControllerBase
 {
-    [HttpGet]
-    public ActionResult<List<TrainModel>> GetTickets()
+
+    private readonly ITrainService _trainService;
+    private readonly IMapper _mapper;
+    public TrainsController(ITrainService trainService, IMapper mapper)
     {
-        return Ok(new List<TrainModel> { new TrainModel() });
+        _trainService = trainService;
+        _mapper = mapper;
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<TrainModel> GetTicketById(int id)
+
+    [HttpGet]
+    public ActionResult<List<TrainModel>> GetTrains()
     {
-        return Ok(new TrainModel());
+        var trainModel = _trainService.GetList();
+        var trains = _mapper.Map<List<TrainOutputModel>>(trainModel);
+        if (trains != null)
+            return Ok(trains);
+        return BadRequest("Oh.....");
+    }
+
+
+
+    [HttpGet("{id}")]
+    public ActionResult<TrainModel> GetTrainById(int id)
+    {
+        var trainModel = _trainService.GetById(id);
+        var train = _mapper.Map<TrainOutputModel>(trainModel);
+        if (train != null)
+            return Ok(train);
+        else
+            return BadRequest("Train doesn't exist");
     }
 
 
     [HttpPost]
-    public ActionResult AddTrain(TrainModel train)
+    public ActionResult AddTrain()
     {
-        return StatusCode(StatusCodes.Status201Created, train);
+        var idAddedEntity = _trainService.Add(new TrainModel());
+        return StatusCode(StatusCodes.Status201Created, idAddedEntity);
+
     }
 
+    //как будто этого тут не должно быть
+
+    /*
     [HttpPut("{id}")]
     public ActionResult EditTrain(int id, TrainModel train)
     {
-        return BadRequest();
+        var trainForEdit = _mapper.Map<TrainModel>(train);
+        _trainService.Update(id, trainForEdit);
+        return Accepted();
     }
+    */
 
     [HttpDelete("{id}")]
     public ActionResult DeleteTrain(int id)
     {
+        _trainService.Delete(id);
         return Accepted();
+    }
+
+
+    [HttpPatch("{id}")]
+    public ActionResult RestoreTrain(int id)
+    {
+        _trainService.Restore(id);
+        return Accepted();
+
     }
 
 }
