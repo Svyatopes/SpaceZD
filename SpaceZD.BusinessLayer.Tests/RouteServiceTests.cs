@@ -6,7 +6,7 @@ using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
-using SpaceZD.BusinessLayer.Tests.TestMocks;
+using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
@@ -41,7 +41,8 @@ public class RouteServiceTests
         var service = new RouteService(_mapper, _routeRepositoryMock.Object, _stationRepositoryMock.Object);
 
         // when
-        int actual = service.Add(new RouteModel { StartStation = new StationModel { Id = 5 }, EndStation = new StationModel { Id = 6 } });
+        int actual = service.Add(new RouteModel
+            { StartStation = new StationModel { Id = 5 }, EndStation = new StationModel { Id = 6 } });
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(5), Times.Once);
@@ -52,7 +53,8 @@ public class RouteServiceTests
 
 
     // GetById
-    [TestCaseSource(typeof(RouteServiceMocks), nameof(RouteServiceMocks.GetMockFromGetByIdTest))]
+    [TestCaseSource(typeof(RouteServiceTestCaseSource),
+        nameof(RouteServiceTestCaseSource.GetTestCaseDataForGetByIdTest))]
     public void GetByIdTest(Route route, RouteModel expected)
     {
         // given
@@ -66,6 +68,7 @@ public class RouteServiceTests
         _routeRepositoryMock.Verify(s => s.GetById(5), Times.Once);
         Assert.AreEqual(expected, actual);
     }
+
     [Test]
     public void GetByIdNegativeTest()
     {
@@ -77,7 +80,8 @@ public class RouteServiceTests
 
 
     // GetList
-    [TestCaseSource(typeof(RouteServiceMocks), nameof(RouteServiceMocks.GetMockFromGetListTest))]
+    [TestCaseSource(typeof(RouteServiceTestCaseSource),
+        nameof(RouteServiceTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(List<Route> routes, List<RouteModel> expected)
     {
         // given
@@ -91,7 +95,9 @@ public class RouteServiceTests
         _routeRepositoryMock.Verify(s => s.GetList(false), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    [TestCaseSource(typeof(RouteServiceMocks), nameof(RouteServiceMocks.GetMockFromGetListDeletedTest))]
+
+    [TestCaseSource(typeof(RouteServiceTestCaseSource),
+        nameof(RouteServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
     public void GetListDeletedTest(List<Route> routes, List<RouteModel> expected)
     {
         // given
@@ -124,6 +130,7 @@ public class RouteServiceTests
         _routeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _routeRepositoryMock.Verify(s => s.Update(route, true), Times.Once);
     }
+
     [Test]
     public void DeleteNegativeTest()
     {
@@ -152,6 +159,7 @@ public class RouteServiceTests
         _routeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _routeRepositoryMock.Verify(s => s.Update(route, false), Times.Once);
     }
+
     [Test]
     public void RestoreNegativeTest()
     {
@@ -180,6 +188,7 @@ public class RouteServiceTests
         _routeRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _routeRepositoryMock.Verify(s => s.Update(route, It.IsAny<Route>()), Times.Once);
     }
+
     [Test]
     public void UpdateNegativeTest()
     {

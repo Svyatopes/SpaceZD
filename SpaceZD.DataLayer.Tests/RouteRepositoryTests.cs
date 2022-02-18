@@ -6,7 +6,7 @@ using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using SpaceZD.DataLayer.Tests.TestMocks;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 
 namespace SpaceZD.DataLayer.Tests;
 
@@ -28,11 +28,12 @@ public class RouteRepositoryTests
         _context.Database.EnsureCreated();
 
         // seed
-        _context.Routes.AddRange(RouteRepositoryMocks.GetRoutes());
+        _context.Routes.AddRange(RouteRepositoryTestCaseSource.GetRoutes());
         _context.SaveChanges();
     }
 
-    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockForGetByIdTest))]
+    [TestCaseSource(typeof(RouteRepositoryTestCaseSource),
+        nameof(RouteRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
     public void GetByIdTest(int id, Route expected)
     {
         // when
@@ -42,7 +43,8 @@ public class RouteRepositoryTests
         Assert.AreEqual(expected, actual);
     }
 
-    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockForGetListTest))]
+    [TestCaseSource(typeof(RouteRepositoryTestCaseSource),
+        nameof(RouteRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(bool includeAll, List<Route> expected)
     {
         // when
@@ -56,7 +58,7 @@ public class RouteRepositoryTests
     public void AddTest()
     {
         // given
-        var entityToAdd = RouteRepositoryMocks.GetRoute();
+        var entityToAdd = RouteRepositoryTestCaseSource.GetRoute();
 
         // when 
         int id = _repository.Add(entityToAdd);
@@ -74,7 +76,7 @@ public class RouteRepositoryTests
     {
         // given
         var entityToEdit = _context.Routes.FirstOrDefault(o => o.Id == id);
-        var entityUpdate = RouteRepositoryMocks.GetRoute();
+        var entityUpdate = RouteRepositoryTestCaseSource.GetRoute();
         entityUpdate.IsDeleted = !entityToEdit!.IsDeleted;
         foreach (var rt in entityUpdate.Transits)
             rt.Route = entityUpdate;
@@ -96,7 +98,7 @@ public class RouteRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         // given
-        var entityToEdit = RouteRepositoryMocks.GetRoute();
+        var entityToEdit = RouteRepositoryTestCaseSource.GetRoute();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Routes.Add(entityToEdit);
         _context.SaveChanges();
@@ -109,7 +111,8 @@ public class RouteRepositoryTests
     }
 
 
-    [TestCaseSource(typeof(RouteRepositoryMocks), nameof(RouteRepositoryMocks.GetMockForAddRouteTransitForRouteTest))]
+    [TestCaseSource(typeof(RouteRepositoryTestCaseSource),
+        nameof(RouteRepositoryTestCaseSource.GetTestCaseDataForAddRouteTransitForRouteTest))]
     public void AddRouteTransitForRouteTest(Route route, RouteTransit routeTransit, Route expected)
     {
         // when 

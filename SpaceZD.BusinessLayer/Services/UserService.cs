@@ -7,15 +7,13 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class UserService : IUserService
+    public class UserService : BaseService, IUserService
     {
         private readonly IRepositorySoftDelete<User> _userRepository;
-        private readonly IMapper _mapper;
 
-        public UserService(IRepositorySoftDelete<User> userRepository, IMapper mapper)
+        public UserService(IRepositorySoftDelete<User> userRepository, IMapper mapper) : base(mapper)
         {
             _userRepository = userRepository;
-            _mapper = mapper;
         }
 
         public UserModel GetById(int id)
@@ -63,11 +61,5 @@ namespace SpaceZD.BusinessLayer.Services
             _userRepository.Update(entity, isDeleted);
 
         }
-        private static void ThrowIfEntityNotFound<T>(T? entity, int id)
-        {
-            if (entity is null)
-                throw new NotFoundException(typeof(T).Name, id);
-        }
-
     }
 }
