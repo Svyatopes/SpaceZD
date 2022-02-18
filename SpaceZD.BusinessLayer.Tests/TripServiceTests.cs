@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
@@ -33,6 +34,69 @@ public class TripServiceTests
         _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
         _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
         _stationRepositoryMock = new Mock<IStationRepository>();
+    }
+
+
+    //Add
+    [TestCaseSource(typeof(TripServiceTestCaseSource), nameof(TripServiceTestCaseSource.GetTestCaseDataForAddTest))]
+    public void AddTest(TripModel tripModel, Trip expected)
+    {
+        // given
+        _tripRepositoryMock.Setup(x => x.Add(It.IsAny<Trip>())).Returns(45);
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(expected.Route);
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(expected.Train);
+        var service = new TripService(_mapper,
+            _tripRepositoryMock.Object,
+            _stationRepositoryMock.Object,
+            _routeRepositoryMock.Object,
+            _trainRepositoryMock.Object);
+
+        // when
+        int actual = service.Add(tripModel);
+
+        // then
+        _tripRepositoryMock.Verify(s => s.Add(expected), Times.Once);
+        Assert.AreEqual(45, actual);
+    }
+
+    [TestCase(1)]
+    [TestCase(2)]
+    public void AddNegativeTest(int variant)
+    {
+        switch (variant)
+        {
+            case 1:
+                _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Route());
+                _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Train?)null);
+                break;
+            case 2:
+                _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Route?)null);
+                _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
+                break;
+        }
+        var service = new TripService(_mapper,
+            _tripRepositoryMock.Object,
+            _stationRepositoryMock.Object,
+            _routeRepositoryMock.Object,
+            _trainRepositoryMock.Object);
+
+        Assert.Throws<NotFoundException>(() => service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
+    }
+
+    [TestCaseSource(typeof(TripServiceTestCaseSource), nameof(TripServiceTestCaseSource.GetTestCaseDataForAddNegativeInvalidDataExceptionTest))]
+    public void AddNegativeInvalidDataExceptionTest(Trip trip)
+    {
+        // given
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip.Route);
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip.Train);
+        var service = new TripService(_mapper,
+            _tripRepositoryMock.Object,
+            _stationRepositoryMock.Object,
+            _routeRepositoryMock.Object,
+            _trainRepositoryMock.Object);
+
+        // when then
+        Assert.Throws<InvalidDataException>(() => service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
     }
 
 

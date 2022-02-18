@@ -9,6 +9,70 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources;
 
 public static class TripServiceTestCaseSource
 {
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForAddTest()
+    {
+        var train = new Train { Id = 10, Carriages = new List<Carriage>(), IsDeleted = false };
+
+        var stationOne = new Station { Name = "Москва", Platforms = new List<Platform>(), IsDeleted = false };
+        var stationTwo = new Station { Name = "Выборг", Platforms = new List<Platform>(), IsDeleted = false };
+        var stationThree = new Station { Name = "Сочи", Platforms = new List<Platform>(), IsDeleted = false };
+        var stationFour = new Station { Name = "Челябинск", Platforms = new List<Platform>(), IsDeleted = false };
+
+        var transitOne = new Transit { StartStation = stationOne, EndStation = stationTwo, IsDeleted = false };
+        var transitTwo = new Transit { StartStation = stationTwo, EndStation = stationThree, IsDeleted = false };
+        var transitThree = new Transit { StartStation = stationThree, EndStation = stationFour, IsDeleted = false };
+
+        var routeTransitOne = new RouteTransit
+            { Transit = transitOne, DepartingTime = new TimeSpan(0, 0, 0), ArrivalTime = new TimeSpan(1, 0, 0), IsDeleted = false };
+        var routeTransitTwo = new RouteTransit
+            { Transit = transitTwo, DepartingTime = new TimeSpan(1, 10, 0), ArrivalTime = new TimeSpan(2, 0, 0), IsDeleted = false };
+        var routeTransitThree = new RouteTransit
+            { Transit = transitThree, DepartingTime = new TimeSpan(2, 10, 0), ArrivalTime = new TimeSpan(3, 0, 0), IsDeleted = false };
+
+        var trip = new Trip
+        {
+            Train = train,
+            Route = new Route
+            {
+                Id = 10,
+                Code = "F700",
+                StartStation = stationOne,
+                EndStation = stationFour,
+                RouteTransits = new List<RouteTransit> { routeTransitOne, routeTransitTwo, routeTransitThree },
+                StartTime = new DateTime(1, 1, 1, 5, 30, 0),
+                IsDeleted = false
+            },
+            Stations = new List<TripStation>(),
+            StartTime = new DateTime(1970, 1, 1),
+            IsDeleted = false
+        };
+
+        var tripModel = ConvertTripToTripModel(trip);
+
+        trip.StartTime = new DateTime(1970, 1, 1, 5, 30, 0);
+        trip.Stations = new List<TripStation>
+        {
+            new() { Station = stationOne, ArrivalTime = new DateTime(), DepartingTime = new DateTime(1970, 1, 1, 5, 30, 0) },
+            new() { Station = stationOne, ArrivalTime = new DateTime(1970, 1, 1, 6, 30, 0), DepartingTime = new DateTime(1970, 1, 1, 6, 40, 0) },
+            new() { Station = stationOne, ArrivalTime = new DateTime(1970, 1, 1, 7, 30, 0), DepartingTime = new DateTime(1970, 1, 1, 7, 40, 0) },
+            new() { Station = stationOne, ArrivalTime = new DateTime(1970, 1, 1, 8, 30, 0), DepartingTime = new DateTime() }
+        };
+
+        yield return new TestCaseData(tripModel, trip);
+    }
+
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForAddNegativeInvalidDataExceptionTest()
+    {
+        var trip = new Trip
+        {
+            Train = new Train { Id = 10, Carriages = new List<Carriage>(), IsDeleted = false },
+            Route = new Route { Id = 10, RouteTransits = new List<RouteTransit>() },
+            IsDeleted = false
+        };
+
+        yield return new TestCaseData(trip);
+    }
+
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetByIdTest()
     {
         var trip = new Trip

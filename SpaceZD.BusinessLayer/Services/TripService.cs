@@ -85,7 +85,7 @@ public class TripService : BaseService, ITripService
         
         tripModel.Stations.Add(new TripStationModel
         {
-            ArrivalTime = new DateTime(),
+            ArrivalTime = new DateTime(), //TODO поменять после миграций
             DepartingTime = tripModel.StartTime,
             Station = routeModel.RouteTransits[0].Transit.StartStation
         });
@@ -103,7 +103,7 @@ public class TripService : BaseService, ITripService
         tripModel.Stations.Add(new TripStationModel
         {
             ArrivalTime = tripModel.StartTime.Add(routeModel.RouteTransits[^1].ArrivalTime),
-            DepartingTime = new DateTime(),
+            DepartingTime = new DateTime(), //TODO поменять после миграций
             Station = routeModel.RouteTransits[^1].Transit.EndStation
         });
         
