@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Attributes;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.API.Controllers;
 
@@ -33,6 +35,7 @@ public class TrainsController : ControllerBase
 
 
     [HttpGet("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult<TrainModel> GetTrainById(int id)
     {
         var trainModel = _trainService.GetById(id);
