@@ -40,7 +40,7 @@ public class TripStationService : BaseService, ITripStationService
                  model.DepartingTime.AddMinutes(SeparationArrivalDepartingTrainMinutes))
             .Select(g => g.Id)
             .Contains(model.Platform.Id))
-            throw new InvalidOperationException($"Невозможно выбрать данную платформу c Id = {model.Platform.Id}");
+            throw new InvalidOperationException($"Невозможно выбрать платформу c Id = {model.Platform.Id}");
 
         var platform = _platformRepository.GetById(model.Platform.Id);
         var platformModel = _mapper.Map<PlatformModel>(platform);
