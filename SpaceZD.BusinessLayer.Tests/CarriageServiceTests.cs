@@ -16,7 +16,6 @@ namespace SpaceZD.BusinessLayer.Tests
 {
     internal class CarriageServiceTests
     {
-
         private Mock<IRepositorySoftDelete<Carriage>> _carriageRepositoryMock;
         private readonly IMapper _mapper;
 
@@ -74,29 +73,28 @@ namespace SpaceZD.BusinessLayer.Tests
             _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Carriage?)null);
             var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
 
-            Assert.Throws<NotFoundException>(() => service.GetById(42));
+            Assert.Throws<NotFoundException>(() => service.GetById(10));
             _carriageRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
         }
 
-        //[TestCase(10)]
-        //public void AddTest(int expected)
-        //{
-        //    // given
-        //    _platformMaintenanceRepositoryMock.Setup(x => x.Add(It.IsAny<PlatformMaintenance>())).Returns(expected);
-        //    var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+        [TestCase(10)]
+        public void AddTest(int expected)
+        {
+            // given
+            _carriageRepositoryMock.Setup(x => x.Add(It.IsAny<Carriage>())).Returns(expected);
+            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
 
-        //    // when
-        //    int actual = service.Add(new PlatformMaintenanceModel
-        //    {
-        //        User = new UserModel { Id = 1 },
-        //        StartStation = new TripStationModel { Id = 2 },
-        //        EndStation = new TripStationModel { Id = 3 },
-        //    });
+            // when
+            int actual = service.Add(new CarriageModel
+            {
+                Type = new CarriageTypeModel { Id = 1 },
+                Train = new TrainModel { Id = 2 }
+            });
 
-        //    // then
-        //    _platformMaintenanceRepositoryMock.Verify(s => s.Add(It.IsAny<PlatformMaintenance>()), Times.Once);
-        //    Assert.AreEqual(expected, actual);
-        //}
+            // then
+            _carriageRepositoryMock.Verify(s => s.Add(It.IsAny<Carriage>()), Times.Once);
+            Assert.AreEqual(expected, actual);
+        }
 
         [Test]
         public void UpdateTest()
@@ -124,8 +122,8 @@ namespace SpaceZD.BusinessLayer.Tests
             var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Update(42, new CarriageModel()));
-            _carriageRepositoryMock.Verify(s => s.GetById(42), Times.Once);
+            Assert.Throws<NotFoundException>(() => service.Update(10, new CarriageModel()));
+            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
             _carriageRepositoryMock.Verify(s => s.Update(order, It.IsAny<Carriage>()), Times.Never);
         }
 
@@ -139,12 +137,13 @@ namespace SpaceZD.BusinessLayer.Tests
             var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
 
             // when
-            service.Delete(42);
+            service.Delete(10);
 
             // then
             _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
             _carriageRepositoryMock.Verify(s => s.Update(order, true), Times.Once);
         }
+
         [Test]
         public void DeleteNegativeTest()
         {
@@ -155,10 +154,9 @@ namespace SpaceZD.BusinessLayer.Tests
 
             // when then
             Assert.Throws<NotFoundException>(() => service.Delete(10));
-            _carriageRepositoryMock.Verify(s => s.GetById(42), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
             _carriageRepositoryMock.Verify(s => s.Update(It.IsAny<Carriage>(), true), Times.Never);
         }
-
 
         //Restore
         [Test]
@@ -177,6 +175,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
             _carriageRepositoryMock.Verify(s => s.Update(order, false), Times.Once);
         }
+
         [Test]
         public void RestoreNegativeTest()
         {
@@ -186,7 +185,7 @@ namespace SpaceZD.BusinessLayer.Tests
             var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Restore(42));
+            Assert.Throws<NotFoundException>(() => service.Restore(10));
             _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
             _carriageRepositoryMock.Verify(s => s.Update(It.IsAny<Carriage>(), true), Times.Never);
         }
