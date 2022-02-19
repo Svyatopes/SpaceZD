@@ -10,6 +10,7 @@ namespace SpaceZD.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[AuthorizeRole(Role.Admin, Role.StationManager)]
 public class TripStationsController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -22,16 +23,14 @@ public class TripStationsController : ControllerBase
     }
 
 
-    //api/Trips/42
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    //api/TripStations/42
     [HttpGet("{id}")]
     public ActionResult<TripStationOutputModel> GetTripById(int id)
     {
         return Ok(_mapper.Map<TripStationOutputModel>(_service.GetById(id)));
     }
 
-    //api/Trips/42
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    //api/TripStations/42
     [HttpPut("{id}")]
     public ActionResult EditTrip(int id, TripStationUpdateInputModel tripStation)
     {
@@ -39,8 +38,7 @@ public class TripStationsController : ControllerBase
         return Accepted();
     }
 
-    //api/Trips/42/ready-platform
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    //api/TripStations/42/ready-platform
     [HttpGet("{id}/ready-platform")]
     public ActionResult<List<PlatformOutputModel>> GetReadyPlatforms(int id)
     {
