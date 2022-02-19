@@ -12,7 +12,7 @@ public static class RouteRepositoryTestCaseSource
         new()
         {
             Code = "F789",
-            Transits = new List<RouteTransit>
+            RouteTransits = new List<RouteTransit>
             {
                 new()
                 {
@@ -34,7 +34,7 @@ public static class RouteRepositoryTestCaseSource
         new()
         {
             Code = "Test",
-            Transits = new List<RouteTransit>(),
+            RouteTransits = new List<RouteTransit>(),
             StartTime = new DateTime(1999, 10, 1),
             StartStation = new Station { Name = "Москва", Platforms = new List<Platform>() },
             EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() },
@@ -43,7 +43,7 @@ public static class RouteRepositoryTestCaseSource
         new()
         {
             Code = "G589",
-            Transits = new List<RouteTransit>
+            RouteTransits = new List<RouteTransit>
             {
                 new()
                 {
@@ -78,7 +78,7 @@ public static class RouteRepositoryTestCaseSource
     internal static Route GetRoute() => new()
     {
         Code = "M456",
-        Transits = new List<RouteTransit>
+        RouteTransits = new List<RouteTransit>
         {
             new()
             {
@@ -115,7 +115,7 @@ public static class RouteRepositoryTestCaseSource
             StartStation = new Station { Name = "С-Пб", Platforms = new List<Platform>() },
             EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() },
             IsDeleted = true,
-            Transits = new List<RouteTransit>
+            RouteTransits = new List<RouteTransit>
             {
                 new()
                 {
@@ -136,7 +136,7 @@ public static class RouteRepositoryTestCaseSource
         {
             Code = GetRoutes()[1].Code,
             StartTime = GetRoutes()[1].StartTime,
-            Transits = new List<RouteTransit>(),
+            RouteTransits = new List<RouteTransit>(),
             StartStation = new Station { Name = "Москва", Platforms = new List<Platform>() },
             EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() },
             IsDeleted = true
@@ -147,7 +147,7 @@ public static class RouteRepositoryTestCaseSource
         {
             Code = GetRoutes()[2].Code,
             StartTime = GetRoutes()[2].StartTime,
-            Transits = new List<RouteTransit>(),
+            RouteTransits = new List<RouteTransit>(),
             StartStation = new Station { Name = "Петрозаводск", Platforms = new List<Platform>() },
             EndStation = new Station { Name = "Сочи", Platforms = new List<Platform>() },
             IsDeleted = false
@@ -165,7 +165,7 @@ public static class RouteRepositoryTestCaseSource
             {
                 Code = GetRoutes()[2].Code,
                 StartTime = GetRoutes()[2].StartTime,
-                Transits = new List<RouteTransit>(),
+                RouteTransits = new List<RouteTransit>(),
                 StartStation = new Station { Name = "Петрозаводск", Platforms = new List<Platform>() },
                 EndStation = new Station { Name = "Сочи", Platforms = new List<Platform>() },
                 IsDeleted = false
@@ -182,7 +182,7 @@ public static class RouteRepositoryTestCaseSource
                 StartStation = new Station { Name = "С-Пб", Platforms = new List<Platform>() },
                 EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() },
                 IsDeleted = true,
-                Transits = new List<RouteTransit>
+                RouteTransits = new List<RouteTransit>
                 {
                     new()
                     {
@@ -201,7 +201,7 @@ public static class RouteRepositoryTestCaseSource
             {
                 Code = GetRoutes()[1].Code,
                 StartTime = GetRoutes()[1].StartTime,
-                Transits = new List<RouteTransit>(),
+                RouteTransits = new List<RouteTransit>(),
                 StartStation = new Station { Name = "Москва", Platforms = new List<Platform>() },
                 EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() },
                 IsDeleted = true
@@ -210,7 +210,7 @@ public static class RouteRepositoryTestCaseSource
             {
                 Code = GetRoutes()[2].Code,
                 StartTime = GetRoutes()[2].StartTime,
-                Transits = new List<RouteTransit>(),
+                RouteTransits = new List<RouteTransit>(),
                 StartStation = new Station { Name = "Петрозаводск", Platforms = new List<Platform>() },
                 EndStation = new Station { Name = "Сочи", Platforms = new List<Platform>() },
                 IsDeleted = false
@@ -241,7 +241,7 @@ public static class RouteRepositoryTestCaseSource
             StartStation = new Station { Name = "С-Пб", Platforms = new List<Platform>() },
             EndStation = new Station { Name = "Выборг", Platforms = new List<Platform>() },
             IsDeleted = true,
-            Transits = new List<RouteTransit>
+            RouteTransits = new List<RouteTransit>
             {
                 new()
                 {
@@ -263,7 +263,7 @@ public static class RouteRepositoryTestCaseSource
         {
             Code = GetRoutes()[1].Code,
             StartTime = GetRoutes()[1].StartTime,
-            Transits = new List<RouteTransit> { routeTransit },
+            RouteTransits = new List<RouteTransit> { routeTransit },
             StartStation = new Station { Name = "Москва", Platforms = new List<Platform>() },
             EndStation = new Station { Name = "Новгород", Platforms = new List<Platform>() },
             IsDeleted = true
