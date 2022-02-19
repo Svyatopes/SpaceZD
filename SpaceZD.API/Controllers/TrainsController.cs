@@ -23,6 +23,7 @@ public class TrainsController : ControllerBase
 
 
     [HttpGet]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<TrainModel>> GetTrains()
     {
         var trainModel = _trainService.GetList();
@@ -48,6 +49,7 @@ public class TrainsController : ControllerBase
 
 
     [HttpPost]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult AddTrain()
     {
         var idAddedEntity = _trainService.Add(new TrainModel());
@@ -55,19 +57,9 @@ public class TrainsController : ControllerBase
 
     }
 
-    //как будто этого тут не должно быть
-
-    /*
-    [HttpPut("{id}")]
-    public ActionResult EditTrain(int id, TrainModel train)
-    {
-        var trainForEdit = _mapper.Map<TrainModel>(train);
-        _trainService.Update(id, trainForEdit);
-        return Accepted();
-    }
-    */
 
     [HttpDelete("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult DeleteTrain(int id)
     {
         _trainService.Delete(id);
@@ -76,6 +68,7 @@ public class TrainsController : ControllerBase
 
 
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreTrain(int id)
     {
         _trainService.Restore(id);
