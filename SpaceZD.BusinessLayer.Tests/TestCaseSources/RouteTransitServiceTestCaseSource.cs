@@ -16,10 +16,10 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
 
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
-            var platformsMaintenance = GetRouteTransit();
-            var platformsMaintenanceModels = GetRouteTransitModel();
-            yield return new TestCaseData(platformsMaintenance[0], platformsMaintenanceModels[0]);
-            yield return new TestCaseData(platformsMaintenance[1], platformsMaintenanceModels[1]);
+            var routeTransit = GetRouteTransit();
+            var routeTransitModels = GetRouteTransitModel();
+            yield return new TestCaseData(routeTransit[0], routeTransitModels[0]);
+            yield return new TestCaseData(routeTransit[1], routeTransitModels[1]);
         }
 
         private static List<RouteTransit> GetRouteTransit() => new List<RouteTransit>
@@ -28,31 +28,37 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                 {
                     Transit=new Transit
                     {
-                        StartStation=new Station{Name="СПБ"},
-                        EndStation=new Station{Name="Москва"}
+                        StartStation=new Station{Name="СПБ", Platforms = new List<Platform>(), IsDeleted=false},
+                        EndStation=new Station{Name="Москва", Platforms = new List<Platform>(), IsDeleted=false}
                     },
                     DepartingTime=new TimeSpan(0,0,0),
                     ArrivalTime=new TimeSpan(10,0,0),
+                    Route=new Route{Code="1cc", RouteTransits=new List<RouteTransit>(),StartTime= new DateTime(2020, 1, 1, 1, 1,1), StartStation=new Station{Name="СПБ", Platforms = new List<Platform>(), IsDeleted=false},
+                                    EndStation=new Station{Name="Москва", Platforms = new List<Platform>(), IsDeleted=false},IsDeleted=false}
                 },
                 new RouteTransit
                 {
                     Transit=new Transit
                     {
-                        StartStation=new Station{Name="СПБ"},
-                        EndStation=new Station{Name="Пермь"}
+                        StartStation=new Station{Name="СПБ", Platforms = new List<Platform>(), IsDeleted=false},
+                        EndStation=new Station{Name="Пермь", Platforms = new List<Platform>(), IsDeleted=false}
                     },
                     DepartingTime=new TimeSpan(0,0,0),
                     ArrivalTime=new TimeSpan(24,0,0),
+                    Route=new Route{Code="1cc", RouteTransits=new List<RouteTransit>(),StartTime= new DateTime(2020, 1, 1, 1, 1,1), StartStation=new Station{Name="СПБ", Platforms = new List<Platform>(), IsDeleted=false},
+                                    EndStation=new Station{Name="Москва", Platforms = new List<Platform>(), IsDeleted=false},IsDeleted=false}
                 },
                 new RouteTransit
                 {
                     Transit=new Transit
                     {
-                        StartStation=new Station{Name="СПБ"},
-                        EndStation=new Station{Name="Выборг"}
+                        StartStation=new Station{Name="СПБ", Platforms = new List<Platform>(), IsDeleted=false},
+                        EndStation=new Station{Name="Выборг", Platforms = new List<Platform>(), IsDeleted=false}
                     },
                     DepartingTime=new TimeSpan(0,0,0),
                     ArrivalTime=new TimeSpan(1,20,0),
+                    Route=new Route{Code="1cc", RouteTransits=new List<RouteTransit>(),StartTime= new DateTime(2020, 1, 1, 1, 1,1), StartStation=new Station{Name="СПБ", Platforms = new List<Platform>(), IsDeleted=false},
+                                    EndStation=new Station{Name="Москва", Platforms = new List<Platform>(), IsDeleted=false},IsDeleted=false},
                     IsDeleted=true
                 }
         };
@@ -63,31 +69,40 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                 {
                     Transit=new TransitModel
                     {
-                        StartStation=new StationModel{Name="СПБ"},
-                        EndStation=new StationModel{Name="Москва"}
+                        StartStation=new StationModel{Name="СПБ", Platforms = new List<PlatformModel>(), IsDeleted=false},
+                        EndStation=new StationModel{Name="Москва", Platforms = new List<PlatformModel>(), IsDeleted=false}
                     },
                     DepartingTime=new TimeSpan(0,0,0),
                     ArrivalTime=new TimeSpan(10,0,0),
+                    Route=new RouteModel{Code="1cc", RouteTransits=new List<RouteTransitModel>(),StartTime= new DateTime(2020, 1, 1, 1, 1,1), 
+                                        StartStation=new StationModel{Name="СПБ", Platforms = new List<PlatformModel>(), IsDeleted=false},
+                                        EndStation=new StationModel{Name="Москва", Platforms = new List<PlatformModel>(), IsDeleted=false},IsDeleted=false}
                 },
                 new RouteTransitModel
                 {
                     Transit=new TransitModel
                     {
-                        StartStation=new StationModel{Name="СПБ"},
-                        EndStation=new StationModel{Name="Пермь"}
+                        StartStation=new StationModel{Name="СПБ", Platforms = new List<PlatformModel>(), IsDeleted=false},
+                        EndStation=new StationModel{Name="Пермь", Platforms = new List<PlatformModel>(), IsDeleted=false}
                     },
                     DepartingTime=new TimeSpan(0,0,0),
                     ArrivalTime=new TimeSpan(24,0,0),
+                    Route=new RouteModel{Code="1cc", RouteTransits=new List<RouteTransitModel>(),StartTime= new DateTime(2020, 1, 1, 1, 1,1),
+                                        StartStation=new StationModel{Name="СПБ", Platforms = new List<PlatformModel>(), IsDeleted=false},
+                                        EndStation=new StationModel{Name="Москва", Platforms = new List<PlatformModel>(), IsDeleted=false},IsDeleted=false}
                 },
                 new RouteTransitModel
                 {
                     Transit=new TransitModel
                     {
-                        StartStation=new StationModel{Name="СПБ"},
-                        EndStation=new StationModel{Name="Выборг"}
+                        StartStation=new StationModel{Name="СПБ", Platforms = new List<PlatformModel>(), IsDeleted=false},
+                        EndStation=new StationModel{Name="Выборг", Platforms = new List<PlatformModel>(), IsDeleted=false}
                     },
                     DepartingTime=new TimeSpan(0,0,0),
                     ArrivalTime=new TimeSpan(1,20,0),
+                    Route=new RouteModel{Code="1cc", RouteTransits=new List<RouteTransitModel>(),StartTime= new DateTime(2020, 1, 1, 1, 1,1),
+                                        StartStation=new StationModel{Name="СПБ", Platforms = new List<PlatformModel>(), IsDeleted=false},
+                                        EndStation=new StationModel{Name="Москва", Platforms = new List<PlatformModel>(), IsDeleted=false},IsDeleted=false},
                     IsDeleted=true
                 }
         };
