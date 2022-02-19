@@ -1,13 +1,16 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Attributes;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
 public class CarriageTypesController : ControllerBase
 {
     private readonly IMapper _mapper;
