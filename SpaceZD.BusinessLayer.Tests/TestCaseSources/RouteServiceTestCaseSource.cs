@@ -17,7 +17,7 @@ internal static class RouteServiceTestCaseSource
         var route = new Route
         {
             Code = "V468",
-            Transits = new List<RouteTransit>
+            RouteTransits = new List<RouteTransit>
             {
                 new()
                 {
@@ -39,7 +39,7 @@ internal static class RouteServiceTestCaseSource
         var routeModel = new RouteModel
         {
             Code = "V468",
-            Transits = new List<RouteTransitModel>
+            RouteTransits = new List<RouteTransitModel>
             {
                 new()
                 {
@@ -93,24 +93,24 @@ internal static class RouteServiceTestCaseSource
             new()
             {
                 Code = "V468",
-                Transits = transits,
+                RouteTransits = transits,
                 StartStation = startStation,
                 EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false
             },
             new()
             {
-                Code = "О875", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "О875", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 14, 30, 0), IsDeleted = false
             },
             new()
             {
-                Code = "Q784", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "Q784", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 5, 20, 0), IsDeleted = false
             },
             new()
             {
-                Code = "Y554", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "Y554", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = false
             }
         };
@@ -118,12 +118,12 @@ internal static class RouteServiceTestCaseSource
         {
             new()
             {
-                Code = "V468", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "V468", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false
             },
             new()
             {
-                Code = "Y554", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "Y554", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = false
             }
         };
@@ -165,22 +165,22 @@ internal static class RouteServiceTestCaseSource
         {
             new()
             {
-                Code = "V468", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "V468", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false
             },
             new()
             {
-                Code = "О875", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "О875", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 14, 30, 0), IsDeleted = true
             },
             new()
             {
-                Code = "Q784", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "Q784", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 5, 20, 0), IsDeleted = true
             },
             new()
             {
-                Code = "Y554", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "Y554", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = true
             }
         };
@@ -188,12 +188,12 @@ internal static class RouteServiceTestCaseSource
         {
             new()
             {
-                Code = "V468", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "V468", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 12, 0, 0), IsDeleted = false
             },
             new()
             {
-                Code = "Y554", Transits = transits, StartStation = startStation, EndStation = endStation,
+                Code = "Y554", RouteTransits = transits, StartStation = startStation, EndStation = endStation,
                 StartTime = new DateTime(1970, 1, 1, 8, 0, 10), IsDeleted = false
             }
         };
@@ -209,7 +209,7 @@ internal static class RouteServiceTestCaseSource
                      .Select(route => new RouteModel
                      {
                          Code = route.Code,
-                         Transits = route.Transits
+                         RouteTransits = route.RouteTransits
                                          .Select(rt => new RouteTransitModel
                                          {
                                              DepartingTime = rt.DepartingTime, ArrivalTime = rt.ArrivalTime,

@@ -10,6 +10,7 @@ namespace SpaceZD.BusinessLayer.Models
         public string PasswordHash { get; set; }
         public List<OrderModel> Orders { get; set; }
         public Role Role { get; set; }
+        public List<PersonModel> Persons { get; set; }
         public bool IsDeleted { get; set; }
 
         private bool Equals(UserModel other)
