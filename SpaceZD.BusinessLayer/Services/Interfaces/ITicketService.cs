@@ -7,6 +7,7 @@ namespace SpaceZD.BusinessLayer.Services
         int Add(TicketModel entity);
         void Delete(int id);
         TicketModel GetById(int id);
+        List<TicketModel> GetListByOrderId(int login);
         List<TicketModel> GetList(bool includeAll = false);
         List<TicketModel> GetListDeleted(bool includeAll = true);
         void Restore(int id);

@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
+public class TicketRepository : BaseRepository, ITicketRepository
 {
     public TicketRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -15,6 +15,12 @@ public class TicketRepository : BaseRepository, IRepositorySoftDelete<Ticket>
                 .Include(t => t.Order)
                 .Include(t => t.Person)
                 .FirstOrDefault(t => t.Id == id);
+    
+    public List<Ticket> GetListById(int orderId) =>
+        _context.Tickets
+                .Include(t => t.Carriage)                
+                .Include(t => t.Person)
+                .Where(t => t.Order.Id == orderId).ToList();
 
     public List<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 

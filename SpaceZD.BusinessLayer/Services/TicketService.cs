@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public class TicketService : ITicketService
 {
     private readonly IMapper _mapper;
-    private readonly IRepositorySoftDelete<Ticket> _ticketRepository;
+    private readonly ITicketRepository _ticketRepository;
 
-    public TicketService(IMapper mapper, IRepositorySoftDelete<Ticket> ticketRepository)
+    public TicketService(IMapper mapper, ITicketRepository ticketRepository)
     {
         _mapper = mapper;
         _ticketRepository = ticketRepository;
@@ -28,6 +28,13 @@ public class TicketService : ITicketService
     {
         var entities = _ticketRepository.GetList(includeAll);
         return _mapper.Map<List<TicketModel>>(entities);
+    }
+
+    public List<TicketModel> GetListByOrderId(int login)
+    {
+
+        var entity = _ticketRepository.GetListById(login);
+        return _mapper.Map <List<TicketModel>>(entity);
     }
 
     public List<TicketModel> GetListDeleted(bool includeAll = true)

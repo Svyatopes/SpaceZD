@@ -14,7 +14,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class UserServiceTest
 {
-    private Mock<IRepositorySoftDelete<User>> _repositoryMock;
+    private Mock<IUserRepository> _repositoryMock;
     private readonly IMapper _mapper;
 
     public UserServiceTest()
@@ -24,7 +24,7 @@ public class UserServiceTest
     [SetUp]
     public void Setup()
     {
-        _repositoryMock = new Mock<IRepositorySoftDelete<User>>();
+        _repositoryMock = new Mock<IUserRepository>();
     }
 
     public static IEnumerable<TestCaseData> GetUser()

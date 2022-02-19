@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Attributes;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
@@ -22,11 +23,12 @@ public class UsersController : ControllerBase
     {
         _userService = userService;
         _mapper = mapper;
-       
+
     }
 
 
     [HttpGet]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<UserModel>> GetUsers()
     {
         var userModel = _userService.GetList();
@@ -37,9 +39,10 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<UserModel> GetUserById(int id)
     {
-        
+
         var userModel = _userService.GetById(id);
         var user = _mapper.Map<UserFullOutputModel>(userModel);
         if (user != null)
@@ -47,17 +50,18 @@ public class UsersController : ControllerBase
         else
             return BadRequest("User doesn't exist");
     }
-    
+
     [HttpGet("login")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<UserModel> GetUserByLogin()
     {
         var login = HttpContext.User.Identity.Name;
         var userModel = _userService.GetByLogin(login);
         var user = _mapper.Map<UserFullOutputModel>(userModel);
         return Ok(user);
-        
+
     }
-    
+
 
     [HttpPost]
     public ActionResult AddUser(UserRegisterInputModel userModel)
@@ -65,11 +69,12 @@ public class UsersController : ControllerBase
         var user = _mapper.Map<UserModel>(userModel);
         user.Role = Role.User;
         var idAddedEntity = _userService.Add(user, userModel.Password);
-        
+
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
     [HttpPut("login")]
+    [AuthorizeRole(Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager)]
     public ActionResult EditUser(UserUpdateInputModel user)
     {
         var login = HttpContext.User.Identity.Name;
@@ -79,16 +84,19 @@ public class UsersController : ControllerBase
         return Accepted();
 
     }
-
-    [HttpDelete("{id}")]
-    public ActionResult DeleteUser(int id)
+    [HttpDelete("login")]
+    [AuthorizeRole(Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager)]
+    public ActionResult DeleteUser()
     {
-        _userService.Update(id, true);
+        var login = HttpContext.User.Identity.Name;
+        var userModel = _userService.GetByLogin(login);
+        _userService.Update(userModel.Id, true);
         return Accepted();
 
     }
 
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreUser(int id)
     {
         _userService.Update(id, false);
