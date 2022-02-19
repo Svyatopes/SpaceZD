@@ -21,6 +21,7 @@ public class TripServiceTests
     private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
     private Mock<IRepositorySoftDelete<Route>> _routeRepositoryMock;
     private readonly IMapper _mapper;
+    private ITripService _service;
 
     public TripServiceTests()
     {
@@ -34,6 +35,7 @@ public class TripServiceTests
         _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
         _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
         _stationRepositoryMock = new Mock<IStationRepository>();
+        _service = new TripService(_mapper, _tripRepositoryMock.Object, _stationRepositoryMock.Object, _routeRepositoryMock.Object, _trainRepositoryMock.Object);
     }
 
 
@@ -45,42 +47,31 @@ public class TripServiceTests
         _tripRepositoryMock.Setup(x => x.Add(It.IsAny<Trip>())).Returns(45);
         _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(expected.Route);
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(expected.Train);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        int actual = service.Add(tripModel);
+        int actual = _service.Add(tripModel);
 
         // then
         _tripRepositoryMock.Verify(s => s.Add(expected), Times.Once);
         Assert.AreEqual(45, actual);
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    public void AddNegativeTest(int variant)
+    [Test]
+    public void AddNegativeTrainNullTest()
     {
-        switch (variant)
-        {
-            case 1:
-                _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Route());
-                _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Train?)null);
-                break;
-            case 2:
-                _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Route?)null);
-                _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
-                break;
-        }
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Route());
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Train?)null);
 
-        Assert.Throws<NotFoundException>(() => service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
+        Assert.Throws<NotFoundException>(() => _service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
+    }
+
+    [Test]
+    public void AddNegativeRouteNullTest()
+    {
+        _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Route?)null);
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
+
+        Assert.Throws<NotFoundException>(() => _service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
     }
 
     [TestCaseSource(typeof(TripServiceTestCaseSource), nameof(TripServiceTestCaseSource.GetTestCaseDataForAddNegativeInvalidDataExceptionTest))]
@@ -89,14 +80,9 @@ public class TripServiceTests
         // given
         _routeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip.Route);
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip.Train);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when then
-        Assert.Throws<InvalidDataException>(() => service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
+        Assert.Throws<InvalidDataException>(() => _service.Add(new TripModel { Route = new RouteModel { Id = 10 }, Train = new TrainModel { Id = 10 } }));
     }
 
 
@@ -106,14 +92,9 @@ public class TripServiceTests
     {
         // given
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        var actual = service.GetById(5);
+        var actual = _service.GetById(5);
 
         // then
         _tripRepositoryMock.Verify(s => s.GetById(5), Times.Once);
@@ -124,13 +105,8 @@ public class TripServiceTests
     public void GetByIdNegativeTest()
     {
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
-        Assert.Throws<NotFoundException>(() => service.GetById(10));
+        Assert.Throws<NotFoundException>(() => _service.GetById(10));
     }
 
 
@@ -140,14 +116,9 @@ public class TripServiceTests
     {
         // given
         _tripRepositoryMock.Setup(x => x.GetList(false)).Returns(trips);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        var actual = service.GetList();
+        var actual = _service.GetList();
 
         // then
         _tripRepositoryMock.Verify(s => s.GetList(false), Times.Once);
@@ -159,14 +130,9 @@ public class TripServiceTests
     {
         // given
         _tripRepositoryMock.Setup(x => x.GetList(true)).Returns(trips);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        var actual = service.GetListDeleted();
+        var actual = _service.GetListDeleted();
 
         // then
         _tripRepositoryMock.Verify(s => s.GetList(true), Times.Once);
@@ -182,14 +148,9 @@ public class TripServiceTests
         var trips = new Trip();
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), true));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trips);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        service.Delete(45);
+        _service.Delete(45);
 
         // then
         _tripRepositoryMock.Verify(s => s.GetById(45), Times.Once);
@@ -201,13 +162,8 @@ public class TripServiceTests
     {
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), true));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
-        Assert.Throws<NotFoundException>(() => service.Delete(10));
+        Assert.Throws<NotFoundException>(() => _service.Delete(10));
     }
 
 
@@ -219,14 +175,9 @@ public class TripServiceTests
         var trips = new Trip();
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), false));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trips);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        service.Restore(45);
+        _service.Restore(45);
 
         // then
         _tripRepositoryMock.Verify(s => s.GetById(45), Times.Once);
@@ -238,13 +189,8 @@ public class TripServiceTests
     {
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), false));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
-        Assert.Throws<NotFoundException>(() => service.Restore(10));
+        Assert.Throws<NotFoundException>(() => _service.Restore(10));
     }
 
 
@@ -257,14 +203,9 @@ public class TripServiceTests
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), It.IsAny<Trip>()));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip);
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        service.Update(45, new TripModel { Train = new TrainModel { Id = 10 } });
+        _service.Update(45, new TripModel { Train = new TrainModel { Id = 10 } });
 
         // then
         _tripRepositoryMock.Verify(s => s.GetById(45), Times.Once);
@@ -277,13 +218,8 @@ public class TripServiceTests
     {
         _tripRepositoryMock.Setup(x => x.Update(It.IsAny<Trip>(), It.IsAny<Trip>()));
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
-        Assert.Throws<NotFoundException>(() => service.Update(10, new TripModel()));
+        Assert.Throws<NotFoundException>(() => _service.Update(10, new TripModel()));
     }
 
 
@@ -296,14 +232,9 @@ public class TripServiceTests
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip);
         _stationRepositoryMock.Setup(x => x.GetById(1)).Returns(startStation);
         _stationRepositoryMock.Setup(x => x.GetById(2)).Returns(endStation);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when
-        var actual = service.GetFreeSeat(45, 1, 2);
+        var actual = _service.GetFreeSeat(45, 1, 2, false);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(1), Times.Once);
@@ -312,27 +243,22 @@ public class TripServiceTests
         CollectionAssert.AreEqual(expected, actual);
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    public void GetFreeSeatNegativeTest(int variant)
+    [Test]
+    public void GetFreeSeatNegativeTripNullTest()
     {
-        switch (variant)
-        {
-            case 1:
-                _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
-                break;
-            case 2:
-                _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
-                _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
-                break;
-        }
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
+        _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Trip?)null);
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Station());
 
-        Assert.Throws<NotFoundException>(() => service.GetFreeSeat(45, 1, 2));
+        Assert.Throws<NotFoundException>(() => _service.GetFreeSeat(45, 1, 2));
+    }
+
+    [Test]
+    public void GetFreeSeatNegativeStationNullTest()
+    {
+        _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Trip());
+        _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
+
+        Assert.Throws<NotFoundException>(() => _service.GetFreeSeat(45, 1, 2));
     }
 
     [TestCaseSource(typeof(TripServiceTestCaseSource), nameof(TripServiceTestCaseSource.GetTestCaseDataForGetFreeSeatNegativeTest))]
@@ -341,13 +267,8 @@ public class TripServiceTests
         // given
         _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip);
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
-        var service = new TripService(_mapper,
-            _tripRepositoryMock.Object,
-            _stationRepositoryMock.Object,
-            _routeRepositoryMock.Object,
-            _trainRepositoryMock.Object);
 
         // when then
-        Assert.Throws<ArgumentException>(() => service.GetFreeSeat(45, 1, 2));
+        Assert.Throws<ArgumentException>(() => _service.GetFreeSeat(45, 1, 2));
     }
 }

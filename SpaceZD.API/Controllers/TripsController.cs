@@ -54,12 +54,7 @@ public class TripsController : ControllerBase
     [HttpGet("{id}/free-seats")]
     public ActionResult<List<CarriageSeatsOutputModel>> GetFreeSeatsByTripId(int id, StartEndIdStationsInputModel model)
     {
-        var freeSeats = _service.GetFreeSeat(id, model.StartStationId, model.EndStationId);
-        foreach (var csm in freeSeats)
-        {
-            csm.Seats = csm.Seats.Where(g => g.IsFree).ToList();
-        }
-        return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(freeSeats));
+        return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId)));
     }
 
     //api/Trips/42/seats
@@ -67,7 +62,7 @@ public class TripsController : ControllerBase
     [HttpGet("{id}/seats")]
     public ActionResult<List<CarriageSeatsOutputModel>> GetSeatsByTripId(int id, StartEndIdStationsInputModel model)
     {
-        return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId)));
+        return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId, false)));
     }
 
     //api/Trips
@@ -85,7 +80,7 @@ public class TripsController : ControllerBase
     public ActionResult EditTrip(int id, TripUpdateInputModel trip)
     {
         _service.Update(id, _mapper.Map<TripModel>(trip));
-        return Accepted();
+        return NoContent();
     }
 
     //api/Trips/42
@@ -94,7 +89,7 @@ public class TripsController : ControllerBase
     public ActionResult DeleteTrip(int id)
     {
         _service.Delete(id);
-        return Accepted();
+        return NoContent();
     }
 
     //api/Trips/42
@@ -103,6 +98,6 @@ public class TripsController : ControllerBase
     public ActionResult RestoreTrip(int id)
     {
         _service.Restore(id);
-        return Accepted();
+        return NoContent();
     }
 }
