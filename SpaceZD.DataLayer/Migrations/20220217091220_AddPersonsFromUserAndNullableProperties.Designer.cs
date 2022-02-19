@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpaceZD.DataLayer.DbContextes;
 
@@ -11,9 +12,10 @@ using SpaceZD.DataLayer.DbContextes;
 namespace SpaceZD.DataLayer.Migrations
 {
     [DbContext(typeof(VeryVeryImportantContext))]
-    partial class VeryVeryImportantContextModelSnapshot : ModelSnapshot
+    [Migration("20220217091220_AddPersonsFromUserAndNullableProperties")]
+    partial class AddPersonsFromUserAndNullableProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,10 +445,10 @@ namespace SpaceZD.DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("ArrivalTime")
+                    b.Property<DateTime>("ArrivalTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DepartingTime")
+                    b.Property<DateTime>("DepartingTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("PlatformId")
@@ -614,7 +616,7 @@ namespace SpaceZD.DataLayer.Migrations
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.RouteTransit", b =>
                 {
                     b.HasOne("SpaceZD.DataLayer.Entities.Route", "Route")
-                        .WithMany("RouteTransits")
+                        .WithMany("Transits")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -750,7 +752,7 @@ namespace SpaceZD.DataLayer.Migrations
 
             modelBuilder.Entity("SpaceZD.DataLayer.Entities.Route", b =>
                 {
-                    b.Navigation("RouteTransits");
+                    b.Navigation("Transits");
 
                     b.Navigation("Trips");
                 });

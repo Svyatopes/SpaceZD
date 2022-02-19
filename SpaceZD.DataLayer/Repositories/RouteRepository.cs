@@ -12,13 +12,13 @@ public class RouteRepository : BaseRepository, IRouteRepository
     public Route? GetById(int id)
     {
         var entity = _context.Routes
-                             .Include(r => r.Transits.Where(t => !t.IsDeleted).OrderBy(g => g.ArrivalTime))
+                             .Include(r => r.RouteTransits.Where(t => !t.IsDeleted).OrderBy(g => g.ArrivalTime))
                              .Include(r => r.StartStation)
                              .Include(r => r.EndStation)
                              .FirstOrDefault(r => r.Id == id);
         if (entity is null)
             return null;
-        entity.Transits = entity.Transits
+        entity.RouteTransits = entity.RouteTransits
                                 .Where(t => !t.IsDeleted)
                                 .OrderBy(g => g.ArrivalTime)
                                 .ToList();
@@ -29,12 +29,12 @@ public class RouteRepository : BaseRepository, IRouteRepository
     public List<Route> GetList(bool includeAll = false)
     {
         var entities = _context.Routes
-                               .Include(r => r.Transits.Where(t => !t.IsDeleted).OrderBy(g => g.ArrivalTime))
+                               .Include(r => r.RouteTransits.Where(t => !t.IsDeleted).OrderBy(g => g.ArrivalTime))
                                .Include(r => r.StartStation)
                                .Include(r => r.EndStation)
                                .Where(r => !r.IsDeleted || includeAll).ToList();
         foreach (var route in entities)
-            route.Transits = route.Transits
+            route.RouteTransits = route.RouteTransits
                                   .Where(t => !t.IsDeleted)
                                   .OrderBy(g => g.ArrivalTime)
                                   .ToList();
@@ -68,7 +68,7 @@ public class RouteRepository : BaseRepository, IRouteRepository
 
     public void AddRouteTransitForRoute(Route route, RouteTransit routeTransit)
     {
-        route.Transits.Add(routeTransit);
+        route.RouteTransits.Add(routeTransit);
         
         _context.SaveChanges();
     }

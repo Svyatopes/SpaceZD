@@ -9,4 +9,5 @@ public class Person
     public string Passport { get; set; }
     public bool IsDeleted { get; set; }
     public virtual ICollection<Ticket> Tickets { get; set; }
+    public virtual User User { get; set; }
 }
