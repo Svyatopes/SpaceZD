@@ -42,6 +42,15 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
             user.Orders = user.Orders.Where(o => !o.IsDeleted).ToList();
         return entities;
     }
+    
+    public List<Person> GetListUserPersons(int id)
+    { 
+        var entities = _context.Persons
+                               //.FirstOrDefault(u => u.Login == login)
+                               .Where(p => p.User.Id == id).ToList();
+        
+        return entities;
+    }
 
     public int Add(User user)
     {

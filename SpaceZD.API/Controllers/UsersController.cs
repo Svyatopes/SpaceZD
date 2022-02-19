@@ -37,6 +37,19 @@ public class UsersController : ControllerBase
             return Ok(user);
         return BadRequest("Oh.....");
     }
+    
+    [HttpGet("id/id")]
+    //[AuthorizeRole(Role.Admin)]
+    public ActionResult<List<PersonModel>> GetPersonUsers()
+    {
+        var login = HttpContext.User.Identity.Name;
+        var userId = _userService.GetByLogin(login).Id;
+        var personModel = _userService.GetListUserPersons(userId);
+        var user = _mapper.Map<List<PersonOutputModel>>(personModel);
+        if (user != null)
+            return Ok(user);
+        return BadRequest("Oh.....");
+    }
 
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin)]

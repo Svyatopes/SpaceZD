@@ -36,6 +36,12 @@ namespace SpaceZD.BusinessLayer.Services
             return _mapper.Map<List<UserModel>>(entities);
         }
 
+        public List<PersonModel> GetListUserPersons(int id)
+        {
+            var entities = _userRepository.GetListUserPersons(id);
+            return _mapper.Map<List<PersonModel>>(entities);
+        }
+
         public List<UserModel> GetListDeleted(bool includeAll = true)
         {
             var entities = _userRepository.GetList(includeAll).Where(t => t.IsDeleted);
