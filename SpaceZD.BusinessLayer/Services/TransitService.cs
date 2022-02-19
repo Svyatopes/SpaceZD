@@ -1,21 +1,19 @@
 ﻿using AutoMapper;
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
-using SpaceZD.BusinessLayer.Services.Interfaces;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
+using SpaceZD.BusinessLayer.Services;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class TransitService : ITransitService
+    public class TransitService : BaseService, ITransitService
     {
-        private readonly IMapper _mapper;
         private readonly IRepositorySoftDelete<Transit> _transitRepository;
-        private readonly IRepositorySoftDelete<Station> _stationRepository;
+        private readonly IStationRepository _stationRepository;
 
-        public TransitService(IMapper mapper, IRepositorySoftDelete<Transit> transitRepository, IRepositorySoftDelete<Station> stationRepository)
+        public TransitService(IRepositorySoftDelete<Transit> transitRepository, IStationRepository stationRepository, IMapper mapper) : base(mapper)
         {
-            _mapper = mapper;
             _transitRepository = transitRepository;
             _stationRepository = stationRepository;
         }
@@ -47,41 +45,36 @@ namespace SpaceZD.BusinessLayer.Services
             return _transitRepository.Add(transit);
         }
 
-        //public void Delete(int id)
-        //{
-        //    if (!_transitRepository.Update(id, true))
-        //        NotFound(nameof(Transit), id);
-        //}
-
-        //public void Restore(int id)
-        //{
-        //    if (!_transitRepository.Update(id, false))
-        //        NotFound(nameof(Transit), id);
-        //}
-
-        //public void Update(int id, TransitModel transitModel)
-        //{
-        //    transitModel.Id = id;
-        //    if (!_transitRepository.Update(_mapper.Map<Transit>(transitModel)))
-        //        NotFound(nameof(Transit), id);
-        //}
-
-        private static void NotFound(string name, int id) => throw new NotFoundException($"{name} c Id = {id} не найден");
+        
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var entity = _transitRepository.GetById(id);
+            ThrowIfEntityNotFound(entity, id);
+            _transitRepository.Update(entity, true);
         }
 
         public void Restore(int id)
         {
-            throw new NotImplementedException();
+            var entity = _transitRepository.GetById(id);
+            ThrowIfEntityNotFound(entity, id);
+            _transitRepository.Update(entity, false);
         }
 
         public void Update(int id, TransitModel transitModel)
         {
-            throw new NotImplementedException();
+            var transitOld = _transitRepository.GetById(id);
+            ThrowIfEntityNotFound(transitOld, id);
+            var transitNew = _mapper.Map<Transit>(transitModel);
+            if (!(transitNew.StartStation is null || transitNew.EndStation is null))
+            {
+                transitNew.StartStation = _stationRepository.GetById(transitNew.StartStation.Id);
+                transitNew.EndStation = _stationRepository.GetById(transitNew.EndStation.Id);
+                _transitRepository.Update(transitOld, transitNew);
+            }
         }
+
+        private static void NotFound(string name, int id) => throw new NotFoundException($"{name} c Id = {id} не найден");
     }
 }
 

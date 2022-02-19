@@ -1,11 +1,6 @@
-﻿using AutoMapper;
-using SpaceZD.BusinessLayer.Exceptions;
-using SpaceZD.BusinessLayer.Models;
-using SpaceZD.BusinessLayer.Services.Interfaces;
-using SpaceZD.DataLayer.Entities;
-using SpaceZD.DataLayer.Interfaces;
+﻿using SpaceZD.BusinessLayer.Models;
 
-namespace SpaceZD.BusinessLayer.Services.Interfaces
+namespace SpaceZD.BusinessLayer.Services
 {
     public interface ITransitService
     {
