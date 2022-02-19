@@ -36,10 +36,10 @@ public class TripStationService : BaseService, ITripStationService
 
         if (!_stationRepository
             .GetReadyPlatformsStation(entity!.Station,
-                 model.ArrivalTime.AddMinutes(-SeparationArrivalDepartingTrainMinutes),
-                 model.DepartingTime.AddMinutes(SeparationArrivalDepartingTrainMinutes))
+                 model.ArrivalTime!.Value.AddMinutes(-SeparationArrivalDepartingTrainMinutes),
+                 model.DepartingTime!.Value.AddMinutes(SeparationArrivalDepartingTrainMinutes))
             .Select(g => g.Id)
-            .Contains(model.Platform.Id))
+            .Contains(model.Platform!.Id))
             throw new InvalidOperationException($"Невозможно выбрать платформу c Id = {model.Platform.Id}");
 
         var platform = _platformRepository.GetById(model.Platform.Id);
@@ -56,7 +56,7 @@ public class TripStationService : BaseService, ITripStationService
         ThrowIfEntityNotFound(entity, id);
 
         return _mapper.Map<List<PlatformModel>>(_stationRepository.GetReadyPlatformsStation(entity!.Station,
-            entity.ArrivalTime.AddMinutes(-SeparationArrivalDepartingTrainMinutes),
-            entity.DepartingTime.AddMinutes(SeparationArrivalDepartingTrainMinutes)));
+            entity.ArrivalTime!.Value.AddMinutes(-SeparationArrivalDepartingTrainMinutes),
+            entity.DepartingTime!.Value.AddMinutes(SeparationArrivalDepartingTrainMinutes)));
     }
 }
