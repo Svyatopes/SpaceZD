@@ -9,16 +9,14 @@ public class Carriage
     public virtual Train Train { get; set; }
     public virtual ICollection<Ticket> Tickets { get; set; }
 
-    private bool Equals(Carriage other)
-    {
-        return Number == other.Number && Type.Equals(other.Type) && IsDeleted == other.IsDeleted;
-    }
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
-            return false;
-        if (ReferenceEquals(this, obj))
-            return true;
-        return obj.GetType() == GetType() && Equals((Carriage)obj);
+        return obj is Carriage carriage &&
+               Id == carriage.Id &&
+               Number == carriage.Number &&
+               EqualityComparer<CarriageType>.Default.Equals(Type, carriage.Type) &&
+               IsDeleted == carriage.IsDeleted &&
+               EqualityComparer<Train>.Default.Equals(Train, carriage.Train) &&
+               EqualityComparer<ICollection<Ticket>>.Default.Equals(Tickets, carriage.Tickets);
     }
 }

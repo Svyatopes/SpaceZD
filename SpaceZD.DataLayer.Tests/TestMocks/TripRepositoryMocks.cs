@@ -73,7 +73,7 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 Route = new Route()
                 {
                     Code = "F789",
-                    Transits = new List<RouteTransit>
+                    RouteTransits = new List<RouteTransit>
                     {
                         new()
                         {

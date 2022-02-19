@@ -6,15 +6,13 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class RouteService : IRouteService
+public class RouteService : BaseService, IRouteService
 {
-    private readonly IMapper _mapper;
     private readonly IRouteRepository _routeRepository;
     private readonly IStationRepository _stationRepository;
 
-    public RouteService(IMapper mapper, IRouteRepository routeRepository, IStationRepository stationRepository)
+    public RouteService(IMapper mapper, IRouteRepository routeRepository, IStationRepository stationRepository) : base(mapper)
     {
-        _mapper = mapper;
         _routeRepository = routeRepository;
         _stationRepository = stationRepository;
     }
@@ -68,11 +66,5 @@ public class RouteService : IRouteService
         ThrowIfEntityNotFound(entity, id);
 
         _routeRepository.Update(entity!, _mapper.Map<Route>(routeModel));
-    }
-
-    private static void ThrowIfEntityNotFound<T>(T? entity, int id)
-    {
-        if (entity is null)
-            throw new NotFoundException(typeof(T).Name, id);
     }
 }
