@@ -1,10 +1,11 @@
-﻿using SpaceZD.DataLayer.DbContextes;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PersonRepository : BaseRepository, IRepositorySoftDelete<Person>
+public class PersonRepository : BaseRepository, IPersonRepository
 {
     public PersonRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -32,5 +33,15 @@ public class PersonRepository : BaseRepository, IRepositorySoftDelete<Person>
     {
         person.IsDeleted = isDeleted;
         _context.SaveChanges();
+    }
+
+    public List<Person> GetByUserLogin(string login)
+    {
+        var entity = _context.Persons
+                              .Where(p => !p.IsDeleted &&
+                                     p.User.Login == login)
+                              .ToList();
+        return entity;
+        
     }
 }

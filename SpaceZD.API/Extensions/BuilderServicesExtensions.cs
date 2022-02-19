@@ -52,7 +52,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IRouteRepository, RouteRepository>();
         services.AddScoped<IRepositorySoftDelete<Platform>, PlatformRepository>();
         services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>, PlatformMaintenanceRepository>();
-        services.AddScoped<IRepositorySoftDelete<Person>, PersonRepository>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<IRepositorySoftDelete<Order>, OrderRepository>();
         services.AddScoped<IRepositorySoftDelete<CarriageType>, CarriageTypeRepository>();
         services.AddScoped<IRepositorySoftDelete<Carriage>, CarriageRepository>();
@@ -70,6 +70,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<ITrainService, TrainService>();
+        services.AddScoped<IPersonService, PersonService>();
     }
 
     public static void AddSwaggerGenWithOptions(this IServiceCollection services)

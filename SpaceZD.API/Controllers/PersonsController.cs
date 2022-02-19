@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Attributes;
+using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
+using SpaceZD.BusinessLayer.Services;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.API.Controllers;
 
@@ -7,17 +12,52 @@ namespace SpaceZD.API.Controllers;
 [Route("api/[controller]")]
 public class PersonsController : ControllerBase
 {
+    
+    private readonly IPersonService _personService;
+    private readonly IMapper _mapper;
+
+    public PersonsController(IPersonService personService, IMapper mapper)
+    {
+        _personService = personService;
+        _mapper = mapper;
+
+    }
     [HttpGet]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<PersonModel>> GetPersons()
     {
-        return Ok(new List<PersonModel> { new PersonModel() });
+        var personModel = _personService.GetList();
+        var user = _mapper.Map<List<PersonOutputModel>>(personModel);
+        if (user != null)
+            return Ok(user);
+        return BadRequest();
     }
 
     [HttpGet("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<PersonModel> GetPersonById(int id)
     {
-        return Ok(new PersonModel());
+
+        var userModel = _personService.GetById(id);
+        var user = _mapper.Map<PersonOutputModel>(userModel);
+        if (user != null)
+            return Ok(user);
+        else
+            return BadRequest("Person doesn't exist");
     }
+
+
+    [HttpGet("id/login")]
+    [AuthorizeRole(Role.Admin, Role.User)]
+    public ActionResult<PersonModel> GetPersonByUserLogin()
+    {
+        var login = HttpContext.User.Identity.Name;
+        var personModel = _personService.GetByUserLogin(login);
+        var user = _mapper.Map<List<PersonOutputModel>>(personModel);
+        return Ok(user);
+       
+    }
+
 
     [HttpGet("with-tickets/{id}")]
     public ActionResult<PersonModel> GetPersonByIdWithTickets(int id)
@@ -25,28 +65,47 @@ public class PersonsController : ControllerBase
         return NotFound("Can't find(((((");
     }
 
+
     [HttpPost]
-    public ActionResult AddPerson(PersonModel Person)
+    [AuthorizeRole(Role.Admin, Role.User)]
+    public ActionResult AddPerson(PersonInputModel personModel)
     {
-        return StatusCode(StatusCodes.Status201Created, Person);
+        var login = HttpContext.User.Identity.Name;
+        var person = _mapper.Map<PersonModel>(personModel);
+        var idAddedEntity = _personService.Add(person, login);
+
+        return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
+
     [HttpPut("{id}")]
-    public ActionResult EditPerson(int id, PersonModel Person)
+    [AuthorizeRole(Role.Admin, Role.User)]
+    public ActionResult EditPerson(int id, PersonInputModel person)
     {
-        return BadRequest();
+        var login = HttpContext.User.Identity.Name;
+        var personForEdit = _mapper.Map<PersonModel>(person);
+        _personService.Update(id, personForEdit, login);
+        return Accepted();
+
     }
+    
 
 
     [HttpDelete("{id}")]
+    [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult DeletePerson(int id)
     {
+        var login = HttpContext.User.Identity.Name;
+        _personService.Update(id, true, login);
         return Accepted();
     }
 
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestorePerson(int id)
     {
+        var login = HttpContext.User.Identity.Name;
+        _personService.Update(id, false, login);
         return Accepted();
     }
 }

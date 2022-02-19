@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
-using System.Security.Claims;
 
 namespace SpaceZD.API.Controllers;
 
@@ -37,9 +34,10 @@ public class UsersController : ControllerBase
             return Ok(user);
         return BadRequest("Oh.....");
     }
-    
+
+
     [HttpGet("id/id")]
-    //[AuthorizeRole(Role.Admin)]
+    [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<List<PersonModel>> GetPersonUsers()
     {
         var login = HttpContext.User.Identity.Name;
@@ -50,6 +48,7 @@ public class UsersController : ControllerBase
             return Ok(user);
         return BadRequest("Oh.....");
     }
+
 
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin)]
@@ -64,8 +63,9 @@ public class UsersController : ControllerBase
             return BadRequest("User doesn't exist");
     }
 
+
     [HttpGet("login")]
-    [AuthorizeRole(Role.Admin)]
+    [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<UserModel> GetUserByLogin()
     {
         var login = HttpContext.User.Identity.Name;
@@ -86,6 +86,7 @@ public class UsersController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
+
     [HttpPut("login")]
     [AuthorizeRole(Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager)]
     public ActionResult EditUser(UserUpdateInputModel user)
@@ -97,6 +98,8 @@ public class UsersController : ControllerBase
         return Accepted();
 
     }
+
+
     [HttpDelete("login")]
     [AuthorizeRole(Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager)]
     public ActionResult DeleteUser()
@@ -107,6 +110,7 @@ public class UsersController : ControllerBase
         return Accepted();
 
     }
+
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
