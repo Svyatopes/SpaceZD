@@ -217,7 +217,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                           Name = "Beta",
                           Platforms = new List<PlatformModel>()
                       },
-                      Transits = new List<RouteTransitModel>()
+                      RouteTransits = new List<RouteTransitModel>()
                       
                     }
                 },
@@ -289,7 +289,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                           Name = "Zeta",
                           Platforms = new List<PlatformModel>()
                       },
-                      Transits = new List<RouteTransitModel>()
+                      RouteTransits = new List<RouteTransitModel>()
 
                     }
                 },
