@@ -47,9 +47,11 @@ public class OrderRepositoryTests
         Assert.AreEqual(order, receivedOrder);
     }
 
-    [TestCase(true)]
-    [TestCase(false)]
-    public void GetListAllIncludedTest(bool allIncluded)
+    [TestCase(1, true)]
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(2, false)]
+    public void GetListAllIncludedTest(int userId, bool allIncluded)
     {
         //given
         var orders = _context.Orders
@@ -57,10 +59,10 @@ public class OrderRepositoryTests
         .Include(o => o.Trip)
         .Include(o => o.StartStation)
         .Include(o => o.EndStation)
-        .Where(p => !p.IsDeleted || allIncluded).ToList();
+        .Where(p => (!p.IsDeleted || allIncluded) && p.User.Id == userId).ToList();
 
         //when
-        var ordersInDB = _repository.GetList(allIncluded);
+        var ordersInDB = _repository.GetList(userId, allIncluded);
 
         //then
         Assert.AreEqual(orders, ordersInDB);
