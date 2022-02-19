@@ -12,8 +12,8 @@ public class TripService : BaseService, ITripService
     private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IRepositorySoftDelete<Train> _trainRepository;
 
-    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository, IRepositorySoftDelete<Route> routeRepository,
-                       IRepositorySoftDelete<Train> trainRepository) : base(mapper)
+    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
+        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper)
     {
         _repository = repository;
         _stationRepository = stationRepository;
@@ -89,7 +89,7 @@ public class TripService : BaseService, ITripService
 
         tripModel.Stations.Add(new TripStationModel
         {
-            ArrivalTime = new DateTime(), //TODO поменять после миграций
+            ArrivalTime = null,
             DepartingTime = tripModel.StartTime,
             Station = routeModel.RouteTransits[0].Transit.StartStation
         });
@@ -107,7 +107,7 @@ public class TripService : BaseService, ITripService
         tripModel.Stations.Add(new TripStationModel
         {
             ArrivalTime = tripModel.StartTime.Add(routeModel.RouteTransits[^1].ArrivalTime),
-            DepartingTime = new DateTime(), //TODO поменять после миграций
+            DepartingTime = null,
             Station = routeModel.RouteTransits[^1].Transit.EndStation
         });
 
@@ -152,12 +152,14 @@ public class TripService : BaseService, ITripService
                 findEndStation = true;
                 break;
             }
+
             if (tripModel.Stations[i].Station.Equals(startStationModel))
             {
                 start = i;
                 findStartStation = true;
             }
         }
+
         if (!findEndStation)
             throw new ArgumentException("Данная комбинация начальной и конечной станции невозможна для данного Trip");
 
@@ -168,14 +170,16 @@ public class TripService : BaseService, ITripService
                                              .ToList();
 
         foreach (var ticket in tripModel.Orders
-                                        .Where(order => stationsToTheEnd.Contains(order.StartStation) && stationsAfterTheStart.Contains(order.EndStation))
+                                        .Where(order =>
+                                            stationsToTheEnd.Contains(order.StartStation) &&
+                                            stationsAfterTheStart.Contains(order.EndStation))
                                         .SelectMany(order => order.Tickets))
         {
             allPlacesModels
-               .Single(g => g.Carriage.Equals(ticket.Carriage))
-               .Seats
-               .Single(g => g.NumberOfSeats == ticket.SeatNumber)
-               .IsFree = false;
+                .Single(g => g.Carriage.Equals(ticket.Carriage))
+                .Seats
+                .Single(g => g.NumberOfSeats == ticket.SeatNumber)
+                .IsFree = false;
         }
 
         return allPlacesModels;
