@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using SpaceZD.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Attributes;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.StationManager)]
 public class StationsController : ControllerBase
 {
     private readonly IMapper _mapper;

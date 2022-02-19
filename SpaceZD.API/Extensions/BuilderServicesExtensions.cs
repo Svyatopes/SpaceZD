@@ -68,6 +68,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRouteService, RouteService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITrainService, TrainService>();
         services.AddScoped<ITripStationService, TripStationService>();
     }
 
