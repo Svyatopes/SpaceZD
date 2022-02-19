@@ -21,23 +21,28 @@ namespace SpaceZD.BusinessLayer.Services
         public TransitModel GetById(int id)
         {
             var entity = _transitRepository.GetById(id);
-            if (entity is null)
-                NotFound(nameof(Transit), id);
+            ThrowIfEntityNotFound(entity, id);
             return _mapper.Map<TransitModel>(entity);
         }
 
-        public List<TransitModel> GetList() => _mapper.Map<List<TransitModel>>(_transitRepository.GetList());
-        public List<TransitModel> GetListDeleted() => _mapper.Map<List<TransitModel>>(_transitRepository.GetList(true).Where(t => t.IsDeleted));
+        public List<TransitModel> GetList(bool includeAll = false)
+        {
+            var entities = _transitRepository.GetList(includeAll);
+            return _mapper.Map<List<TransitModel>>(entities);
+        }
+
+        public List<TransitModel> GetListDeleted(bool includeAll = true)
+        {
+            var entities = _transitRepository.GetList(includeAll).Where(t => t.IsDeleted);
+            return _mapper.Map<List<TransitModel>>(entities);
+
+        }
 
         public int Add(TransitModel transitModel)
         {
             var startStation = _stationRepository.GetById(transitModel.StartStation.Id);
-            if (startStation is null)
-                NotFound(nameof(Station), transitModel.StartStation.Id);
             var endStation = _stationRepository.GetById(transitModel.EndStation.Id);
-            if (endStation is null)
-                NotFound(nameof(Station), transitModel.EndStation.Id);
-
+            
             var transit = _mapper.Map<Transit>(transitModel);
             transit.StartStation = startStation!;
             transit.EndStation = endStation!;
@@ -45,7 +50,7 @@ namespace SpaceZD.BusinessLayer.Services
             return _transitRepository.Add(transit);
         }
 
-        
+
 
         public void Delete(int id)
         {

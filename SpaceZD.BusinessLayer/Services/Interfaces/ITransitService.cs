@@ -4,18 +4,12 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public interface ITransitService
     {
-        public TransitModel GetById(int id);
-
-        public List<TransitModel> GetList();
-
-        public List<TransitModel> GetListDeleted();
-
-        public int Add(TransitModel transitModel);
-
-        public void Delete(int id);
-
-        public void Restore(int id);
-
-        public void Update(int id, TransitModel transitModel);
+        int Add(TransitModel transitModel);
+        void Delete(int id);
+        TransitModel GetById(int id);
+        List<TransitModel> GetList(bool includeAll = false);
+        List<TransitModel> GetListDeleted(bool includeAll = true);
+        void Restore(int id);
+        void Update(int id, TransitModel transitModel);
     }
 }
