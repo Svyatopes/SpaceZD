@@ -10,11 +10,13 @@ public class TicketService : ITicketService
 {
     private readonly IMapper _mapper;
     private readonly ITicketRepository _ticketRepository;
+    private readonly IUserRepository _userRepository;
 
-    public TicketService(IMapper mapper, ITicketRepository ticketRepository)
+    public TicketService(IMapper mapper, ITicketRepository ticketRepository, IUserRepository userRepository)
     {
         _mapper = mapper;
         _ticketRepository = ticketRepository;
+        _userRepository = userRepository;
     }
 
     public TicketModel GetById(int id)
@@ -30,11 +32,22 @@ public class TicketService : ITicketService
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public List<TicketModel> GetListByOrderId(int login)
+    public List<TicketModel> GetListByOrderId(int orderId, string login)
     {
+        var user = _userRepository.GetByLogin(login);
+        foreach (var item in user.Orders)
+        {
+            if (item.Id == orderId)
+            {
+                var entity = _ticketRepository.GetListById(orderId);
+                return _mapper.Map<List<TicketModel>>(entity);
+            }
+            else
+                throw new AccessViolationException();            
+        }
 
-        var entity = _ticketRepository.GetListById(login);
-        return _mapper.Map <List<TicketModel>>(entity);
+        return new List<TicketModel>();
+
     }
 
     public List<TicketModel> GetListDeleted(bool includeAll = true)

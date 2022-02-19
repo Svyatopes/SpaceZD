@@ -37,7 +37,8 @@ public class TicketsController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<List<TicketModel>> GetTicketByOrderId(int orderId)
     {
-        var ticketModel = _ticketService.GetListByOrderId(10);
+        var login = HttpContext.User.Identity.Name;
+        var ticketModel = _ticketService.GetListByOrderId(orderId, login);
         var tickets = _mapper.Map<List<TicketOutputModel>>(ticketModel);
         if (tickets != null)
             return Ok(tickets);
@@ -46,7 +47,7 @@ public class TicketsController : ControllerBase
 
     
     [HttpGet("{id}")]
-    [AuthorizeRole(Role.Admin, Role.User)]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<TicketModel> GetTicketById(int id)
     {
         var ticketModel = _ticketService.GetById(id);
