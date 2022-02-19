@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
-using System.Linq;
+using SpaceZD.DataLayer.Tests.TestCaseSources;
 
 namespace SpaceZD.DataLayer.Tests;
 internal class CarriageRepositoryTests
@@ -81,7 +83,7 @@ internal class CarriageRepositoryTests
     public void GetListTest(bool includeAll)
     {
         // given
-        var expected = _context.Carriages.Where(t => !t.IsDeleted || includeAll).ToList();
+        var expected = _context.Carriages.Where(c => !c.IsDeleted || includeAll).ToList();
 
         // when
         var list = _repository.GetList(includeAll);
