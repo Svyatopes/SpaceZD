@@ -20,8 +20,8 @@ public class StationRepositoryTests
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                      .UseInMemoryDatabase("Test")
-                      .Options;
+                     .UseInMemoryDatabase("Test")
+                     .Options;
 
         _context = new VeryVeryImportantContext(options);
         _repository = new StationRepository(_context);
@@ -110,10 +110,10 @@ public class StationRepositoryTests
 
     [TestCaseSource(typeof(StationRepositoryTestCaseSource),
         nameof(StationRepositoryTestCaseSource.GetTestCaseDataForReadyPlatformsStation))]
-    public void GetReadyPlatformsStationTest(Station station, List<Platform> expected)
+    public void GetReadyPlatformsStationTest(Station station, DateTime startMoment, DateTime endMoment, List<Platform> expected)
     {
         // when 
-        var actual = _repository.GetReadyPlatformsStation(station, new DateTime(2022, 1, 1));
+        var actual = _repository.GetReadyPlatformsStation(station, startMoment, endMoment);
 
         // then
         CollectionAssert.AreEqual(expected, actual);

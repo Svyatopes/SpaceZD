@@ -43,7 +43,6 @@ public class UserServiceTest
             new() { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = Role.User, IsDeleted = false },
             new() { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = Role.Admin, IsDeleted = false },
             new() { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = Role.TrainRouteManager, IsDeleted = false }
-
     });
         yield return new TestCaseData(new List<User>
         {
@@ -62,7 +61,6 @@ public class UserServiceTest
             new() { Id = 10, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = Role.User, IsDeleted = true },
             new() { Id = 11, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = Role.Admin, IsDeleted = false },
             new() { Id = 12, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = Role.TrainRouteManager, IsDeleted = true }
-
     });
         yield return new TestCaseData(new List<User>
         {
