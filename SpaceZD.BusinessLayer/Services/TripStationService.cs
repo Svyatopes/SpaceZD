@@ -37,11 +37,27 @@ public class TripStationService : BaseService, ITripStationService
         CheckTheAbilityToStopOnTheSelectedPlatform(entity!.Station, model.ArrivalTime!.Value, model.DepartingTime!.Value, model.Platform!.Id);
 
         var platform = _platformRepository.GetById(model.Platform.Id);
-        var platformModel = _mapper.Map<PlatformModel>(platform);
-        model.Platform = platformModel;
-
         var tripStationNew = _mapper.Map<TripStation>(model);
+        tripStationNew.Platform = platform;
+        
         _repository.Update(entity, tripStationNew);
+    }
+
+    public void SetPlatform(int id, int idPlatform)
+    {
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        if (entity!.ArrivalTime is null)
+            CheckTheAbilityToStopOnTheSelectedPlatform(entity.Station, entity.DepartingTime!.Value, entity.DepartingTime!.Value, idPlatform);
+        else if (entity.DepartingTime is null)
+            CheckTheAbilityToStopOnTheSelectedPlatform(entity.Station, entity.ArrivalTime!.Value, entity.ArrivalTime!.Value, idPlatform);
+        else
+            CheckTheAbilityToStopOnTheSelectedPlatform(entity.Station, entity.ArrivalTime!.Value, entity.DepartingTime!.Value, idPlatform);
+
+        entity.Platform = _platformRepository.GetById(idPlatform);
+        
+        _repository.Update(entity, entity);
     }
 
     public List<PlatformModel> GetReadyPlatforms(int id)
@@ -49,9 +65,22 @@ public class TripStationService : BaseService, ITripStationService
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
-        return _mapper.Map<List<PlatformModel>>(_stationRepository.GetReadyPlatformsStation(entity!.Station,
-            entity.ArrivalTime!.Value.AddMinutes(-_separationArrivalDepartingTrainMinutes),
-            entity.DepartingTime!.Value.AddMinutes(_separationArrivalDepartingTrainMinutes)));
+        if (entity!.ArrivalTime is null && entity.DepartingTime is not null)
+            return _mapper.Map<List<PlatformModel>>(_stationRepository.GetReadyPlatformsStation(entity.Station,
+                entity.DepartingTime!.Value.AddMinutes(-_separationArrivalDepartingTrainMinutes),
+                entity.DepartingTime!.Value.AddMinutes(_separationArrivalDepartingTrainMinutes)));
+        
+        if (entity.DepartingTime is null && entity.ArrivalTime is not null)
+            return _mapper.Map<List<PlatformModel>>(_stationRepository.GetReadyPlatformsStation(entity.Station,
+                entity.ArrivalTime!.Value.AddMinutes(-_separationArrivalDepartingTrainMinutes),
+                entity.ArrivalTime!.Value.AddMinutes(_separationArrivalDepartingTrainMinutes)));
+        
+        if (entity.ArrivalTime is not null && entity.DepartingTime is not null)
+            return _mapper.Map<List<PlatformModel>>(_stationRepository.GetReadyPlatformsStation(entity!.Station,
+                entity.ArrivalTime!.Value.AddMinutes(-_separationArrivalDepartingTrainMinutes),
+                entity.DepartingTime!.Value.AddMinutes(_separationArrivalDepartingTrainMinutes)));
+        
+        throw new InvalidDataException();
     }
 
     private void CheckTheAbilityToStopOnTheSelectedPlatform(Station station, DateTime arrivalTime, DateTime departureTime, int platformId)

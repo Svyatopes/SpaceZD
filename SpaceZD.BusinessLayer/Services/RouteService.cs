@@ -65,6 +65,15 @@ public class RouteService : BaseService, IRouteService
         var entity = _routeRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
-        _routeRepository.Update(entity!, _mapper.Map<Route>(routeModel));
+        var startStation = _stationRepository.GetById(routeModel.StartStation.Id);
+        ThrowIfEntityNotFound(startStation, routeModel.StartStation.Id);
+        var endStation = _stationRepository.GetById(routeModel.EndStation.Id);
+        ThrowIfEntityNotFound(endStation, routeModel.EndStation.Id);
+
+        var route = _mapper.Map<Route>(routeModel);
+        route.StartStation = startStation!;
+        route.EndStation = endStation!;
+
+        _routeRepository.Update(entity!, route);
     }
 }
