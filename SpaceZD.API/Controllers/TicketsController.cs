@@ -50,7 +50,8 @@ public class TicketsController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<TicketModel> GetTicketById(int id)
     {
-        var ticketModel = _ticketService.GetById(id);
+        var login = HttpContext.User.Identity.Name;
+        var ticketModel = _ticketService.GetById(id, login);
         var ticket = _mapper.Map<TicketOutputModel>(ticketModel);
         if (ticket != null)
             return Ok(ticket);

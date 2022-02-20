@@ -6,7 +6,7 @@ namespace SpaceZD.BusinessLayer.Services
     {
         int Add(TicketModel entity);
         void Delete(int id);
-        TicketModel GetById(int id);
+        TicketModel GetById(int id, string login);
         List<TicketModel> GetListByOrderId(int orderId, string login);
         List<TicketModel> GetList(bool includeAll = false);
         List<TicketModel> GetListDeleted(bool includeAll = true);
