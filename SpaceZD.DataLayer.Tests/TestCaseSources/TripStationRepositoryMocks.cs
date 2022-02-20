@@ -31,12 +31,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Train = new Train()
                     {
-                        Id = 1,
                         IsDeleted = false
                     },
                     Route = new Route()
                     {
-                        Id = 1,
                         Code = "F700",
                         RouteTransits = new List<RouteTransit>
                         {
@@ -82,12 +80,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Train = new Train()
                     {
-                        Id = 1,
                         IsDeleted = false
                     },
                     Route = new Route()
                     {
-                        Id = 1,
                         Code = "F345",
                         RouteTransits = new List<RouteTransit>
                         {
@@ -133,12 +129,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Train = new Train()
                     {
-                        Id = 1,
                         IsDeleted = false
                     },
                     Route = new Route()
                     {
-                        Id = 1,
                         Code = "F790",
                         RouteTransits = new List<RouteTransit>
                         {
@@ -247,12 +241,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
             {
                 Train = new Train()
                 {
-                    Id = 1,
                     IsDeleted = false
                 },
                 Route = new Route()
                 {
-                    Id = 1,
                     Code = "F400",
                     RouteTransits = new List<RouteTransit>
                     {

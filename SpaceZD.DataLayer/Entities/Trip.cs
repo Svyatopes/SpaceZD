@@ -13,9 +13,13 @@ public class Trip
 
     private bool Equals(Trip other)
     {
-        return Train.Id == other.Train.Id && Route.Id == other.Route.Id && IsDeleted == other.IsDeleted;
+        return Train.Equals(other.Train) &&
+            Route.Equals(other.Route) &&
+            Stations.SequenceEqual(other.Stations) &&
+            StartTime.Equals(other.StartTime) &&
+            IsDeleted == other.IsDeleted;
     }
-
+    
     public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj))
