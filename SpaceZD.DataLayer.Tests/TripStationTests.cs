@@ -16,8 +16,8 @@ namespace SpaceZD.DataLayer.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                          .UseInMemoryDatabase(databaseName: "Test")
-                          .Options;
+                         .UseInMemoryDatabase(databaseName: "Test")
+                         .Options;
 
             _context = new VeryVeryImportantContext(options);
             _context.Database.EnsureDeleted();
@@ -58,22 +58,6 @@ namespace SpaceZD.DataLayer.Tests
 
             // then
             CollectionAssert.AreEqual(expected, list);
-        }
-
-
-        [Test]
-        public void AddTest()
-        {
-            // given
-            var entityToAdd = TripStationRepositoryMocks.GetTripStation();
-
-            // when 
-            int id = _repository.Add(entityToAdd);
-
-            // then
-            var entityOnCreate = _context.TripStations.FirstOrDefault(o => o.Id == id);
-
-            Assert.AreEqual(entityOnCreate, entityToAdd);
         }
 
 

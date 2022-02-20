@@ -31,12 +31,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Train = new Train()
                     {
-                        Id = 1,
                         IsDeleted = false
                     },
                     Route = new Route()
                     {
-                        Id = 1,
                         Code = "F700",
                         RouteTransits = new List<RouteTransit>
                         {
@@ -82,12 +80,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Train = new Train()
                     {
-                        Id = 1,
                         IsDeleted = false
                     },
                     Route = new Route()
                     {
-                        Id = 1,
                         Code = "F345",
                         RouteTransits = new List<RouteTransit>
                         {
@@ -133,12 +129,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                 {
                     Train = new Train()
                     {
-                        Id = 1,
                         IsDeleted = false
                     },
                     Route = new Route()
                     {
-                        Id = 1,
                         Code = "F790",
                         RouteTransits = new List<RouteTransit>
                         {
@@ -160,67 +154,6 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
                     StartTime = new DateTime(1970, 1, 1, 5, 30, 0),
                     IsDeleted = false
                 }
-            }
-        };
-
-        public static List<TripStation> GetShortTripStations() => new List<TripStation>
-        {
-            new()
-            {
-                Station = new Station()
-                {
-                    Name = "Rostov",
-                    Platforms = new List<Platform>
-                    {
-                        new() { Number = 1 },
-                        new() { Number = 2 }
-                    }
-                },
-                Platform = new Platform()
-                {
-                    Number = 1
-                },
-                ArrivalTime = new DateTime(2002, 12, 31, 22, 56, 59),
-
-                DepartingTime = new DateTime(2003, 12, 31, 22, 56, 59)
-            },
-            new()
-            {
-                Station = new Station()
-                {
-                    Name = "Vorcuta",
-                    Platforms = new List<Platform>
-                    {
-                        new() { Number = 1 },
-                        new() { Number = 2 }
-                    }
-                },
-                Platform = new Platform()
-                {
-                    Number = 1
-                },
-                ArrivalTime = new DateTime(2002, 12, 31, 22, 56, 59),
-
-                DepartingTime = new DateTime(2003, 12, 31, 22, 56, 59)
-            },
-            new()
-            {
-                Station = new Station()
-                {
-                    Name = "Yamaika",
-                    Platforms = new List<Platform>
-                    {
-                        new() { Number = 1 },
-                        new() { Number = 2 }
-                    }
-                },
-                Platform = new Platform()
-                {
-                    Number = 1
-                },
-                ArrivalTime = new DateTime(2002, 12, 31, 22, 56, 59),
-
-                DepartingTime = new DateTime(2003, 12, 31, 22, 56, 59)
             }
         };
 
@@ -247,12 +180,10 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
             {
                 Train = new Train()
                 {
-                    Id = 1,
                     IsDeleted = false
                 },
                 Route = new Route()
                 {
-                    Id = 1,
                     Code = "F400",
                     RouteTransits = new List<RouteTransit>
                     {

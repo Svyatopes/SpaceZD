@@ -32,10 +32,8 @@ internal static class RouteServiceTestCaseSource
             StartTime = new DateTime(1970, 1, 1, 12, 0, 0),
             IsDeleted = true
         };
-        var startStationModel = new StationModel
-            { Name = startStation.Name, Platforms = new List<PlatformModel>(), IsDeleted = startStation.IsDeleted };
-        var endStationModel = new StationModel
-            { Name = endStation.Name, Platforms = new List<PlatformModel>(), IsDeleted = endStation.IsDeleted };
+        var startStationModel = new StationModel { Name = startStation.Name, Platforms = new List<PlatformModel>(), IsDeleted = startStation.IsDeleted };
+        var endStationModel = new StationModel { Name = endStation.Name, Platforms = new List<PlatformModel>(), IsDeleted = endStation.IsDeleted };
         var routeModel = new RouteModel
         {
             Code = "V468",
