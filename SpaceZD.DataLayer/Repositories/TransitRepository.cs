@@ -28,8 +28,7 @@ public class TransitRepository : BaseRepository, IRepositorySoftDelete<Transit>
     {
         entityToEdit.StartStation = newEntity.StartStation;
         entityToEdit.EndStation = newEntity.EndStation;
-        entityToEdit.Price = newEntity.Price;
-        entityToEdit.RouteTransit = newEntity.RouteTransit;
+        entityToEdit.Price = newEntity.Price;        
 
         _context.SaveChanges();
     }

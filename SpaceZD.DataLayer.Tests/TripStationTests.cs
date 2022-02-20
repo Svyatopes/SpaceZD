@@ -16,8 +16,8 @@ namespace SpaceZD.DataLayer.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                          .UseInMemoryDatabase(databaseName: "Test")
-                          .Options;
+                         .UseInMemoryDatabase(databaseName: "Test")
+                         .Options;
 
             _context = new VeryVeryImportantContext(options);
             _context.Database.EnsureDeleted();
