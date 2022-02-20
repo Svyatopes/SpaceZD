@@ -44,7 +44,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes
     [HttpPost]
-    public ActionResult AddCarriageType(CarriageTypeInputModel carriageType)
+    public ActionResult AddCarriageType([FromBody] CarriageTypeInputModel carriageType)
     {
         _carriageTypeService.Add(_mapper.Map<CarriageTypeModel>(carriageType));
         return StatusCode(StatusCodes.Status201Created);
@@ -52,7 +52,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/42
     [HttpPut("{id}")]
-    public ActionResult EditCarriageType(int id, CarriageTypeInputModel carriageType)
+    public ActionResult EditCarriageType(int id, [FromBody] CarriageTypeInputModel carriageType)
     {
         _carriageTypeService.Update(id, _mapper.Map<CarriageTypeModel>(carriageType));
         return Accepted();

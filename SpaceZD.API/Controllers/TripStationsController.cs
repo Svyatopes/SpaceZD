@@ -25,16 +25,24 @@ public class TripStationsController : ControllerBase
 
     //api/TripStations/42
     [HttpGet("{id}")]
-    public ActionResult<TripStationOutputModel> GetTripById(int id)
+    public ActionResult<TripStationOutputModel> GetTripStationById(int id)
     {
         return Ok(_mapper.Map<TripStationOutputModel>(_service.GetById(id)));
     }
 
     //api/TripStations/42
     [HttpPut("{id}")]
-    public ActionResult EditTrip(int id, TripStationUpdateInputModel tripStation)
+    public ActionResult EditTripStation(int id, [FromBody] TripStationUpdateInputModel tripStation)
     {
         _service.Update(id, _mapper.Map<TripStationModel>(tripStation));
+        return Accepted();
+    }
+    
+    //api/TripStations/42/set-platform/2
+    [HttpPut("{id}/set-platform/{idPlatform}")]
+    public ActionResult SetPlatformTripStation(int id, int idPlatform)
+    {
+        _service.SetPlatform(id, idPlatform);
         return Accepted();
     }
 
