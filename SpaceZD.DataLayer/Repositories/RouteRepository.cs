@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class RouteRepository : BaseRepository, IRouteRepository
+public class RouteRepository : BaseRepository, IRepositorySoftDelete<Route>
 {
     public RouteRepository(VeryVeryImportantContext context) : base(context) {}
 
@@ -63,13 +63,6 @@ public class RouteRepository : BaseRepository, IRouteRepository
     {
         route.IsDeleted = isDeleted;
 
-        _context.SaveChanges();
-    }
-
-    public void AddRouteTransitForRoute(Route route, RouteTransit routeTransit)
-    {
-        route.RouteTransits.Add(routeTransit);
-        
         _context.SaveChanges();
     }
 }

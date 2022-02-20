@@ -19,7 +19,7 @@ public class TripServiceTests
     private Mock<IRepositorySoftDelete<Trip>> _tripRepositoryMock;
     private Mock<IStationRepository> _stationRepositoryMock;
     private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
-    private Mock<IRouteRepository> _routeRepositoryMock;
+    private Mock<IRepositorySoftDelete<Route>> _routeRepositoryMock;
     private readonly IMapper _mapper;
     private ITripService _service;
 
@@ -33,7 +33,7 @@ public class TripServiceTests
     {
         _tripRepositoryMock = new Mock<IRepositorySoftDelete<Trip>>();
         _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
-        _routeRepositoryMock = new Mock<IRouteRepository>();
+        _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
         _stationRepositoryMock = new Mock<IStationRepository>();
         _service = new TripService(_mapper, _tripRepositoryMock.Object, _stationRepositoryMock.Object, _routeRepositoryMock.Object, _trainRepositoryMock.Object);
     }

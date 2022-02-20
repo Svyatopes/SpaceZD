@@ -9,11 +9,11 @@ public class TripService : BaseService, ITripService
 {
     private readonly IRepositorySoftDelete<Trip> _repository;
     private readonly IStationRepository _stationRepository;
-    private readonly IRouteRepository _routeRepository;
+    private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IRepositorySoftDelete<Train> _trainRepository;
 
     public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
-        IRouteRepository routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper)
+        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper)
     {
         _repository = repository;
         _stationRepository = stationRepository;
