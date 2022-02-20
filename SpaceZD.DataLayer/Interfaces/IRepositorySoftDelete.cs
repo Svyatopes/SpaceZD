@@ -1,6 +1,6 @@
 namespace SpaceZD.DataLayer.Interfaces;
 
-public interface IRepositorySoftDelete<T>
+public interface IRepositorySoftDelete<T> where T : class
 {
     public T? GetById(int id);
     public List<T> GetList(bool includeAll = false);
