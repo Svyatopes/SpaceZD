@@ -130,9 +130,23 @@ public class TicketService : ITicketService
         {
             throw new AccessViolationException();
         }
+    }
 
+    public void UpdatePrice(int id, TicketModel entity, string login)
+    {
+        if (entity.Price == 0)
+        {
+            throw new NullReferenceException();
+        }
+        var user = _userRepository.GetByLogin(login);
+        var ticketOld = _ticketRepository.GetById(id);
+        var ticketNew = _mapper.Map<Ticket>(entity);
+        ThrowIfEntityNotFound(ticketOld, id);
 
-
+        if (ticketOld.Order.User.Login == login || user.Role == Role.Admin)
+        {
+            _ticketRepository.UpdatePrice(ticketOld, ticketNew);
+        }
     }
 
     public void Delete(int id)

@@ -12,5 +12,6 @@ namespace SpaceZD.BusinessLayer.Services
         List<TicketModel> GetListDeleted(bool includeAll = true);
         void Restore(int id);
         void Update(int id, TicketModel entity, string login);
+        void UpdatePrice(int id, TicketModel entity, string login);
     }
 }

@@ -92,6 +92,17 @@ public class TicketsController : ControllerBase
         _ticketService.Update(id, ticket, login);
         return Accepted();
     }
+
+
+    [HttpPut("hh/{id}")]
+    [AuthorizeRole(Role.Admin)]
+    public ActionResult EditPriceTicket(int id, TicketUpdatePriceInputModel ticketModel)
+    {
+        var login = HttpContext.User.Identity.Name;
+        var ticket = _mapper.Map<TicketModel>(ticketModel);
+        _ticketService.UpdatePrice(id, ticket, login);
+        return Accepted();
+    }
     
 
     [HttpDelete("{id}")]
