@@ -35,7 +35,6 @@ public class TicketRepository : BaseRepository, ITicketRepository
     {
         ticketOld.Carriage = ticketNew.Carriage;
         ticketOld.SeatNumber = ticketNew.SeatNumber;
-        ticketOld.Price = ticketNew.Price;
         ticketOld.Person = ticketNew.Person;
 
         _context.SaveChanges();

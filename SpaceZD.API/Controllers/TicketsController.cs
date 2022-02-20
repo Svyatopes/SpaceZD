@@ -32,6 +32,18 @@ public class TicketsController : ControllerBase
             return Ok(tickets);
         return BadRequest("Oh.....");
     }
+    
+    
+    [HttpGet("delete")]
+    [AuthorizeRole(Role.Admin)]
+    public ActionResult<List<TicketModel>> GetTicketsDelete()
+    {
+        var ticketModel = _ticketService.GetListDeleted();
+        var tickets = _mapper.Map<List<TicketOutputModel>>(ticketModel);
+        if (tickets != null)
+            return Ok(tickets);
+        return BadRequest();
+    }
 
     [HttpGet("by-order/{orderId}")]
     [AuthorizeRole(Role.Admin, Role.User)]
@@ -62,7 +74,7 @@ public class TicketsController : ControllerBase
 
     [HttpPost]
     [AuthorizeRole(Role.Admin, Role.User)]
-    public ActionResult AddTicket(TicketInputModel ticketModel)
+    public ActionResult AddTicket(TicketCreateInputModel ticketModel)
     {
         var ticket = _mapper.Map<TicketModel>(ticketModel);
         var idAddedEntity = _ticketService.Add(ticket);
@@ -73,12 +85,14 @@ public class TicketsController : ControllerBase
 
     [HttpPut("{id}")]
     [AuthorizeRole(Role.Admin, Role.User)]
-    public ActionResult EditTicket(int id, TicketModel ticketModel)
+    public ActionResult EditTicket(int id, TicketUpdateInputModel ticketModel)
     {
+        var login = HttpContext.User.Identity.Name;
         var ticket = _mapper.Map<TicketModel>(ticketModel);
-        _ticketService.Update(id, ticket);
+        _ticketService.Update(id, ticket, login);
         return Accepted();
     }
+    
 
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.Admin, Role.User)]

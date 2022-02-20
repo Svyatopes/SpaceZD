@@ -73,6 +73,8 @@ public static class BuilderServicesExtensions
         services.AddScoped<IPersonService, PersonService>();
         services.AddScoped<ITransitService, TransitService>();
         services.AddScoped<ITripStationService, TripStationService>();
+        services.AddScoped<ICarriageService, CarriageService>();
+
     }
 
     public static void AddSwaggerGenWithOptions(this IServiceCollection services)

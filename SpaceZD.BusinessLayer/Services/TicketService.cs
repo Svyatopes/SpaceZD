@@ -12,14 +12,21 @@ public class TicketService : ITicketService
     private readonly IMapper _mapper;
     private readonly ITicketRepository _ticketRepository;
     private readonly IRepositorySoftDelete<Order> _orderRepository;
+    private readonly IPersonRepository _personRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IRepositorySoftDelete<Carriage> _carriageRepository;
 
-    public TicketService(IMapper mapper, ITicketRepository ticketRepository, IUserRepository userRepository, IRepositorySoftDelete<Order> orderRepository)
+
+    public TicketService(IMapper mapper, ITicketRepository ticketRepository, 
+        IUserRepository userRepository, IRepositorySoftDelete<Order> orderRepository,
+        IPersonRepository personRepository, IRepositorySoftDelete<Carriage> carriageRepository)
     {
         _mapper = mapper;
         _ticketRepository = ticketRepository;
         _userRepository = userRepository;
         _orderRepository = orderRepository;
+        _personRepository = personRepository;
+        _carriageRepository = carriageRepository;
     }
 
     public TicketModel GetById(int id, string login)
@@ -93,12 +100,38 @@ public class TicketService : ITicketService
 
     }
 
-    public void Update(int id, TicketModel entity)
+    public void Update(int id, TicketModel entity, string login)
     {
+        if (entity.Carriage is null || entity.Person is null || entity.SeatNumber == 0)
+        {
+            throw new NullReferenceException();
+        }
+        var user = _userRepository.GetByLogin(login);
         var ticketOld = _ticketRepository.GetById(id);
+        var ticketNew = _mapper.Map<Ticket>(entity);
         ThrowIfEntityNotFound(ticketOld, id);
-        var tickedNew = _mapper.Map<Ticket>(entity);
-        _ticketRepository.Update(ticketOld, tickedNew);
+
+        if (ticketOld.Order.User.Login == login || user.Role == Role.Admin)
+        {
+            var carriageNew = _carriageRepository.GetById(entity.Carriage.Id);
+            ThrowIfEntityNotFound(carriageNew, carriageNew.Id);
+
+            var personNew = _personRepository.GetById(entity.Person.Id);
+            ThrowIfEntityNotFound(personNew, personNew.Id);
+            ticketNew.Carriage = carriageNew;
+            ticketNew.Person = personNew;
+
+            if (personNew.User.Id == user.Id)
+                _ticketRepository.Update(ticketOld, ticketNew);
+            else
+                throw new AccessViolationException();
+        }
+        else
+        {
+            throw new AccessViolationException();
+        }
+
+
 
     }
 

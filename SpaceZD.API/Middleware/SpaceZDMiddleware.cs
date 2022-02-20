@@ -36,6 +36,10 @@ public class SpaceZdMiddleware
         {
             await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "БД не алё");
         }
+        catch (NullReferenceException)
+        {
+            await HandleExceptionAsync(context, HttpStatusCode.NotFound, "Не все данные заполнены");
+        }
         catch (Exception ex)
         {
             await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
