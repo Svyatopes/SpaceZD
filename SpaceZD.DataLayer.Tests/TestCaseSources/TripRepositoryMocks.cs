@@ -107,13 +107,11 @@ namespace SpaceZD.DataLayer.Tests.TestCaseSources
         {
             Train = new Train()
             {
-                Id = 1,
                 Carriages = new List<Carriage>(),
                 IsDeleted = false
             },
             Route = new Route()
             {
-                Id = 1,
                 Code = "F700",
                 RouteTransits = new List<RouteTransit>
                 {
