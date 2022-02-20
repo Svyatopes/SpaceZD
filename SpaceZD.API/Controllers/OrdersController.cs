@@ -37,7 +37,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet]
-    [Route("admin/{userId}")]
+    [Route("by-user/{userId}")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<OrderModel>> GetOrders(int userId)
     {
