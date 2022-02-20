@@ -61,22 +61,6 @@ namespace SpaceZD.DataLayer.Tests
         }
 
 
-        [Test]
-        public void AddTest()
-        {
-            // given
-            var entityToAdd = TripStationRepositoryMocks.GetTripStation();
-
-            // when 
-            int id = _repository.Add(entityToAdd);
-
-            // then
-            var entityOnCreate = _context.TripStations.FirstOrDefault(o => o.Id == id);
-
-            Assert.AreEqual(entityOnCreate, entityToAdd);
-        }
-
-
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
