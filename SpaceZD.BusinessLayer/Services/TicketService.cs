@@ -17,7 +17,7 @@ public class TicketService : ITicketService
     private readonly IRepositorySoftDelete<Carriage> _carriageRepository;
 
 
-    public TicketService(IMapper mapper, ITicketRepository ticketRepository, 
+    public TicketService(IMapper mapper, ITicketRepository ticketRepository,
         IUserRepository userRepository, IRepositorySoftDelete<Order> orderRepository,
         IPersonRepository personRepository, IRepositorySoftDelete<Carriage> carriageRepository)
     {
@@ -52,7 +52,7 @@ public class TicketService : ITicketService
             }
             return new TicketModel();
         }
-        
+
     }
 
     public List<TicketModel> GetList(bool includeAll = false)
@@ -77,12 +77,12 @@ public class TicketService : ITicketService
                 {
                     var entity = _ticketRepository.GetListById(orderId);
                     return _mapper.Map<List<TicketModel>>(entity);
-                }                    
+                }
                 else
                     throw new AccessViolationException();
             }
             return new List<TicketModel>();
-        } 
+        }
     }
 
     public List<TicketModel> GetListDeleted(bool includeAll = true)
@@ -91,12 +91,31 @@ public class TicketService : ITicketService
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public int Add(TicketModel entity)
+    public int Add(TicketModel entity, string login)
     {
+        if (entity.Carriage is null || entity.Person is null || entity.Order is null || entity.SeatNumber == 0)
+        {
+            throw new NullReferenceException();
+        }
+        var user = _userRepository.GetByLogin(login);
+        var ticket = _mapper.Map<Ticket>(entity);
 
-        var addEntity = _mapper.Map<Ticket>(entity);
-        var id = _ticketRepository.Add(addEntity);
-        return id;
+        var carriage = _carriageRepository.GetById(entity.Carriage.Id);
+        ThrowIfEntityNotFound(carriage, carriage.Id);
+
+        var order = _orderRepository.GetById(entity.Order.Id);
+        ThrowIfEntityNotFound(order, order.Id);
+
+        var person = _personRepository.GetById(entity.Person.Id);
+        ThrowIfEntityNotFound(person, person.Id);
+        ticket.Carriage = carriage;
+        ticket.Person = person;
+        ticket.Order = order;
+
+        if (person.User.Id == user.Id && order.User.Id == user.Id)
+            return _ticketRepository.Add(ticket);
+        else
+            throw new AccessViolationException();
 
     }
 
@@ -149,11 +168,19 @@ public class TicketService : ITicketService
         }
     }
 
-    public void Delete(int id)
+    public void Delete(int id, string login)
     {
+        var user = _userRepository.GetByLogin(login);
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        _ticketRepository.Update(entity, true);
+        if (entity.IsDeleted && user.Role != Role.Admin)
+            throw new NotFoundException("Билет", id);
+
+
+        if (user.Persons.Contains(entity.Person))
+            _ticketRepository.Update(entity, true);
+        else
+            throw new AccessViolationException();
 
     }
 

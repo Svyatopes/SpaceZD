@@ -76,8 +76,9 @@ public class TicketsController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult AddTicket(TicketCreateInputModel ticketModel)
     {
+        var login = HttpContext.User.Identity.Name; 
         var ticket = _mapper.Map<TicketModel>(ticketModel);
-        var idAddedEntity = _ticketService.Add(ticket);
+        var idAddedEntity = _ticketService.Add(ticket, login);
 
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
 
@@ -94,7 +95,7 @@ public class TicketsController : ControllerBase
     }
 
 
-    [HttpPut("hh/{id}")]
+    [HttpPut("price/{id}")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult EditPriceTicket(int id, TicketUpdatePriceInputModel ticketModel)
     {
@@ -109,7 +110,8 @@ public class TicketsController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult DeleteTicket(int id)
     {
-        _ticketService.Delete(id);
+        var login = HttpContext.User.Identity.Name;
+        _ticketService.Delete(id, login);
         return NoContent();
     }
 
