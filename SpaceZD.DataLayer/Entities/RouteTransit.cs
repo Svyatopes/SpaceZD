@@ -11,11 +11,9 @@ public class RouteTransit
 
     private bool Equals(RouteTransit other)
     {
-        return EqualityComparer<Transit>.Default.Equals(Transit, other.Transit) &&
-               DepartingTime.Equals(other.DepartingTime) &&
+        return DepartingTime.Equals(other.DepartingTime) &&
                ArrivalTime.Equals(other.ArrivalTime) &&
-               IsDeleted == other.IsDeleted &&
-               EqualityComparer<Route>.Default.Equals(Route, other.Route);
+               IsDeleted == other.IsDeleted;
     }
 
     public override bool Equals(object? obj)
