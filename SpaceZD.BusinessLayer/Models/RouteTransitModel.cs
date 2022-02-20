@@ -14,7 +14,6 @@
             return Transit.Equals(other.Transit) &&
                 DepartingTime.Equals(other.DepartingTime) &&
                 ArrivalTime.Equals(other.ArrivalTime) &&
-                Route.Equals(other.Route) &&
                 IsDeleted == other.IsDeleted;
         }
         public override bool Equals(object? obj)

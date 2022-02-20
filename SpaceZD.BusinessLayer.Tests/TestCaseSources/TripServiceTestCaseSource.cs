@@ -52,10 +52,10 @@ public static class TripServiceTestCaseSource
         trip.StartTime = new DateTime(1970, 1, 1, 5, 30, 0);
         trip.Stations = new List<TripStation>
         {
-            new() { Station = stationOne, ArrivalTime = new DateTime(), DepartingTime = new DateTime(1970, 1, 1, 5, 30, 0) },
-            new() { Station = stationOne, ArrivalTime = new DateTime(1970, 1, 1, 6, 30, 0), DepartingTime = new DateTime(1970, 1, 1, 6, 40, 0) },
-            new() { Station = stationOne, ArrivalTime = new DateTime(1970, 1, 1, 7, 30, 0), DepartingTime = new DateTime(1970, 1, 1, 7, 40, 0) },
-            new() { Station = stationOne, ArrivalTime = new DateTime(1970, 1, 1, 8, 30, 0), DepartingTime = new DateTime() }
+            new() { Station = stationOne, ArrivalTime = null, DepartingTime = new DateTime(1970, 1, 1, 5, 30, 0) },
+            new() { Station = stationTwo, ArrivalTime = new DateTime(1970, 1, 1, 6, 30, 0), DepartingTime = new DateTime(1970, 1, 1, 6, 40, 0) },
+            new() { Station = stationThree, ArrivalTime = new DateTime(1970, 1, 1, 7, 30, 0), DepartingTime = new DateTime(1970, 1, 1, 7, 40, 0) },
+            new() { Station = stationFour, ArrivalTime = new DateTime(1970, 1, 1, 8, 30, 0), DepartingTime = null }
         };
 
         yield return new TestCaseData(tripModel, trip);
@@ -449,21 +449,7 @@ public static class TripServiceTestCaseSource
             },
             StartTime = entity.StartTime,
             Train = new TrainModel { Carriages = new List<CarriageModel>(), IsDeleted = entity.Train.IsDeleted },
-            Stations = entity.Stations
-                             .Select(tripStation => new TripStationModel
-                              {
-                                  ArrivalTime = tripStation.ArrivalTime,
-                                  DepartingTime = tripStation.DepartingTime,
-                                  Station = new StationModel
-                                      { Name = tripStation.Station.Name, IsDeleted = tripStation.Station.IsDeleted, Platforms = new List<PlatformModel>() },
-                                  Platform = new PlatformModel
-                                  {
-                                      Number = tripStation.Platform.Number,
-                                      Station = new StationModel { Name = tripStation.Platform.Station.Name, IsDeleted = tripStation.Platform.Station.IsDeleted },
-                                      IsDeleted = tripStation.Platform.IsDeleted
-                                  }
-                              })
-                             .ToList(),
+            Stations = new List<TripStationModel>(),
             IsDeleted = entity.IsDeleted
         };
     }
