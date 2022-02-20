@@ -8,11 +8,18 @@ public class CarriageModel
     public CarriageTypeModel Type { get; set; }
     public bool IsDeleted { get; set; }
 
+
+    private bool Equals(CarriageModel other)
+    {
+        return Number == other.Number && Type.Equals(other.Type) && IsDeleted == other.IsDeleted;
+    }
+
     public override bool Equals(object? obj)
     {
-        return obj is CarriageModel model &&
-               Number == model.Number &&
-               Type.Equals(model.Type) &&
-               IsDeleted == model.IsDeleted;
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        return obj.GetType() == GetType() && Equals((CarriageModel)obj);
     }
 }
