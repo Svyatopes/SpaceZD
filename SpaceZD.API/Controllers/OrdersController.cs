@@ -5,7 +5,7 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
-using System.Security.Claims;
+using SpaceZD.API.Extensions;
 
 namespace SpaceZD.API.Controllers;
 
@@ -26,7 +26,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.User)]
     public ActionResult<List<OrderModel>> GetOrders()
     {
-        var userId = GetUserId();
+        var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -41,7 +41,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<OrderModel>> GetOrders(int userId)
     {
-        var adminId = GetUserId();
+        var adminId = this.GetUserId();
         if (adminId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -55,7 +55,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<OrderModel> GetOrderById(int id)
     {
-        var userId = GetUserId();
+        var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -68,7 +68,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.User)]
     public ActionResult AddOrder([FromBody] OrderInputModel order)
     {
-        var userId = GetUserId();
+        var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -83,7 +83,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult EditOrder(int id, [FromBody] OrderInputModel order)
     {
-        var userId = GetUserId();
+        var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -99,7 +99,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult DeleteOrder(int id)
     {
-        var userId = GetUserId();
+        var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -112,7 +112,7 @@ public class OrdersController : ControllerBase
     [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreOrder(int id)
     {
-        var userId = GetUserId();
+        var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
@@ -121,17 +121,5 @@ public class OrdersController : ControllerBase
         return Ok();
     }
 
-    private int? GetUserId()
-    {
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity == null)
-            return null;
-
-        int userId;
-        var userIdStr = identity.FindFirst(ClaimTypes.UserData)?.Value;
-        var parsed = int.TryParse(userIdStr, out userId);
-        if (!parsed)
-            return null;
-        return userId;
-    }
+    
 }
