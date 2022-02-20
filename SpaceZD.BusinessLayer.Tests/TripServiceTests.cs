@@ -242,6 +242,25 @@ public class TripServiceTests
         _tripRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
+    
+    [TestCaseSource(typeof(TripServiceTestCaseSource), nameof(TripServiceTestCaseSource.GetTestCaseDataForGetOnlyFreeSeatTest))]
+    public void GetOnlyFreeSeatTest(Trip trip, Station startStation, Station endStation, List<CarriageSeatsModel> expected)
+    {
+
+        // given
+        _tripRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(trip);
+        _stationRepositoryMock.Setup(x => x.GetById(1)).Returns(startStation);
+        _stationRepositoryMock.Setup(x => x.GetById(2)).Returns(endStation);
+
+        // when
+        var actual = _service.GetFreeSeat(45, 1, 2);
+
+        // then
+        _stationRepositoryMock.Verify(s => s.GetById(1), Times.Once);
+        _stationRepositoryMock.Verify(s => s.GetById(2), Times.Once);
+        _tripRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        CollectionAssert.AreEqual(expected, actual);
+    }
 
     [Test]
     public void GetFreeSeatNegativeTripNullTest()

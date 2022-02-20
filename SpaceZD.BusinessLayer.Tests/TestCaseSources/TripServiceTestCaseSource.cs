@@ -379,6 +379,18 @@ public static class TripServiceTestCaseSource
         yield return new TestCaseData(trip, stationOne, stationTwo, carriageSeatsFour);
     }
 
+    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetOnlyFreeSeatTest()
+    {
+        foreach (var tcd in GetTestCaseDataForGetFreeSeatTest())
+        {
+            foreach (var csm in (tcd.Arguments[3] as List<CarriageSeatsModel>)!)
+            {
+                csm.Seats = csm.Seats.Where(g=>g.IsFree).ToList();
+            }
+            yield return new TestCaseData(tcd.Arguments[0],tcd.Arguments[1],tcd.Arguments[2],tcd.Arguments[3]);
+        }
+    }
+
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetFreeSeatNegativeTest()
     {
         var stationOne = new Station { Name = "Москва", Platforms = new List<Platform>(), IsDeleted = false };
