@@ -56,7 +56,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IRepositorySoftDelete<CarriageType>, CarriageTypeRepository>();
         services.AddScoped<IRepositorySoftDelete<Carriage>, CarriageRepository>();
-        services.AddScoped<IRepository<TripStation>, TripStationRepository>();
+        services.AddScoped<ITripStationRepository, TripStationRepository>();
         services.AddScoped<ILoginUser, UserRepository>();
     }
 
@@ -69,6 +69,8 @@ public static class BuilderServicesExtensions
         services.AddScoped<IRouteService, RouteService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITrainService, TrainService>();
+        services.AddScoped<ITransitService, TransitService>();
+        services.AddScoped<ITripStationService, TripStationService>();
         services.AddScoped<IOrderService, OrderService>();
     }
 

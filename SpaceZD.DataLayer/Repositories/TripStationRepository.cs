@@ -5,9 +5,9 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class TripStationRepository : BaseRepository, IRepository<TripStation>
+public class TripStationRepository : BaseRepository, ITripStationRepository
 {
-    public TripStationRepository(VeryVeryImportantContext context) : base(context) { }
+    public TripStationRepository(VeryVeryImportantContext context) : base(context) {}
 
     public TripStation? GetById(int id) =>
         _context.TripStations
@@ -15,14 +15,11 @@ public class TripStationRepository : BaseRepository, IRepository<TripStation>
                 .Include(c => c.Station)
                 .FirstOrDefault(c => c.Id == id);
 
-    public List<TripStation> GetList() => _context.TripStations.ToList();
-
-    public int Add(TripStation tripStation)
-    {
-        _context.TripStations.Add(tripStation);
-        _context.SaveChanges();
-        return tripStation.Id;
-    }
+    public List<TripStation> GetList() =>
+        _context.TripStations
+                .Include(c => c.Platform)
+                .Include(c => c.Station)
+                .ToList();
 
     public void Update(TripStation entityToEdit, TripStation newEntity)
     {
