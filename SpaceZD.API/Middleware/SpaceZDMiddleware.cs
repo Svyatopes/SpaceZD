@@ -24,6 +24,10 @@ public class SpaceZdMiddleware
         {
             await HandleExceptionAsync(context, (HttpStatusCode)403, ex.Message);
         }
+        catch (AccessViolationException ex)
+        {
+            await HandleExceptionAsync(context, HttpStatusCode.Unauthorized, ex.Message);
+        }
         catch (NotFoundException ex)
         {
             await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);

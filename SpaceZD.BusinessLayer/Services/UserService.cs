@@ -3,6 +3,7 @@ using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Helpers;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services
@@ -54,6 +55,7 @@ namespace SpaceZD.BusinessLayer.Services
         {
             var addEntity = _mapper.Map<User>(entity);
             addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
+            addEntity.Role = Role.User;            
             var id = _userRepository.Add(addEntity);            
             return id;
         }

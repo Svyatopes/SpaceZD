@@ -33,7 +33,7 @@ public class TicketsController : ControllerBase
         return BadRequest("Oh.....");
     }
 
-    [HttpGet("id/{orderId}")]
+    [HttpGet("by-order/{orderId}")]
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<List<TicketModel>> GetTicketByOrderId(int orderId)
     {
@@ -47,7 +47,7 @@ public class TicketsController : ControllerBase
 
     
     [HttpGet("{id}")]
-    [AuthorizeRole(Role.Admin)]
+    [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<TicketModel> GetTicketById(int id)
     {
         var ticketModel = _ticketService.GetById(id);
@@ -84,7 +84,7 @@ public class TicketsController : ControllerBase
     public ActionResult DeleteTicket(int id)
     {
         _ticketService.Delete(id);
-        return Accepted();
+        return NoContent();
     }
 
 
@@ -93,7 +93,7 @@ public class TicketsController : ControllerBase
     public ActionResult RestoreTicket(int id)
     {
         _ticketService.Restore(id);
-        return Accepted();
+        return NoContent();
 
     }
 

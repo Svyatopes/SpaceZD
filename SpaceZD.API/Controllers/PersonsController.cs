@@ -47,7 +47,7 @@ public class PersonsController : ControllerBase
     }
 
 
-    [HttpGet("id/login")]
+    [HttpGet("by-user-login")]
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<PersonModel> GetPersonByUserLogin()
     {
@@ -68,7 +68,7 @@ public class PersonsController : ControllerBase
 
     [HttpPost]
     [AuthorizeRole(Role.Admin, Role.User)]
-    public ActionResult AddPerson(PersonInputModel personModel)
+    public ActionResult AddPerson([FromBody] PersonInputModel personModel)
     {
         var login = HttpContext.User.Identity.Name;
         var person = _mapper.Map<PersonModel>(personModel);

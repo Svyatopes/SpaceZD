@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
 using SpaceZD.API.Models;
@@ -36,9 +37,9 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("id/id")]
+    [HttpGet("id/persons")]
     [AuthorizeRole(Role.Admin, Role.User)]
-    public ActionResult<List<PersonModel>> GetPersonUsers()
+    public ActionResult<List<PersonModel>> GetListPersonsFromUser()
     {
         var login = HttpContext.User.Identity.Name;
         var userId = _userService.GetByLogin(login).Id;
@@ -64,7 +65,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("login")]
+    [HttpGet("by-login")]
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<UserModel> GetUserByLogin()
     {
@@ -77,18 +78,17 @@ public class UsersController : ControllerBase
 
 
     [HttpPost]
-    public ActionResult AddUser(UserRegisterInputModel userModel)
+    public ActionResult AddUser([FromBody] UserRegisterInputModel userModel)
     {
         var user = _mapper.Map<UserModel>(userModel);
-        user.Role = Role.User;
         var idAddedEntity = _userService.Add(user, userModel.Password);
 
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
 
-    [HttpPut("login")]
-    [AuthorizeRole(Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager)]
+    [HttpPut]
+    [Authorize]
     public ActionResult EditUser(UserUpdateInputModel user)
     {
         var login = HttpContext.User.Identity.Name;
@@ -100,8 +100,8 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpDelete("login")]
-    [AuthorizeRole(Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager)]
+    [HttpDelete]
+    [Authorize]
     public ActionResult DeleteUser()
     {
         var login = HttpContext.User.Identity.Name;
