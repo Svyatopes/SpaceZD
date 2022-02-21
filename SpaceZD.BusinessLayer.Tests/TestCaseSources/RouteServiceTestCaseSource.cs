@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.BusinessLayer.Tests.TestCaseSources;
 
@@ -54,7 +55,8 @@ internal static class RouteServiceTestCaseSource
             IsDeleted = true
         };
 
-        yield return new TestCaseData(route, routeModel);
+        yield return new TestCaseData(route, routeModel, Role.Admin);
+        yield return new TestCaseData(route, routeModel, Role.TrainRouteManager);
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
@@ -126,8 +128,8 @@ internal static class RouteServiceTestCaseSource
             }
         };
 
-        yield return new TestCaseData(fistList, ConvertRoutesToRotesModels(fistList));
-        yield return new TestCaseData(secondList, ConvertRoutesToRotesModels(secondList));
+        yield return new TestCaseData(fistList, ConvertRoutesToRotesModels(fistList), Role.Admin);
+        yield return new TestCaseData(secondList, ConvertRoutesToRotesModels(secondList), Role.TrainRouteManager);
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListDeletedTest()
