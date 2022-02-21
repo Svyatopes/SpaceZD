@@ -12,8 +12,8 @@ public class TripService : BaseService, ITripService
     private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IRepositorySoftDelete<Train> _trainRepository;
 
-    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
-        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper)
+    public TripService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
+        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper, userRepository)
     {
         _repository = repository;
         _stationRepository = stationRepository;
@@ -72,28 +72,31 @@ public class TripService : BaseService, ITripService
         var train = _trainRepository.GetById(tripModel.Train.Id);
         ThrowIfEntityNotFound(train, tripModel.Train.Id);
 
-        tripModel.StartTime = new DateTime(tripModel.StartTime.Year, tripModel.StartTime.Month, tripModel.StartTime.Day,
-            route!.StartTime.Hour, route.StartTime.Minute, route.StartTime.Second);
+        tripModel.StartTime = new DateTime(tripModel.StartTime.Year,
+            tripModel.StartTime.Month,
+            tripModel.StartTime.Day,
+            route!.StartTime.Hour,
+            route.StartTime.Minute,
+            route.StartTime.Second);
         tripModel.IsDeleted = false;
 
-        var routeModel = _mapper.Map<RouteModel>(route);
-        var trainModel = _mapper.Map<TrainModel>(train);
+        var trip = _mapper.Map<Trip>(tripModel);
 
-        tripModel.Route = routeModel;
-        tripModel.Train = trainModel;
+        trip.Route = route;
+        trip.Train = train!;
+        trip.Stations = new List<TripStation>();
 
-        if (!routeModel.RouteTransits.Any())
+        if (!route.RouteTransits.Any())
             throw new InvalidDataException("У выбранного маршрута отсутствуют перегоны между станциями.");
 
-        CreateTripStationForTripFromRoute(tripModel, routeModel.RouteTransits);
+        CreateTripStationForTripFromRoute(trip, route.RouteTransits.ToList());
 
-        var trip = _mapper.Map<Trip>(tripModel);
         return _repository.Add(trip);
     }
 
-    private void CreateTripStationForTripFromRoute(TripModel tripModel, List<RouteTransitModel> routeTransits)
+    private void CreateTripStationForTripFromRoute(Trip tripModel, List<RouteTransit> routeTransits)
     {
-        tripModel.Stations.Add(new TripStationModel
+        tripModel.Stations.Add(new TripStation
         {
             ArrivalTime = null,
             DepartingTime = tripModel.StartTime,
@@ -102,7 +105,7 @@ public class TripService : BaseService, ITripService
 
         for (int i = 0; i < routeTransits.Count - 1; i++)
         {
-            tripModel.Stations.Add(new TripStationModel
+            tripModel.Stations.Add(new TripStation
             {
                 ArrivalTime = tripModel.StartTime.Add(routeTransits[i].ArrivalTime),
                 DepartingTime = tripModel.StartTime.Add(routeTransits[i + 1].DepartingTime),
@@ -110,7 +113,7 @@ public class TripService : BaseService, ITripService
             });
         }
 
-        tripModel.Stations.Add(new TripStationModel
+        tripModel.Stations.Add(new TripStation
         {
             ArrivalTime = tripModel.StartTime.Add(routeTransits[^1].ArrivalTime),
             DepartingTime = null,
@@ -126,12 +129,13 @@ public class TripService : BaseService, ITripService
 
         var tripModel = _mapper.Map<TripModel>(trip);
 
-        FillStationsToEndAndAfterStart(tripModel.Stations, idStartStation, idEndStation, out var stationsToTheEnd, out var stationsAfterTheStart);
+        FillStationsToEndAndAfterStart(trip!.Stations.ToList(), idStartStation, idEndStation, out var stationsToTheEnd, out var stationsAfterTheStart);
 
         var allPlacesModels = GetCompletedAllPlacesModels(tripModel.Train.Carriages);
 
-        MarkingOccupiedSeats(tripModel.Orders.Where(order => stationsToTheEnd.Contains(order.StartStation) && stationsAfterTheStart.Contains(order.EndStation))
-                                      .SelectMany(order => order.Tickets), allPlacesModels);
+        MarkingOccupiedSeats(trip.Orders.Where(order => stationsToTheEnd.Contains(order.StartStation) && stationsAfterTheStart.Contains(order.EndStation))
+                                 .SelectMany(order => order.Tickets),
+            allPlacesModels);
 
         if (onlyFree)
             foreach (var csm in allPlacesModels)
@@ -155,16 +159,13 @@ public class TripService : BaseService, ITripService
         return allPlacesModels;
     }
 
-    private void FillStationsToEndAndAfterStart(List<TripStationModel> stations, int idStartStation, int idEndStation,
-        out List<TripStationModel> stationsToTheEnd, out List<TripStationModel> stationsAfterTheStart)
+    private void FillStationsToEndAndAfterStart(List<TripStation> stations, int idStartStation, int idEndStation,
+        out List<TripStation> stationsToTheEnd, out List<TripStation> stationsAfterTheStart)
     {
         var startStation = _stationRepository.GetById(idStartStation);
         ThrowIfEntityNotFound(startStation, idStartStation);
         var endStation = _stationRepository.GetById(idEndStation);
         ThrowIfEntityNotFound(endStation, idEndStation);
-
-        var startStationModel = _mapper.Map<StationModel>(startStation);
-        var endStationModel = _mapper.Map<StationModel>(endStation);
 
         int start = 0;
         int count = 0;
@@ -173,14 +174,14 @@ public class TripService : BaseService, ITripService
 
         for (int i = 0; i < stations.Count; i++)
         {
-            if (findStartStation && stations[i].Station.Equals(endStationModel))
+            if (findStartStation && stations[i].Station.Equals(endStation))
             {
                 count = i - start;
                 findEndStation = true;
                 break;
             }
 
-            if (stations[i].Station.Equals(startStationModel))
+            if (stations[i].Station.Equals(startStation))
             {
                 start = i;
                 findStartStation = true;
@@ -196,11 +197,11 @@ public class TripService : BaseService, ITripService
                                         .ToList();
     }
 
-    private void MarkingOccupiedSeats(IEnumerable<TicketModel> tickets, List<CarriageSeatsModel> allPlacesModels)
+    private void MarkingOccupiedSeats(IEnumerable<Ticket> tickets, List<CarriageSeatsModel> allPlacesModels)
     {
         foreach (var ticket in tickets)
             allPlacesModels
-               .Single(g => g.Carriage.Equals(ticket.Carriage))
+               .Single(g => g.Carriage.Equals(_mapper.Map<CarriageModel>(ticket.Carriage)))
                .Seats
                .Single(g => g.NumberOfSeats == ticket.SeatNumber)
                .IsFree = false;

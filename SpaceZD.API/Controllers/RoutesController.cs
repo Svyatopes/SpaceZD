@@ -44,7 +44,7 @@ public class RoutesController : ControllerBase
 
     //api/Routes
     [HttpPost]
-    public ActionResult AddRoute(RouteInputModel route)
+    public ActionResult AddRoute([FromBody] RouteInputModel route)
     {
         _routeService.Add(_mapper.Map<RouteModel>(route));
         return StatusCode(StatusCodes.Status201Created);
@@ -52,7 +52,7 @@ public class RoutesController : ControllerBase
 
     //api/Routes/42
     [HttpPut("{id}")]
-    public ActionResult EditRoute(int id, RouteInputModel route)
+    public ActionResult EditRoute(int id, [FromBody] RouteInputModel route)
     {
         _routeService.Update(id, _mapper.Map<RouteModel>(route));
         return Accepted();
