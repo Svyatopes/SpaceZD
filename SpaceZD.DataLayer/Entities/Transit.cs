@@ -8,6 +8,8 @@ public class Transit
     public decimal? Price { get; set; }
     public bool IsDeleted { get; set; }
     public virtual ICollection<RouteTransit> RouteTransit { get; set; }
+    public int StartStationId { get; set; }
+    public int EndStationId { get; set; }
 
     private bool Equals(Transit other)
     {
