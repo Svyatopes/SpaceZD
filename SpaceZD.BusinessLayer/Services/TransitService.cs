@@ -12,7 +12,7 @@ namespace SpaceZD.BusinessLayer.Services
         private readonly IRepositorySoftDelete<Transit> _transitRepository;
         private readonly IStationRepository _stationRepository;
 
-        public TransitService(IRepositorySoftDelete<Transit> transitRepository, IStationRepository stationRepository, IMapper mapper) : base(mapper)
+        public TransitService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Transit> transitRepository, IStationRepository stationRepository) : base(mapper, userRepository)
         {
             _transitRepository = transitRepository;
             _stationRepository = stationRepository;

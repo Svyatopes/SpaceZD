@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
@@ -10,7 +11,6 @@ namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
 public class CarriageTypesController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -25,52 +25,90 @@ public class CarriageTypesController : ControllerBase
     [HttpGet]
     public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypes()
     {
-        return Ok(_mapper.Map<List<CarriageTypeOutputModel>>(_carriageTypeService.GetList()));
+        var entities = _carriageTypeService.GetList();
+        var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/CarriageTypes/deleted
     [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<CarriageTypeOutputModel>> GetDeletedCarriageTypes()
     {
-        return Ok(_mapper.Map<List<CarriageTypeOutputModel>>(_carriageTypeService.GetListDeleted()));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _carriageTypeService.GetListDeleted(userId.Value);
+        var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/CarriageTypes/42
     [HttpGet("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult<CarriageTypeOutputModel> GetCarriageTypeById(int id)
     {
-        return Ok(_mapper.Map<CarriageTypeOutputModel>(_carriageTypeService.GetById(id)));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _carriageTypeService.GetById(userId.Value, id);
+        var result = _mapper.Map<CarriageTypeOutputModel>(entities);
+        return Ok(result);
     }
 
     //api/CarriageTypes
     [HttpPost]
-    public ActionResult AddCarriageType(CarriageTypeInputModel carriageType)
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
+    public ActionResult AddCarriageType([FromBody] CarriageTypeInputModel carriageType)
     {
-        _carriageTypeService.Add(_mapper.Map<CarriageTypeModel>(carriageType));
-        return StatusCode(StatusCodes.Status201Created);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<CarriageTypeModel>(carriageType);
+        var idCreate = _carriageTypeService.Add(userId.Value, entity);
+        return StatusCode(StatusCodes.Status201Created, idCreate);
     }
 
     //api/CarriageTypes/42
     [HttpPut("{id}")]
-    public ActionResult EditCarriageType(int id, CarriageTypeInputModel carriageType)
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
+    public ActionResult EditCarriageType(int id, [FromBody] CarriageTypeInputModel carriageType)
     {
-        _carriageTypeService.Update(id, _mapper.Map<CarriageTypeModel>(carriageType));
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<CarriageTypeModel>(carriageType);
+        _carriageTypeService.Update(userId.Value, id, entity);
+        return NoContent();
     }
 
     //api/CarriageTypes/42
     [HttpDelete("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult DeleteCarriageType(int id)
     {
-        _carriageTypeService.Delete(id);
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _carriageTypeService.Delete(userId.Value, id);
+        return NoContent();
     }
 
     //api/CarriageTypes/42
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreCarriageType(int id)
     {
-        _carriageTypeService.Restore(id);
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _carriageTypeService.Restore(userId.Value, id);
+        return NoContent();
     }
 }

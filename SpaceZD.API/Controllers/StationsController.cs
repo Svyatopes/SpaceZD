@@ -51,7 +51,7 @@ public class StationsController : ControllerBase
 
     //api/Stations
     [HttpPost]
-    public ActionResult AddStation(StationInputModel station)
+    public ActionResult AddStation([FromBody] StationInputModel station)
     {
         _stationService.Add(_mapper.Map<StationModel>(station));
         return StatusCode(StatusCodes.Status201Created);
@@ -59,7 +59,7 @@ public class StationsController : ControllerBase
 
     //api/Stations/42
     [HttpPut("{id}")]
-    public ActionResult EditStation(int id, StationInputModel station)
+    public ActionResult EditStation(int id, [FromBody] StationInputModel station)
     {
         _stationService.Update(id, _mapper.Map<StationModel>(station));
         return Accepted();

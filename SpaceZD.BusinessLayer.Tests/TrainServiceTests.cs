@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Configuration;
-using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
@@ -17,6 +15,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 public class TrainServiceTests
 {
     private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
+    private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
     private readonly IMapper _mapper;
 
     public TrainServiceTests()
@@ -28,6 +27,7 @@ public class TrainServiceTests
     public void SetUp()
     {
         _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
+        _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
     }
 
 
@@ -43,7 +43,7 @@ public class TrainServiceTests
 
         expectedTrainModels = expectedTrainModels.Where(o => !o.IsDeleted || allIncluded).ToList();
 
-        var trainService = new TrainService(_trainRepositoryMock.Object, _mapper);
+        var trainService = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
         var trainModels = trainService.GetList(allIncluded);
@@ -59,7 +59,7 @@ public class TrainServiceTests
     {
         // given
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_trainRepositoryMock.Object, _mapper);
+        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
         var actual = service.GetById(5);
@@ -76,7 +76,7 @@ public class TrainServiceTests
     {
         // given
         _trainRepositoryMock.Setup(x => x.Add(It.IsAny<Train>())).Returns(expected);
-        var service = new TrainService(_trainRepositoryMock.Object, _mapper);
+        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
         int actual = service.Add(new TrainModel
@@ -110,7 +110,7 @@ public class TrainServiceTests
         var train = new Train();
         _trainRepositoryMock.Setup(x => x.Update(It.IsAny<Train>(), It.IsAny<Train>()));
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_trainRepositoryMock.Object, _mapper);
+        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
         service.Update(5, new TrainModel());
@@ -130,7 +130,7 @@ public class TrainServiceTests
         var train = new Train();
         _trainRepositoryMock.Setup(x => x.Update(It.IsAny<Train>(), true));
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_trainRepositoryMock.Object, _mapper);
+        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
         service.Delete(5);
@@ -150,7 +150,7 @@ public class TrainServiceTests
         var train = new Train();
         _trainRepositoryMock.Setup(x => x.Update(It.IsAny<Train>(), false));
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_trainRepositoryMock.Object, _mapper);
+        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
         service.Restore(5);

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using System.Collections.Generic;
 
 namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
@@ -9,16 +10,18 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
     {
         public static IEnumerable<TestCaseData> GetListTestCases()
         {
-            yield return new TestCaseData(GetOrders(), GetOrderModels(), false);
-            yield return new TestCaseData(GetOrders(), GetOrderModels(), true);
+            yield return new TestCaseData(GetOrders(), GetOrderModels(), false, 1);
+            yield return new TestCaseData(GetOrders(), GetOrderModels(), true, 1);
+            yield return new TestCaseData(GetOrders(), GetOrderModels(), false, 2);
+            yield return new TestCaseData(GetOrders(), GetOrderModels(), true, 2);
         }
 
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var orders = GetOrders();
             var orderModels = GetOrderModels();
-            yield return new TestCaseData(orders[0], orderModels[0]);
-            yield return new TestCaseData(orders[1], orderModels[1]);
+            yield return new TestCaseData(orders[0], orderModels[0], Role.User, 42);
+            yield return new TestCaseData(orders[1], orderModels[1], Role.Admin, 1);
         }
 
         private static List<Order> GetOrders() => new List<Order>
@@ -43,7 +46,8 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                 {
                   Name = "Egor",
                   Login = "Egorka",
-                  PasswordHash = "askldjalsdj"
+                  PasswordHash = "askldjalsdj",
+                  Role = Role.User
                 },
                 Trip = new Trip
                 {
@@ -83,6 +87,69 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                       }
                     }
                 },
+                Tickets = new List<Ticket>
+                {
+                    new Ticket
+                    {
+                        Carriage = new Carriage
+                        {
+                            Number = 1,
+                            Type = new CarriageType { Name = "Lux", NumberOfSeats = 10}
+                        },
+                        IsPetPlaceIncluded = false,
+                        IsTeaIncluded = true,
+                        Person = new Person
+                        {
+                            FirstName  = "Tiger",
+                            LastName = "Woods",
+                            Passport = "KFDSLK23123",
+                            Patronymic = "JR"
+                        },
+                        Price = 350,
+                        SeatNumber = 3,
+                        Order = new Order
+                        {
+                             StartStation = new TripStation
+                             {
+                                 Station = new Station
+                                 {
+                                     Name = "Bologoe",
+                                 }
+                             },
+                        },
+                        IsDeleted = false
+                    },
+                    new Ticket
+                    {
+                        Carriage = new Carriage
+                        {
+                            Number = 1,
+                            Type = new CarriageType { Name = "Lux", NumberOfSeats = 10}
+                        },
+                        IsPetPlaceIncluded = true,
+                        IsTeaIncluded = false,
+                        Person = new Person
+                        {
+                            FirstName  = "G",
+                            LastName = "Man",
+                            Passport = "KFDSLK23123",
+                            Patronymic = "Half-Life 3"
+                        },
+                        Price = 420,
+                        SeatNumber = 5,
+                        Order = new Order
+                        {
+                             StartStation = new TripStation
+                             {
+                                 Station = new Station
+                                 {
+                                     Name = "Bologoe",
+                                 }
+                             },
+                        },
+                        IsDeleted = true
+                    }
+                },
                 IsDeleted = false
             },
             new Order
@@ -105,7 +172,8 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                 {
                   Name = "Anton",
                   Login = "Antoshka",
-                  PasswordHash = "aqweasd"
+                  PasswordHash = "aqweasd",
+                  Role = Role.User
                 },
                 Trip = new Trip
                 {
@@ -145,6 +213,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                       }
                     }
                 },
+                Tickets = new List<Ticket>(),
                 IsDeleted = true
             }
         };
@@ -153,7 +222,69 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
         {
             new OrderModel
             {
-                Tickets = new List<TicketModel>(),
+                Tickets = new List<TicketModel>
+                {
+                    new TicketModel
+                    {
+                        Carriage = new CarriageModel
+                        {
+                            Number = 1,
+                            Type = new CarriageTypeModel { Name = "Lux", NumberOfSeats = 10}
+                        },
+                        IsPetPlaceIncluded = false,
+                        IsTeaIncluded = true,
+                        Person = new PersonModel
+                        {
+                            FirstName  = "Tiger",
+                            LastName = "Woods",
+                            Passport = "KFDSLK23123",
+                            Patronymic = "JR"
+                        },
+                        Price = 350,
+                        SeatNumber = 3,
+                        Order = new OrderModel
+                        {
+                             StartStation = new TripStationModel
+                             {
+                                 Station = new StationModel
+                                 {
+                                     Name = "Bologoe",
+                                 }
+                             },
+                        },
+                        IsDeleted = false
+                    },
+                    new TicketModel
+                    {
+                        Carriage = new CarriageModel
+                        {
+                            Number = 1,
+                            Type = new CarriageTypeModel { Name = "Lux", NumberOfSeats = 10}
+                        },
+                        IsPetPlaceIncluded = true,
+                        IsTeaIncluded = false,
+                        Person = new PersonModel
+                        {
+                            FirstName  = "G",
+                            LastName = "Man",
+                            Passport = "KFDSLK23123",
+                            Patronymic = "Half-Life 3"
+                        },
+                        Price = 420,
+                        SeatNumber = 5,
+                        Order = new OrderModel
+                        {
+                             StartStation = new TripStationModel
+                             {
+                                 Station = new StationModel
+                                 {
+                                     Name = "Bologoe",
+                                 }
+                             },
+                        },
+                        IsDeleted = true
+                    }
+                },
                 StartStation = new TripStationModel
                 {
                     Station = new StationModel
@@ -175,6 +306,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                   Name = "Egor",
                   Login = "Egorka",
                   PasswordHash = "askldjalsdj",
+                  Role = Role.User,
                   Orders = new List<OrderModel>()
                 },
                 Trip = new TripModel
@@ -221,6 +353,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                       
                     }
                 },
+                
                 IsDeleted = false
             },
             new OrderModel
@@ -247,6 +380,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                   Name = "Anton",
                   Login = "Antoshka",
                   PasswordHash = "aqweasd",
+                  Role = Role.User,
                   Orders = new List<OrderModel>()
                 },
                 Trip = new TripModel

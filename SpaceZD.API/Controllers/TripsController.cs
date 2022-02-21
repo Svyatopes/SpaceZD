@@ -27,7 +27,7 @@ public class TripsController : ControllerBase
     {
         return Ok(_mapper.Map<List<TripShortOutputModel>>(_service.GetList()));
     }
-    
+
     //api/Trips/2022-1-1
     [HttpGet("{date}")]
     public ActionResult<List<TripShortOutputModel>> GetTripsFromDate(DateTime date)
@@ -51,16 +51,16 @@ public class TripsController : ControllerBase
     }
 
     //api/Trips/42/free-seats
-    [HttpGet("{id}/free-seats")]
-    public ActionResult<List<CarriageSeatsOutputModel>> GetFreeSeatsByTripId(int id, StartEndIdStationsInputModel model)
+    [HttpPost("{id}/free-seats")]
+    public ActionResult<List<CarriageSeatsOutputModel>> GetFreeSeatsByTripId(int id, [FromBody] StartEndIdStationsInputModel model)
     {
         return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId)));
     }
 
     //api/Trips/42/seats
     [AuthorizeRole(Role.Admin)]
-    [HttpGet("{id}/seats")]
-    public ActionResult<List<CarriageSeatsOutputModel>> GetSeatsByTripId(int id, StartEndIdStationsInputModel model)
+    [HttpPost("{id}/seats")]
+    public ActionResult<List<CarriageSeatsOutputModel>> GetSeatsByTripId(int id, [FromBody] StartEndIdStationsInputModel model)
     {
         return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId, false)));
     }
@@ -68,7 +68,7 @@ public class TripsController : ControllerBase
     //api/Trips
     [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [HttpPost]
-    public ActionResult AddTrip(TripCreateInputModel trip)
+    public ActionResult AddTrip([FromBody] TripCreateInputModel trip)
     {
         _service.Add(_mapper.Map<TripModel>(trip));
         return StatusCode(StatusCodes.Status201Created);
@@ -77,7 +77,7 @@ public class TripsController : ControllerBase
     //api/Trips/42
     [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [HttpPut("{id}")]
-    public ActionResult EditTrip(int id, TripUpdateInputModel trip)
+    public ActionResult EditTrip(int id, [FromBody] TripUpdateInputModel trip)
     {
         _service.Update(id, _mapper.Map<TripModel>(trip));
         return NoContent();
