@@ -1,5 +1,4 @@
 using AutoMapper;
-using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
@@ -28,10 +27,8 @@ public class CarriageTypeService : BaseService, ICarriageTypeService
         return _mapper.Map<CarriageTypeModel>(entity);
     }
 
-    public List<CarriageTypeModel> GetList(int userId)
+    public List<CarriageTypeModel> GetList()
     {
-        CheckUserRole(userId, _allowedRoles);
-
         var entities = _repository.GetList();
         return _mapper.Map<List<CarriageTypeModel>>(entities);
     }

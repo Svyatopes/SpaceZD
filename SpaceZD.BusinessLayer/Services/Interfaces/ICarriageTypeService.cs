@@ -5,7 +5,7 @@ namespace SpaceZD.BusinessLayer.Services;
 public interface ICarriageTypeService
 {
     CarriageTypeModel GetById(int userId, int id);
-    List<CarriageTypeModel> GetList(int userId);
+    List<CarriageTypeModel> GetList();
     List<CarriageTypeModel> GetListDeleted(int userId);
     int Add(int userId, CarriageTypeModel carriageTypeModel);
     void Delete(int userId, int id);
