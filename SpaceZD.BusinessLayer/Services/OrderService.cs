@@ -60,7 +60,7 @@ public class OrderService : BaseService, IOrderService
         var user = _userRepository.GetById(userId);
         ThrowIfEntityNotFound(user, userId);
 
-        if (user.Role != Role.User)
+        if (user!.Role != Role.User)
             ThrowIfRoleDoesntHavePermissions();
 
         (var startStation, var endStation, var trip) = GetStartEndStationsAndTripForAddEditToRepository(order);
@@ -70,6 +70,7 @@ public class OrderService : BaseService, IOrderService
         orderEntity.StartStation = startStation!;
         orderEntity.EndStation = endStation!;
         orderEntity.Trip = trip!;
+        orderEntity.User = user;
 
         var id = _orderRepository.Add(orderEntity);
         return id;
