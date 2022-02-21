@@ -12,8 +12,8 @@ public class TripService : BaseService, ITripService
     private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IRepositorySoftDelete<Train> _trainRepository;
 
-    public TripService(IMapper mapper, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
-        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper)
+    public TripService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
+        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper, userRepository)
     {
         _repository = repository;
         _stationRepository = stationRepository;
@@ -72,8 +72,12 @@ public class TripService : BaseService, ITripService
         var train = _trainRepository.GetById(tripModel.Train.Id);
         ThrowIfEntityNotFound(train, tripModel.Train.Id);
 
-        tripModel.StartTime = new DateTime(tripModel.StartTime.Year, tripModel.StartTime.Month, tripModel.StartTime.Day,
-            route!.StartTime.Hour, route.StartTime.Minute, route.StartTime.Second);
+        tripModel.StartTime = new DateTime(tripModel.StartTime.Year,
+            tripModel.StartTime.Month,
+            tripModel.StartTime.Day,
+            route!.StartTime.Hour,
+            route.StartTime.Minute,
+            route.StartTime.Second);
         tripModel.IsDeleted = false;
 
         var trip = _mapper.Map<Trip>(tripModel);
@@ -130,7 +134,8 @@ public class TripService : BaseService, ITripService
         var allPlacesModels = GetCompletedAllPlacesModels(tripModel.Train.Carriages);
 
         MarkingOccupiedSeats(trip.Orders.Where(order => stationsToTheEnd.Contains(order.StartStation) && stationsAfterTheStart.Contains(order.EndStation))
-                                 .SelectMany(order => order.Tickets), allPlacesModels);
+                                 .SelectMany(order => order.Tickets),
+            allPlacesModels);
 
         if (onlyFree)
             foreach (var csm in allPlacesModels)

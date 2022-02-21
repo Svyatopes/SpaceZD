@@ -10,7 +10,6 @@ namespace SpaceZD.BusinessLayer.Services;
 public class OrderService : BaseService, IOrderService
 {
     private readonly IOrderRepository _orderRepository;
-    private readonly IRepositorySoftDelete<User> _userRepository;
     private readonly IRepositorySoftDelete<Trip> _tripRepository;
     private readonly IRepositorySoftDelete<TripStation> _tripStationRepository;
 
@@ -19,10 +18,9 @@ public class OrderService : BaseService, IOrderService
         IRepositorySoftDelete<User> userRepository,
         IRepositorySoftDelete<Trip> tripRepository,
         IRepositorySoftDelete<TripStation> tripStationRepository
-        ) : base(mapper)
+        ) : base(mapper, userRepository)
     {
         _orderRepository = orderRepository;
-        _userRepository = userRepository;
         _tripRepository = tripRepository;
         _tripStationRepository = tripStationRepository;
     }
