@@ -17,4 +17,9 @@ public abstract class BaseService
         if (entity is null)
             throw new NotFoundException(typeof(T).Name, id);
     }
+
+    protected static void ThrowIfRoleDoesntHavePermissions()
+    {
+        throw new AuthorizationException("Your current role doesn't have permissions to do this.");
+    }
 }
