@@ -16,8 +16,8 @@ namespace SpaceZD.DataLayer.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                          .UseInMemoryDatabase(databaseName: "Test")
-                          .Options;
+                         .UseInMemoryDatabase(databaseName: "Test")
+                         .Options;
 
             _context = new VeryVeryImportantContext(options);
             _context.Database.EnsureDeleted();
@@ -36,13 +36,13 @@ namespace SpaceZD.DataLayer.Tests
         public void GetByIdTest(int id)
         {
             // given
-            var expectedEntity = _context.Trips.Find(id);
+            var expected = _context.Trips.Find(id);
 
             // when
-            var receivedEntity = _repository.GetById(id);
+            var actual = _repository.GetById(id);
 
             // then
-            Assert.AreEqual(expectedEntity, receivedEntity);
+            Assert.AreEqual(expected, actual);
         }
 
 
@@ -50,13 +50,13 @@ namespace SpaceZD.DataLayer.Tests
         public void GetListTest()
         {
             // given
-            var expected = TripRepositoryMocks.GetShortTrips();
+            var expected = TripRepositoryMocks.GetTrips();
 
             // when
-            var list = _repository.GetList();
+            var actual = _repository.GetList();
 
             // then
-            CollectionAssert.AreEqual(expected, list);
+            CollectionAssert.AreEqual(expected, actual);
         }
 
 
@@ -88,7 +88,7 @@ namespace SpaceZD.DataLayer.Tests
             _repository.Update(entityToEdit!, newEntity);
 
             // then
-            var entityUpdated = _context.Transits.FirstOrDefault(o => o.Id == entityToEdit!.Id);
+            var entityUpdated = _context.Trips.FirstOrDefault(o => o.Id == entityToEdit!.Id);
             Assert.AreEqual(entityToEdit, entityUpdated);
         }
 
@@ -107,7 +107,7 @@ namespace SpaceZD.DataLayer.Tests
             _repository.Update(entityToEdit, isDeleted);
 
             // then
-            var entityToUpdated = _context.Stations.FirstOrDefault(o => o.Id == entityToEdit.Id);
+            var entityToUpdated = _context.Trips.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
             Assert.AreEqual(entityToEdit, entityToUpdated);
         }

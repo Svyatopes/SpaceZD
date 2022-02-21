@@ -11,11 +11,11 @@ public class RouteTransit
 
     private bool Equals(RouteTransit other)
     {
-        return Transit.Equals(other.Transit) &&
-            DepartingTime.Equals(other.DepartingTime) &&
-            ArrivalTime.Equals(other.ArrivalTime) &&
-            IsDeleted == other.IsDeleted;
+        return DepartingTime.Equals(other.DepartingTime) &&
+               ArrivalTime.Equals(other.ArrivalTime) &&
+               IsDeleted == other.IsDeleted;
     }
+
     public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj))

@@ -16,7 +16,7 @@
         {
             return other is TicketModel model &&
                    Person.Equals(model.Person) &&
-                   Order.StartStation.Platform.Number == model.Order.StartStation.Platform.Number &&
+                   Order.StartStation.Station.Name == model.Order.StartStation.Station.Name &&
                    Carriage.Number == model.Carriage.Number &&
                    SeatNumber == model.SeatNumber &&
                    Price == model.Price &&

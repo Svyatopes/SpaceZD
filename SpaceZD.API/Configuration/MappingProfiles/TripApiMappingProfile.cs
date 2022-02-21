@@ -9,7 +9,8 @@ public class TripApiMappingProfile : Profile
     public TripApiMappingProfile()
     {
         CreateMap<TripCreateInputModel, TripModel>()
-            .ForMember(tm => tm.Route, opt => opt.MapFrom(tcim => new RouteModel { Id = tcim.RouteId }));
+            .ForMember(tm => tm.Route, opt => opt.MapFrom(tcim => new RouteModel { Id = tcim.RouteId }))
+            .ForMember(tm => tm.Train, opt => opt.MapFrom(tcim => new TrainModel { Id = tcim.TrainId }));
         CreateMap<TripUpdateInputModel, TripModel>()
             .ForMember(tm => tm.Train, opt => opt.MapFrom(tuim => new TrainModel { Id = tuim.TrainId }));
 

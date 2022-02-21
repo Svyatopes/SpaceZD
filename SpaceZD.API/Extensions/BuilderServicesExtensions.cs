@@ -7,6 +7,7 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.DataLayer.Repositories;
+using Route = SpaceZD.DataLayer.Entities.Route;
 
 namespace SpaceZD.API.Extensions;
 
@@ -49,14 +50,14 @@ public static class BuilderServicesExtensions
         services.AddScoped<IRepositorySoftDelete<Ticket>, TicketRepository>();
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<IRepositorySoftDelete<RouteTransit>, RouteTransitRepository>();
-        services.AddScoped<IRouteRepository, RouteRepository>();
+        services.AddScoped<IRepositorySoftDelete<Route>, RouteRepository>();
         services.AddScoped<IRepositorySoftDelete<Platform>, PlatformRepository>();
         services.AddScoped<IRepositorySoftDelete<PlatformMaintenance>, PlatformMaintenanceRepository>();
         services.AddScoped<IRepositorySoftDelete<Person>, PersonRepository>();
-        services.AddScoped<IRepositorySoftDelete<Order>, OrderRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IRepositorySoftDelete<CarriageType>, CarriageTypeRepository>();
         services.AddScoped<IRepositorySoftDelete<Carriage>, CarriageRepository>();
-        services.AddScoped<IRepository<TripStation>, TripStationRepository>();
+        services.AddScoped<ITripStationRepository, TripStationRepository>();
         services.AddScoped<ILoginUser, UserRepository>();
     }
 
@@ -69,6 +70,10 @@ public static class BuilderServicesExtensions
         services.AddScoped<IRouteService, RouteService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITrainService, TrainService>();
+        services.AddScoped<ITransitService, TransitService>();
+        services.AddScoped<ITripStationService, TripStationService>();
+        services.AddScoped<ITripService, TripService>();
+        services.AddScoped<IOrderService, OrderService>();
     }
 
     public static void AddSwaggerGenWithOptions(this IServiceCollection services)
