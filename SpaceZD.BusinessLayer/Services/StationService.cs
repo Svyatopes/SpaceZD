@@ -11,7 +11,8 @@ public class StationService : BaseService, IStationService
     private readonly IStationRepository _repository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
-    public StationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IStationRepository repository) : base(mapper, userRepository)
+    public StationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IStationRepository repository) 
+        : base(mapper, userRepository)
     {
         _repository = repository;
     }
