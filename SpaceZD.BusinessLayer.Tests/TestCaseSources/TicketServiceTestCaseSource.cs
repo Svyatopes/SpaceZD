@@ -44,10 +44,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                     {
                         StartStation = new TripStation()
                         {
-                            Platform = new Platform()
-                            {
-                                Number = 3
-                            }
+                            Station = new Station { Name  = "Moscow"}
                         },
                         
                     },
@@ -76,12 +73,8 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                     {
                         StartStation = new TripStation()
                         {
-                            Platform = new Platform()
-                            {
-                                Number = 3
-                            }
-                        },
-
+                            Station = new Station { Name  = "SPb"}
+                        }
                     },
                     Price = 367,
                     IsDeleted = true
@@ -117,10 +110,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                     {
                         StartStation = new TripStationModel()
                         {
-                            Platform = new PlatformModel()
-                            {
-                                Number = 3
-                            }
+                            Station = new StationModel { Name = "Moscow"}
                         },
 
                     },
@@ -149,10 +139,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                     {
                         StartStation = new TripStationModel()
                         {
-                            Platform = new PlatformModel()
-                            {
-                                Number = 3
-                            }
+                            Station = new StationModel { Name = "SPb"}
                         },
 
                     },

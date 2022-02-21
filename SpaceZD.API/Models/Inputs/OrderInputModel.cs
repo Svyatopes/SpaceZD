@@ -1,6 +1,6 @@
 namespace SpaceZD.API.Models;
 
-public class OderInputModel
+public class OrderInputModel
 {
     public int TripId { get; set; }
     public int StartTripStationId { get; set; }

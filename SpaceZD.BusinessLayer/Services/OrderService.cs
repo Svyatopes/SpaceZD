@@ -2,63 +2,162 @@
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class OrderService : BaseService
+public class OrderService : BaseService, IOrderService
 {
-    private readonly IRepositorySoftDelete<Order> _orderRepository;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IRepositorySoftDelete<User> _userRepository;
+    private readonly IRepositorySoftDelete<Trip> _tripRepository;
+    private readonly IRepositorySoftDelete<TripStation> _tripStationRepository;
 
-    public OrderService(IMapper mapper, IRepositorySoftDelete<Order> orderRepository) : base(mapper)
+    public OrderService(IMapper mapper,
+        IOrderRepository orderRepository,
+        IRepositorySoftDelete<User> userRepository,
+        IRepositorySoftDelete<Trip> tripRepository,
+        IRepositorySoftDelete<TripStation> tripStationRepository
+        ) : base(mapper)
     {
         _orderRepository = orderRepository;
+        _userRepository = userRepository;
+        _tripRepository = tripRepository;
+        _tripStationRepository = tripStationRepository;
     }
 
-    public List<OrderModel> GetList(bool allIncluded)
+    public List<OrderModel> GetList(int userId, int userOrdersId, bool allIncluded)
     {
-        var orders = _orderRepository.GetList(allIncluded);
+        var user = _userRepository.GetById(userId);
+        ThrowIfEntityNotFound(user, userId);
+
+        if ((user!.Role != Role.User
+            && user.Role != Role.Admin)
+            || (user.Role == Role.User && userId != userOrdersId))
+            ThrowIfRoleDoesntHavePermissions();
+
+        var orders = _orderRepository.GetList(userOrdersId, allIncluded);
         return _mapper.Map<List<OrderModel>>(orders);
     }
 
-    public OrderModel GetById(int id)
+    public OrderModel GetById(int userId, int orderId)
     {
-        var order = GetOrderEntity(id);
-        return _mapper.Map<OrderModel>(order);
+        var user = _userRepository.GetById(userId);
+        ThrowIfEntityNotFound(user, userId);
+
+        var order = _orderRepository.GetById(orderId);
+        ThrowIfEntityNotFound(order, orderId);
+
+        if ((user!.Role == Role.User && order!.User.Id != userId)
+            || (user.Role != Role.Admin && user.Role != Role.User))
+            ThrowIfRoleDoesntHavePermissions();
+
+        var orderModel = _mapper.Map<OrderModel>(order);
+        return orderModel;
     }
 
-    public int Add(OrderModel order)
+    public int Add(int userId, OrderModel order)
     {
+        var user = _userRepository.GetById(userId);
+        ThrowIfEntityNotFound(user, userId);
+
+        if (user.Role != Role.User)
+            ThrowIfRoleDoesntHavePermissions();
+
+        (var startStation, var endStation, var trip) = GetStartEndStationsAndTripForAddEditToRepository(order);
+
         var orderEntity = _mapper.Map<Order>(order);
+
+        orderEntity.StartStation = startStation!;
+        orderEntity.EndStation = endStation!;
+        orderEntity.Trip = trip!;
+
         var id = _orderRepository.Add(orderEntity);
         return id;
     }
 
-    public void Update(int id, OrderModel order)
+    public void Edit(int userId, int orderId, OrderModel order)
     {
-        var orderEntity = GetOrderEntity(id);
+        var user = _userRepository.GetById(userId);
+        ThrowIfEntityNotFound(user, userId);
+
+        if (user!.Role != Role.User && user.Role != Role.Admin)
+            ThrowIfRoleDoesntHavePermissions();
+
+        order.Id = orderId;
+
+        var orderEntity = _orderRepository.GetById(orderId);
+        ThrowIfEntityNotFound(orderEntity, orderId);
+
+        if(orderEntity!.User.Id != user.Id && user.Role != Role.Admin)
+        {
+            ThrowIfRoleDoesntHavePermissions();
+        }
+
+        (var startStation, var endStation, var trip) = GetStartEndStationsAndTripForAddEditToRepository(order);
+
         var updatedOrderEntiry = _mapper.Map<Order>(order);
-        _orderRepository.Update(orderEntity, updatedOrderEntiry);
+        updatedOrderEntiry.StartStation = startStation!;
+        updatedOrderEntiry.EndStation = endStation!;
+        updatedOrderEntiry.Trip = trip!;
+
+        _orderRepository.Update(orderEntity!, updatedOrderEntiry);
     }
 
-    public void Delete(int id)
+    public void Delete(int userId, int orderId)
     {
-        var orderEntity = GetOrderEntity(id);
-        _orderRepository.Update(orderEntity, true);
+        var user = _userRepository.GetById(userId);
+        ThrowIfEntityNotFound(user, userId);
+
+        if (user!.Role != Role.User && user.Role != Role.Admin)
+            ThrowIfRoleDoesntHavePermissions();
+
+        var orderEntity = _orderRepository.GetById(orderId);
+        ThrowIfEntityNotFound(orderEntity, orderId);
+
+        if (orderEntity!.User.Id != user.Id && user.Role != Role.Admin)
+        {
+            ThrowIfRoleDoesntHavePermissions();
+        }
+
+        _orderRepository.Update(orderEntity!, true);
     }
 
-    public void Restore(int id)
+    public void Restore(int userId, int orderId)
     {
-        var orderEntity = GetOrderEntity(id);
-        _orderRepository.Update(orderEntity, false);
+        var user = _userRepository.GetById(userId);
+        ThrowIfEntityNotFound(user, userId);
+
+        if (user!.Role != Role.Admin)
+            ThrowIfRoleDoesntHavePermissions();
+
+        var orderEntity = _orderRepository.GetById(orderId);
+        ThrowIfEntityNotFound(orderEntity, orderId);
+
+        _orderRepository.Update(orderEntity!, false);
     }
 
-    private Order GetOrderEntity(int id)
+    private (TripStation, TripStation, Trip) GetStartEndStationsAndTripForAddEditToRepository(OrderModel order)
     {
-        var orderEntity = _orderRepository.GetById(id);
-        if (orderEntity == null)
-            throw new NotFoundException(nameof(Order), id);
+        if (order.StartStation.Id == order.EndStation.Id)
+            throw new InvalidDataException("Start and end stations can't be the same station");
 
-        return orderEntity;
+        var startStation = _tripStationRepository.GetById(order.StartStation.Id);
+        ThrowIfEntityNotFound(startStation, order.StartStation.Id);
+
+        var endStation = _tripStationRepository.GetById(order.EndStation.Id);
+        ThrowIfEntityNotFound(endStation, order.EndStation.Id);
+
+        var trip = _tripRepository.GetById(order.Trip.Id);
+        ThrowIfEntityNotFound(trip, order.Trip.Id);
+
+        if (startStation!.Trip.Id != trip!.Id)
+            throw new InvalidDataException("Start station not belong to specified trip");
+        if (endStation!.Trip.Id != trip.Id)
+            throw new InvalidDataException("End station not belong to specified trip");
+
+        return (startStation, endStation, trip);
     }
+
 }
