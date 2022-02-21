@@ -23,8 +23,7 @@ public static class StationServiceTestCaseSource
                 new() { Name = "Омск", Platforms = new List<PlatformModel>(), IsDeleted = false },
                 new() { Name = "48 км", Platforms = new List<PlatformModel>(), IsDeleted = false },
                 new() { Name = "Выборг", Platforms = new List<PlatformModel>(), IsDeleted = false }
-            },
-            Role.Admin);
+            });
         yield return new TestCaseData(new List<Station>
             {
                 new() { Name = "Москва", Platforms = new List<Platform>(), IsDeleted = false },
@@ -34,8 +33,7 @@ public static class StationServiceTestCaseSource
             {
                 new() { Name = "Москва", Platforms = new List<PlatformModel>(), IsDeleted = false },
                 new() { Name = "Красное село", Platforms = new List<PlatformModel>(), IsDeleted = false }
-            },
-            Role.StationManager);
+            });
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListDeletedTest()

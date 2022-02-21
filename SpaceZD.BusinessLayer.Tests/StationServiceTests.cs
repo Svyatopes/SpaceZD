@@ -50,7 +50,7 @@ public class StationServiceTests
         _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         Assert.AreEqual(expected, actual);
     }
-    
+
     [Test]
     public void AddNegativeNotFoundExceptionTest()
     {
@@ -95,7 +95,7 @@ public class StationServiceTests
             new List<StationModel> { new() { Name = "Владивосток", Platforms = new List<PlatformModel>() } },
             actual);
     }
-    
+
     [Test]
     public void GetNearStationsNegativeNotFoundExceptionTest()
     {
@@ -149,7 +149,7 @@ public class StationServiceTests
         // when then
         Assert.Throws<NotFoundException>(() => _service.GetById(45, 10));
     }
-    
+
     [Test]
     public void GetByIdNegativeNotFoundExceptionTest()
     {
@@ -173,39 +173,17 @@ public class StationServiceTests
 
     // GetList
     [TestCaseSource(typeof(StationServiceTestCaseSource), nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListTest))]
-    public void GetListTest(List<Station> stations, List<StationModel> expected, Role role)
+    public void GetListTest(List<Station> stations, List<StationModel> expected)
     {
         // given
         _stationRepositoryMock.Setup(x => x.GetList(false)).Returns(stations);
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
-        var actual = _service.GetList(45);
+        var actual = _service.GetList();
 
         // then
         _stationRepositoryMock.Verify(s => s.GetList(false), Times.Once);
-        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
-    }
-    
-    [Test]
-    public void GetListNegativeNotFoundExceptionTest()
-    {
-        // given
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
-
-        // when then
-        Assert.Throws<NotFoundException>(() => _service.GetList(10));
-    }
-
-    [Test]
-    public void GetListNegativeAuthorizationExceptionTest()
-    {
-        // given
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
-
-        // when then
-        Assert.Throws<AuthorizationException>(() => _service.GetList(10));
     }
 
     [TestCaseSource(typeof(StationServiceTestCaseSource), nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
@@ -223,7 +201,7 @@ public class StationServiceTests
         _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
-    
+
     [Test]
     public void GetListDeletedNegativeNotFoundExceptionTest()
     {
@@ -276,7 +254,7 @@ public class StationServiceTests
         // when then
         Assert.Throws<NotFoundException>(() => _service.Delete(45, 10));
     }
-    
+
     [Test]
     public void DeleteNegativeNotFoundExceptionTest()
     {
@@ -328,7 +306,7 @@ public class StationServiceTests
         // when then
         Assert.Throws<NotFoundException>(() => _service.Restore(45, 10));
     }
-    
+
     [Test]
     public void RestoreNegativeNotFoundExceptionTest()
     {
@@ -381,7 +359,7 @@ public class StationServiceTests
         // when then
         Assert.Throws<NotFoundException>(() => _service.Update(45, 10, new StationModel()));
     }
-    
+
     [Test]
     public void UpdateNegativeNotFoundExceptionTest()
     {

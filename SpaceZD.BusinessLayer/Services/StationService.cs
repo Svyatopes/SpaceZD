@@ -39,10 +39,8 @@ public class StationService : BaseService, IStationService
         return _mapper.Map<List<StationModel>>(result);
     }
 
-    public List<StationModel> GetList(int userId)
+    public List<StationModel> GetList()
     {
-        CheckUserRole(userId, _allowedRoles);
-
         var entities = _repository.GetList();
         return _mapper.Map<List<StationModel>>(entities);
     }

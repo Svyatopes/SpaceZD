@@ -6,7 +6,7 @@ public interface IStationService
 {
     StationModel GetById(int userId, int id);
     List<StationModel> GetNearStations(int userId, int id);
-    List<StationModel> GetList(int userId);
+    List<StationModel> GetList();
     List<StationModel> GetListDeleted(int userId);
     int Add(int userId, StationModel stationModel);
     void Delete(int userId, int id);
