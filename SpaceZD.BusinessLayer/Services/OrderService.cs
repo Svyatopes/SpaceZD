@@ -11,13 +11,13 @@ public class OrderService : BaseService, IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IRepositorySoftDelete<Trip> _tripRepository;
-    private readonly IRepositorySoftDelete<TripStation> _tripStationRepository;
+    private readonly ITripStationRepository _tripStationRepository;
 
     public OrderService(IMapper mapper,
         IOrderRepository orderRepository,
         IRepositorySoftDelete<User> userRepository,
         IRepositorySoftDelete<Trip> tripRepository,
-        IRepositorySoftDelete<TripStation> tripStationRepository
+        ITripStationRepository tripStationRepository
         ) : base(mapper, userRepository)
     {
         _orderRepository = orderRepository;

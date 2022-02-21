@@ -34,12 +34,13 @@ public class CarriageTypeServiceTests
     }
 
     // Add
-    [TestCase(45)]
-    public void AddTest(int expected)
+    [TestCase(45, Role.Admin)]
+    [TestCase(45, Role.TrainRouteManager)]
+    public void AddTest(int expected, Role role)
     {
         // given
         _carriageTypeRepositoryMock.Setup(x => x.Add(It.IsAny<CarriageType>())).Returns(expected);
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
         int actual = _service.Add(45, new CarriageTypeModel());
@@ -73,11 +74,11 @@ public class CarriageTypeServiceTests
 
     // GetById
     [TestCaseSource(typeof(CarriageTypeServiceTestCaseSource), nameof(CarriageTypeServiceTestCaseSource.GetTestCaseDataForGetByIdTest))]
-    public void GetByIdTest(CarriageType carriageType)
+    public void GetByIdTest(CarriageType carriageType, Role role)
     {
         // given
         _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
         var actual = _service.GetById(45, 5);
@@ -131,35 +132,13 @@ public class CarriageTypeServiceTests
     {
         // given
         _carriageTypeRepositoryMock.Setup(x => x.GetList(false)).Returns(carriageTypes);
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        var actual = _service.GetList(45);
+        var actual = _service.GetList();
 
         // then
         _carriageTypeRepositoryMock.Verify(s => s.GetList(false), Times.Once);
-        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
-    }
-
-    [Test]
-    public void GetListNegativeNotFoundExceptionTest()
-    {
-        // given
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
-
-        // when then
-        Assert.Throws<NotFoundException>(() => _service.GetList(10));
-    }
-
-    [Test]
-    public void GetListNegativeAuthorizationExceptionTest()
-    {
-        // given
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
-
-        // when then
-        Assert.Throws<AuthorizationException>(() => _service.GetList(10));
     }
 
     [TestCaseSource(typeof(CarriageTypeServiceTestCaseSource), nameof(CarriageTypeServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
@@ -192,7 +171,7 @@ public class CarriageTypeServiceTests
     public void GetListDeletedNegativeAuthorizationExceptionTest()
     {
         // given
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.TrainRouteManager });
 
         // when then
         Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(10));
@@ -200,14 +179,15 @@ public class CarriageTypeServiceTests
 
 
     //Delete
-    [Test]
-    public void DeleteTest()
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    public void DeleteTest(Role role)
     {
         // given
         var carriageType = new CarriageType();
         _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), true));
         _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
         _service.Delete(45, 45);
@@ -296,7 +276,7 @@ public class CarriageTypeServiceTests
     public void RestoreNegativeAuthorizationExceptionTest()
     {
         // given
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.TrainRouteManager });
 
         // when then
         Assert.Throws<AuthorizationException>(() => _service.Restore(10, 10));
@@ -304,14 +284,15 @@ public class CarriageTypeServiceTests
 
 
     //Update
-    [Test]
-    public void UpdateTest()
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    public void UpdateTest(Role role)
     {
         // given
         var carriageType = new CarriageType();
         _carriageTypeRepositoryMock.Setup(x => x.Update(It.IsAny<CarriageType>(), It.IsAny<CarriageType>()));
         _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriageType);
-        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
         _service.Update(45, 45, new CarriageTypeModel());

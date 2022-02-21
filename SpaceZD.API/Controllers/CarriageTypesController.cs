@@ -11,7 +11,6 @@ namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
 public class CarriageTypesController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -26,17 +25,14 @@ public class CarriageTypesController : ControllerBase
     [HttpGet]
     public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypes()
     {
-        var userId = this.GetUserId();
-        if (userId == null)
-            return Unauthorized("Not valid token, try login again");
-
-        var entities = _carriageTypeService.GetList(userId.Value);
+        var entities = _carriageTypeService.GetList();
         var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
         return Ok(result);
     }
 
     //api/CarriageTypes/deleted
     [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<CarriageTypeOutputModel>> GetDeletedCarriageTypes()
     {
         var userId = this.GetUserId();
@@ -50,6 +46,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/42
     [HttpGet("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult<CarriageTypeOutputModel> GetCarriageTypeById(int id)
     {
         var userId = this.GetUserId();
@@ -63,6 +60,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes
     [HttpPost]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult AddCarriageType([FromBody] CarriageTypeInputModel carriageType)
     {
         var userId = this.GetUserId();
@@ -76,6 +74,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/42
     [HttpPut("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult EditCarriageType(int id, [FromBody] CarriageTypeInputModel carriageType)
     {
         var userId = this.GetUserId();
@@ -89,6 +88,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/42
     [HttpDelete("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult DeleteCarriageType(int id)
     {
         var userId = this.GetUserId();
@@ -101,6 +101,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/42
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreCarriageType(int id)
     {
         var userId = this.GetUserId();
