@@ -2,6 +2,7 @@
 using SpaceZD.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
@@ -25,59 +26,103 @@ public class StationsController : ControllerBase
     [HttpGet]
     public ActionResult<List<StationShortOutputModel>> GetStations()
     {
-        return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetList()));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _stationService.GetList(userId.Value);
+        var result = _mapper.Map<List<StationShortOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Stations/deleted
     [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<StationShortOutputModel>> GetDeletedStations()
     {
-        return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetListDeleted()));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _stationService.GetListDeleted(userId.Value);
+        var result = _mapper.Map<List<StationShortOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Stations/42
     [HttpGet("{id}")]
     public ActionResult<StationFullOutputModel> GetStationById(int id)
     {
-        return Ok(_mapper.Map<StationFullOutputModel>(_stationService.GetById(id)));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _stationService.GetById(userId.Value, id);
+        var result = _mapper.Map<StationFullOutputModel>(entities);
+        return Ok(result);
     }
 
     //api/Stations/42/near-stations
     [HttpGet("{id}/near-stations")]
     public ActionResult<List<StationShortOutputModel>> GetNearStationsById(int id)
     {
-        return Ok(_mapper.Map<List<StationShortOutputModel>>(_stationService.GetNearStations(id)));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _stationService.GetNearStations(userId.Value, id);
+        var result = _mapper.Map<List<StationShortOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Stations
     [HttpPost]
     public ActionResult AddStation([FromBody] StationInputModel station)
     {
-        _stationService.Add(_mapper.Map<StationModel>(station));
-        return StatusCode(StatusCodes.Status201Created);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<StationModel>(station);
+        var idCreate = _stationService.Add(userId.Value, entity);
+        return StatusCode(StatusCodes.Status201Created, idCreate);
     }
 
     //api/Stations/42
     [HttpPut("{id}")]
     public ActionResult EditStation(int id, [FromBody] StationInputModel station)
     {
-        _stationService.Update(id, _mapper.Map<StationModel>(station));
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<StationModel>(station);
+        _stationService.Update(userId.Value, id, entity);
+        return NoContent();
     }
 
     //api/Stations/42
     [HttpDelete("{id}")]
     public ActionResult DeleteStation(int id)
     {
-        _stationService.Delete(id);
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _stationService.Delete(userId.Value, id);
+        return NoContent();
     }
 
     //api/Stations/42
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreStation(int id)
     {
-        _stationService.Restore(id);
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _stationService.Restore(userId.Value, id);
+        return NoContent();
     }
 }

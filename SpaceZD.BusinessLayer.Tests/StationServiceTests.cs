@@ -8,6 +8,7 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Tests;
@@ -38,13 +39,35 @@ public class StationServiceTests
     {
         // given
         _stationRepositoryMock.Setup(x => x.Add(It.IsAny<Station>())).Returns(expected);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        int actual = _service.Add(new StationModel());
+        int actual = _service.Add(45, new StationModel());
 
         // then
         _stationRepositoryMock.Verify(s => s.Add(It.IsAny<Station>()), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         Assert.AreEqual(expected, actual);
+    }
+    
+    [Test]
+    public void AddNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.Add(10, new StationModel()));
+    }
+
+    [Test]
+    public void AddNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.Add(10, new StationModel()));
     }
 
 
@@ -57,16 +80,38 @@ public class StationServiceTests
         var stations = new List<Station> { new() { Name = "Владивосток", Platforms = new List<Platform>() } };
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
         _stationRepositoryMock.Setup(x => x.GetNearStations(It.IsAny<Station>())).Returns(stations);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        var actual = _service.GetNearStations(45);
+        var actual = _service.GetNearStations(45, 45);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.GetNearStations(station), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(
             new List<StationModel> { new() { Name = "Владивосток", Platforms = new List<PlatformModel>() } },
             actual);
+    }
+    
+    [Test]
+    public void GetNearStationsNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.GetNearStations(10, 10));
+    }
+
+    [Test]
+    public void GetNearStationsNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.GetNearStations(10, 10));
     }
 
 
@@ -77,12 +122,14 @@ public class StationServiceTests
         // given
         var station = new Station { Name = "Владивосток", Platforms = new List<Platform>(), IsDeleted = true };
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        StationModel actual = _service.GetById(5);
+        StationModel actual = _service.GetById(45, 5);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         Assert.AreEqual(
             new StationModel
                 { Name = station.Name, Platforms = new List<PlatformModel>(), IsDeleted = station.IsDeleted },
@@ -94,41 +141,104 @@ public class StationServiceTests
     {
         // given
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.GetById(10));
+        Assert.Throws<NotFoundException>(() => _service.GetById(45, 10));
+    }
+    
+    [Test]
+    public void GetByIdNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.GetById(10, 10));
+    }
+
+    [Test]
+    public void GetByIdNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.GetById(10, 10));
     }
 
 
     // GetList
-    [TestCaseSource(typeof(StationServiceTestCaseSource),
-        nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListTest))]
+    [TestCaseSource(typeof(StationServiceTestCaseSource), nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(List<Station> stations, List<StationModel> expected)
     {
         // given
         _stationRepositoryMock.Setup(x => x.GetList(false)).Returns(stations);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        var actual = _service.GetList();
+        var actual = _service.GetList(45);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetList(false), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
     }
+    
+    [Test]
+    public void GetListNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
-    [TestCaseSource(typeof(StationServiceTestCaseSource),
-        nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.GetList(10));
+    }
+
+    [Test]
+    public void GetListNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.GetList(10));
+    }
+
+    [TestCaseSource(typeof(StationServiceTestCaseSource), nameof(StationServiceTestCaseSource.GetTestCaseDataForGetListDeletedTest))]
     public void GetListDeletedTest(List<Station> stations, List<StationModel> expected)
     {
         // given
         _stationRepositoryMock.Setup(x => x.GetList(true)).Returns(stations);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        var actual = _service.GetListDeleted();
+        var actual = _service.GetListDeleted(45);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetList(true), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
+    }
+    
+    [Test]
+    public void GetListDeletedNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.GetListDeleted(10));
+    }
+
+    [Test]
+    public void GetListDeletedNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(10));
     }
 
 
@@ -140,13 +250,15 @@ public class StationServiceTests
         var stations = new Station();
         _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), true));
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(stations);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        _service.Delete(45);
+        _service.Delete(45, 45);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(stations, true), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
     }
 
     [Test]
@@ -155,9 +267,30 @@ public class StationServiceTests
         // given
         _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), true));
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.Delete(10));
+        Assert.Throws<NotFoundException>(() => _service.Delete(45, 10));
+    }
+    
+    [Test]
+    public void DeleteNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.Delete(10, 10));
+    }
+
+    [Test]
+    public void DeleteNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.Delete(10, 10));
     }
 
 
@@ -169,13 +302,15 @@ public class StationServiceTests
         var stations = new Station();
         _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), false));
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(stations);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        _service.Restore(45);
+        _service.Restore(45, 45);
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(stations, false), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
     }
 
     [Test]
@@ -184,9 +319,30 @@ public class StationServiceTests
         // given
         _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), false));
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.Restore(10));
+        Assert.Throws<NotFoundException>(() => _service.Restore(45, 10));
+    }
+    
+    [Test]
+    public void RestoreNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.Restore(10, 10));
+    }
+
+    [Test]
+    public void RestoreNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.Restore(10, 10));
     }
 
 
@@ -198,13 +354,15 @@ public class StationServiceTests
         var station = new Station();
         _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), It.IsAny<Station>()));
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(station);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when
-        _service.Update(45, new StationModel());
+        _service.Update(45, 45, new StationModel());
 
         // then
         _stationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _stationRepositoryMock.Verify(s => s.Update(station, It.IsAny<Station>()), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
     }
 
     [Test]
@@ -213,8 +371,29 @@ public class StationServiceTests
         // given
         _stationRepositoryMock.Setup(x => x.Update(It.IsAny<Station>(), It.IsAny<Station>()));
         _stationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Station?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.Update(10, new StationModel()));
+        Assert.Throws<NotFoundException>(() => _service.Update(45, 10, new StationModel()));
+    }
+    
+    [Test]
+    public void UpdateNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.Update(10, 10, new StationModel()));
+    }
+
+    [Test]
+    public void UpdateNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.Update(10, 10, new StationModel()));
     }
 }

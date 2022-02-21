@@ -4,12 +4,12 @@ namespace SpaceZD.BusinessLayer.Services;
 
 public interface IStationService
 {
-    StationModel GetById(int id);
-    List<StationModel> GetNearStations(int id);
-    List<StationModel> GetList();
-    List<StationModel> GetListDeleted();
-    int Add(StationModel stationModel);
-    void Delete(int id);
-    void Restore(int id);
-    void Update(int id, StationModel stationModel);
+    StationModel GetById(int userId, int id);
+    List<StationModel> GetNearStations(int userId, int id);
+    List<StationModel> GetList(int userId);
+    List<StationModel> GetListDeleted(int userId);
+    int Add(int userId, StationModel stationModel);
+    void Delete(int userId, int id);
+    void Restore(int userId, int id);
+    void Update(int userId, int id, StationModel stationModel);
 }
