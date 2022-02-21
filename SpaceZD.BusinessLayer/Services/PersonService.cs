@@ -10,10 +10,9 @@ namespace SpaceZD.BusinessLayer.Services
         private readonly IPersonRepository _personRepository;
         private readonly IUserRepository _userRepository;
 
-        public PersonService(IPersonRepository personRepository, IMapper mapper, IUserRepository userRepository) : base(mapper)
+        public PersonService(IPersonRepository personRepository, IUserRepository userRepository, IMapper mapper) : base(mapper, userRepository)
         {
             _personRepository = personRepository;
-            _userRepository = userRepository;   
         }
 
         public PersonModel GetById(int id)

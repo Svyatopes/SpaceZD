@@ -13,7 +13,7 @@ public class TripStationService : BaseService, ITripStationService
     private readonly IStationRepository _stationRepository;
     private readonly IRepositorySoftDelete<Platform> _platformRepository;
 
-    public TripStationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, ITripStationRepository repository, IStationRepository stationRepository,
+    public TripStationService(IMapper mapper, IUserRepository userRepository, ITripStationRepository repository, IStationRepository stationRepository,
         IRepositorySoftDelete<Platform> platformRepository) : base(mapper, userRepository)
     {
         _repository = repository;

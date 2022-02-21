@@ -10,7 +10,7 @@ namespace SpaceZD.BusinessLayer.Services
     {
         private readonly IRepositorySoftDelete<Train> _trainRepository;
 
-        public TrainService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper, userRepository)
+        public TrainService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper, userRepository)
         {
             _trainRepository = trainRepository;
         }

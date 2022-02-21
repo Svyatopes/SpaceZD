@@ -11,7 +11,7 @@ public class RouteService : BaseService, IRouteService
     private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IStationRepository _stationRepository;
 
-    public RouteService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Route> routeRepository, IStationRepository stationRepository) : base(mapper, userRepository)
+    public RouteService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Route> routeRepository, IStationRepository stationRepository) : base(mapper, userRepository)
     {
         _routeRepository = routeRepository;
         _stationRepository = stationRepository;

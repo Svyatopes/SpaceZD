@@ -7,23 +7,19 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
-public class TicketService : ITicketService
+public class TicketService : BaseService, ITicketService
 {
-    private readonly IMapper _mapper;
     private readonly ITicketRepository _ticketRepository;
-    private readonly IRepositorySoftDelete<Order> _orderRepository;
+    private readonly IOrderRepository _orderRepository;
     private readonly IPersonRepository _personRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IRepositorySoftDelete<Carriage> _carriageRepository;
 
 
     public TicketService(IMapper mapper, ITicketRepository ticketRepository,
-        IUserRepository userRepository, IRepositorySoftDelete<Order> orderRepository,
-        IPersonRepository personRepository, IRepositorySoftDelete<Carriage> carriageRepository)
-    {
-        _mapper = mapper;
-        _ticketRepository = ticketRepository;
-        _userRepository = userRepository;
+        IUserRepository userRepository, IOrderRepository orderRepository,
+        IPersonRepository personRepository, IRepositorySoftDelete<Carriage> carriageRepository) : base(mapper, userRepository)
+    {        
+        _ticketRepository = ticketRepository;       
         _orderRepository = orderRepository;
         _personRepository = personRepository;
         _carriageRepository = carriageRepository;

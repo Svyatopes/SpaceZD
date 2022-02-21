@@ -11,7 +11,7 @@ public class CarriageTypeService : BaseService, ICarriageTypeService
     private readonly IRepositorySoftDelete<CarriageType> _repository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository, IRepositorySoftDelete<User> userRepository) 
+    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository, IUserRepository userRepository) 
         : base(mapper, userRepository)
     {
         _repository = repository;

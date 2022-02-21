@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public abstract class BaseService
 {
     protected readonly IMapper _mapper;
-    protected readonly IRepositorySoftDelete<User> _userRepository;
+    protected readonly IUserRepository _userRepository;
 
-    protected BaseService(IMapper mapper, IRepositorySoftDelete<User> userRepository)
+    protected BaseService(IMapper mapper, IUserRepository userRepository)
     {
         _mapper = mapper;
         _userRepository = userRepository;

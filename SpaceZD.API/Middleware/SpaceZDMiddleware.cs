@@ -32,7 +32,7 @@ public class SpaceZdMiddleware
         {
             await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
         }
-        catch (SqlException ex)
+        catch (SqlException)
         {
             await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "БД не алё");
         }

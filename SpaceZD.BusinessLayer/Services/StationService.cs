@@ -10,7 +10,7 @@ public class StationService : BaseService, IStationService
 {
     private readonly IStationRepository _repository;
 
-    public StationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IStationRepository repository) : base(mapper, userRepository)
+    public StationService(IMapper mapper, IUserRepository userRepository, IStationRepository repository) : base(mapper, userRepository)
     {
         _repository = repository;
     }
