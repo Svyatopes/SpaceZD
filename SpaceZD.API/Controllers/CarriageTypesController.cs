@@ -37,6 +37,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/deleted
     [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<CarriageTypeOutputModel>> GetDeletedCarriageTypes()
     {
         var userId = this.GetUserId();
@@ -101,6 +102,7 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes/42
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreCarriageType(int id)
     {
         var userId = this.GetUserId();

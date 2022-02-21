@@ -12,8 +12,8 @@ public class CarriageTypeService : BaseService, ICarriageTypeService
     private readonly IRepositorySoftDelete<CarriageType> _repository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository, IRepositorySoftDelete<User> userRepository) : base(mapper,
-        userRepository)
+    public CarriageTypeService(IMapper mapper, IRepositorySoftDelete<CarriageType> repository, IRepositorySoftDelete<User> userRepository) 
+        : base(mapper, userRepository)
     {
         _repository = repository;
     }
@@ -35,13 +35,15 @@ public class CarriageTypeService : BaseService, ICarriageTypeService
         var entities = _repository.GetList();
         return _mapper.Map<List<CarriageTypeModel>>(entities);
     }
+
     public List<CarriageTypeModel> GetListDeleted(int userId)
     {
-        CheckUserRole(userId, _allowedRoles);
+        CheckUserRole(userId, Role.Admin);
 
         var entities = _repository.GetList(true).Where(t => t.IsDeleted);
         return _mapper.Map<List<CarriageTypeModel>>(entities);
     }
+
     public int Add(int userId, CarriageTypeModel carriageTypeModel)
     {
         CheckUserRole(userId, _allowedRoles);
@@ -62,7 +64,7 @@ public class CarriageTypeService : BaseService, ICarriageTypeService
 
     public void Restore(int userId, int id)
     {
-        CheckUserRole(userId, _allowedRoles);
+        CheckUserRole(userId, Role.Admin);
 
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
