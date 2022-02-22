@@ -30,6 +30,15 @@ public class TripsController : ControllerBase
         var result = _mapper.Map<List<TripShortOutputModel>>(entities);
         return Ok(result);
     }
+    
+    //api/Trips/from-date/2022-1-1
+    [HttpGet("from-date/{date}")]
+    public ActionResult<List<TripShortOutputModel>> GetTripsFromDate(DateTime date)
+    {
+        var entities = _service.GetList().Where(g => g.StartTime.Date == date.Date);
+        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
+        return Ok(result);
+    }
 
     //api/Trips/deleted
     [HttpGet("deleted")]
