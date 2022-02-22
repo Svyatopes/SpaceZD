@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.BusinessLayer.Tests.TestCaseSources;
 
