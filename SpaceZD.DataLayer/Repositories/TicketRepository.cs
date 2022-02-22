@@ -40,16 +40,7 @@ public class TicketRepository : BaseRepository, ITicketRepository
         _context.SaveChanges();
         
     }
-    public void UpdatePrice(Ticket ticketWithOldPrice, Ticket ticketWithNewPrice)
-    {
-        ticketWithOldPrice.Price = ticketWithNewPrice.Price;
-        ticketWithOldPrice.IsPetPlaceIncluded = ticketWithNewPrice.IsPetPlaceIncluded;
-        ticketWithOldPrice.IsTeaIncluded = ticketWithNewPrice.IsTeaIncluded;
-
-        _context.SaveChanges();
         
-    }
-    
     public void Update(Ticket ticket, bool isDeleted)
     {
         ticket.IsDeleted = isDeleted;

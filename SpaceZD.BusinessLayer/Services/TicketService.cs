@@ -94,6 +94,25 @@ public class TicketService : BaseService, ITicketService
         ticket.Carriage = carriage;
         ticket.Person = person;
         ticket.Order = order;
+        decimal? price = 0;
+        var starStationID = ticket.Order.StartStation.Id;
+        var endStationID = ticket.Order.EndStation.Id;
+        
+        var hhh = ticket.Order.Trip.Route.RouteTransits.Select(t => t.Transit).ToList();
+        foreach (var item in hhh)
+        {
+            if (item.Id >= starStationID && item.Id <= endStationID)
+            {
+                price += item.Price;
+            }
+            
+        }
+        if (entity.IsPetPlaceIncluded)
+            price *= (decimal)1.5;
+        if (entity.IsTeaIncluded)
+            price += (decimal)50;
+
+        ticket.Price = price;
 
         if (person.User.Id == user.Id && order.User.Id == user.Id)
             return _ticketRepository.Add(ticket);
@@ -136,25 +155,7 @@ public class TicketService : BaseService, ITicketService
         }
     }
 
-    public void UpdatePrice(int id, TicketModel entity, int userId)
-    {
-        CheckUserRole(userId, Role.Admin);
-
-        if (entity.Price == 0)
-        {
-            throw new NullReferenceException();
-        }
-        var user = _userRepository.GetById(userId);
-        var ticketOld = _ticketRepository.GetById(id);
-        var ticketNew = _mapper.Map<Ticket>(entity);
-        ThrowIfEntityNotFound(ticketOld, id);
-
-        if (ticketOld.Order.User.Id == userId || user.Role == Role.Admin)
-        {
-            _ticketRepository.UpdatePrice(ticketOld, ticketNew);
-        }
-    }
-
+    
     public void Delete(int id, int userId)
     {
         CheckUserRole(userId, _allowedRoles);

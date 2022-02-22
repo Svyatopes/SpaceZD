@@ -115,20 +115,7 @@ public class TicketsController : ControllerBase
         return Accepted();
     }
 
-
-    [HttpPut("price/{id}")]
-    [AuthorizeRole(Role.Admin)]
-    public ActionResult EditPriceTicket(int id, TicketUpdatePriceInputModel ticketModel)
-    {
-        var userId = this.GetUserId();
-        if (userId == null)
-            return Unauthorized("Not valid token, try login again");
-
-        var ticket = _mapper.Map<TicketModel>(ticketModel);
-        _ticketService.UpdatePrice(id, ticket, userId.Value);
-        return Accepted();
-    }
-    
+   
 
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]

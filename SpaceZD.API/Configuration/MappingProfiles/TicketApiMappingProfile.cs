@@ -17,8 +17,7 @@ public class TicketApiMappingProfile : Profile
              .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new CarriageModel { Id = tim.CarriageId }))
              .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel { Id = tim.PersonId }));
 
-        CreateMap<TicketUpdatePriceInputModel, TicketModel>();
-            
+                    
         CreateMap<TicketModel, TicketOutputModel>()
             .ForMember(tom => tom.CarriageId, opt => opt.MapFrom(tm => tm.Carriage.Id))
             .ForMember(tom => tom.OrderId, opt => opt.MapFrom(tm => tm.Order.Id))
