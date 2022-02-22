@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.BusinessLayer.Tests.TestCaseSources;
 
@@ -58,7 +59,8 @@ public static class TripServiceTestCaseSource
             new() { Station = stationFour, ArrivalTime = new DateTime(1970, 1, 1, 8, 30, 0), DepartingTime = null }
         };
 
-        yield return new TestCaseData(tripModel, trip);
+        yield return new TestCaseData(tripModel, trip, Role.Admin);
+        yield return new TestCaseData(tripModel, trip, Role.TrainRouteManager);
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForAddNegativeInvalidDataExceptionTest()
@@ -207,9 +209,9 @@ public static class TripServiceTestCaseSource
         };
 
         yield return new TestCaseData(new List<Trip> { tripOne, tripTwo, tripThree },
-            new List<TripModel> { ConvertTripToTripModel(tripOne), ConvertTripToTripModel(tripThree) });
-        yield return new TestCaseData(new List<Trip> { tripOne },
-            new List<TripModel> { ConvertTripToTripModel(tripOne) });
+            new List<TripModel> { ConvertTripToTripModel(tripOne), ConvertTripToTripModel(tripThree) },
+            Role.Admin);
+        yield return new TestCaseData(new List<Trip> { tripOne }, new List<TripModel> { ConvertTripToTripModel(tripOne) }, Role.Admin);
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
@@ -377,18 +379,6 @@ public static class TripServiceTestCaseSource
         var carriageSeatsFour = new List<CarriageSeatsModel> { (CarriageSeatsModel)carriageSeats[0].Clone(), (CarriageSeatsModel)carriageSeats[1].Clone() };
         carriageSeatsFour[0].Seats[2].IsFree = false;
         yield return new TestCaseData(trip, stationOne, stationTwo, carriageSeatsFour);
-    }
-
-    internal static IEnumerable<TestCaseData> GetTestCaseDataForGetOnlyFreeSeatTest()
-    {
-        foreach (var tcd in GetTestCaseDataForGetFreeSeatTest())
-        {
-            foreach (var csm in (tcd.Arguments[3] as List<CarriageSeatsModel>)!)
-            {
-                csm.Seats = csm.Seats.Where(g=>g.IsFree).ToList();
-            }
-            yield return new TestCaseData(tcd.Arguments[0],tcd.Arguments[1],tcd.Arguments[2],tcd.Arguments[3]);
-        }
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetFreeSeatNegativeTest()
