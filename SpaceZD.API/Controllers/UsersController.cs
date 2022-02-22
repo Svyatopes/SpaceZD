@@ -59,7 +59,7 @@ public class UsersController : ControllerBase
 
 
     [HttpGet("users/persons")]
-    [AuthorizeRole(Role.Admin, Role.User)]
+    [AuthorizeRole(Role.User)]
     public ActionResult<List<PersonModel>> GetListPersonsFromUser()
     {
         var userId = this.GetUserId();

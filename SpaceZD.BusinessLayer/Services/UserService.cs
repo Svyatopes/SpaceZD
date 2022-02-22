@@ -44,7 +44,7 @@ namespace SpaceZD.BusinessLayer.Services
 
         public List<PersonModel> GetListUserPersons(int userId)
         {
-            CheckUserRole(userId, _allowedRoles);
+            CheckUserRole(userId, Role.User);
 
             var entities = _userRepository.GetListUserPersons(userId);
             return _mapper.Map<List<PersonModel>>(entities);
