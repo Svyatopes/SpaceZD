@@ -9,6 +9,7 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Tests;
@@ -40,16 +41,18 @@ public class TripStationServiceTests
 
     // GetById
     [TestCaseSource(typeof(TripStationServiceTestCaseSource), nameof(TripStationServiceTestCaseSource.GetTestCaseDataForGetByIdTest))]
-    public void GetByIdTest(TripStation tripStation, TripStationModel expected)
+    public void GetByIdTest(TripStation tripStation, TripStationModel expected, Role role)
     {
         // given
         _tripStationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(tripStation);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
-        var actual = _service.GetById(5);
+        var actual = _service.GetById(45, 5);
 
         // then
         _tripStationRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         Assert.AreEqual(expected, actual);
     }
 
@@ -58,15 +61,36 @@ public class TripStationServiceTests
     {
         // given
         _tripStationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((TripStation?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.GetById(10));
+        Assert.Throws<NotFoundException>(() => _service.GetById(45, 10));
+    }
+
+    [Test]
+    public void GetByIdNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.GetById(10, 10));
+    }
+
+    [Test]
+    public void GetByIdNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.GetById(10, 10));
     }
 
 
     //Update
     [TestCaseSource(typeof(TripStationServiceTestCaseSource), nameof(TripStationServiceTestCaseSource.GetTestCaseDataForUpdateTest))]
-    public void UpdateTest(TripStationModel model, TripStationModel expected)
+    public void UpdateTest(TripStationModel model, TripStationModel expected, Role role)
     {
         // given
         var tripStation = new TripStation { Station = new Station() };
@@ -75,15 +99,17 @@ public class TripStationServiceTests
         _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Platform
             { Number = 2, Station = new Station { Name = "Москва" }, IsDeleted = false });
         _stationRepositoryMock
-            .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .Returns(new List<Platform> { new() { Id = 1 } });
+           .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+           .Returns(new List<Platform> { new() { Id = 1 } });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
-        _service.Update(45, model);
+        _service.Update(45, 45, model);
 
         // then
         _tripStationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _tripStationRepositoryMock.Verify(s => s.Update(tripStation, It.IsAny<TripStation>()), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         Assert.AreEqual(model, expected);
     }
 
@@ -93,9 +119,10 @@ public class TripStationServiceTests
         // given
         _tripStationRepositoryMock.Setup(x => x.Update(It.IsAny<TripStation>(), It.IsAny<TripStation>()));
         _tripStationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((TripStation?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.Update(10, new TripStationModel()));
+        Assert.Throws<NotFoundException>(() => _service.Update(45, 10, new TripStationModel()));
     }
 
     [Test]
@@ -105,11 +132,13 @@ public class TripStationServiceTests
         var tripStation = new TripStation { Station = new Station() };
         _tripStationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(tripStation);
         _stationRepositoryMock
-            .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .Returns(new List<Platform>());
+           .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+           .Returns(new List<Platform>());
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<InvalidOperationException>(() => _service.Update(10,
+        Assert.Throws<InvalidOperationException>(() => _service.Update(45,
+            10,
             new TripStationModel
             {
                 ArrivalTime = new DateTime(12, 1, 22), DepartingTime = new DateTime(12, 1, 22),
@@ -117,10 +146,31 @@ public class TripStationServiceTests
             }));
     }
 
+    [Test]
+    public void UpdateNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.Update(10, 10, new TripStationModel()));
+    }
+
+    [Test]
+    public void UpdateNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.Update(10, 10, new TripStationModel()));
+    }
+
 
     //SetPlatform
-    [Test]
-    public void SetPlatformTest()
+    [TestCase(Role.Admin)]
+    [TestCase(Role.StationManager)]
+    public void SetPlatformTest(Role role)
     {
         // given
         var tripStation = new TripStation { Station = new Station(), ArrivalTime = null, DepartingTime = new DateTime(1990, 1, 1) };
@@ -131,25 +181,28 @@ public class TripStationServiceTests
         _stationRepositoryMock
            .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
            .Returns(new List<Platform> { new() { Id = 1 } });
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
-        _service.SetPlatform(45, 1);
+        _service.SetPlatform(45, 45, 1);
 
         // then
         _tripStationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         _tripStationRepositoryMock.Verify(s => s.Update(tripStation, tripStation), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
     }
-    
+
     [Test]
     public void SetPlatformNegativeTest()
     {
         // given
         _tripStationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((TripStation?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<NotFoundException>(() => _service.SetPlatform(10, 1));
+        Assert.Throws<NotFoundException>(() => _service.SetPlatform(45, 10, 1));
     }
-    
+
     [Test]
     public void SetPlatformNegativeInvalidOperationExceptionTest()
     {
@@ -159,28 +212,70 @@ public class TripStationServiceTests
         _stationRepositoryMock
            .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
            .Returns(new List<Platform>());
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
         // when then
-        Assert.Throws<InvalidOperationException>(() => _service.SetPlatform(10, 1));
+        Assert.Throws<InvalidOperationException>(() => _service.SetPlatform(45, 10, 1));
+    }
+
+    [Test]
+    public void SetPlatformNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.SetPlatform(10, 10, 1));
+    }
+
+    [Test]
+    public void SetPlatformNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.SetPlatform(10, 10, 1));
     }
 
 
     //GetReadyPlatforms
-    [TestCaseSource(typeof(TripStationServiceTestCaseSource),
-        nameof(TripStationServiceTestCaseSource.GetTestCaseDataForGetReadyPlatformsTest))]
-    public void GetReadyPlatformsTest(TripStation tripStation, List<Platform> platforms, List<PlatformModel> expected)
+    [TestCaseSource(typeof(TripStationServiceTestCaseSource), nameof(TripStationServiceTestCaseSource.GetTestCaseDataForGetReadyPlatformsTest))]
+    public void GetReadyPlatformsTest(TripStation tripStation, List<Platform> platforms, List<PlatformModel> expected, Role role)
     {
         // given
         _tripStationRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(tripStation);
         _stationRepositoryMock
-            .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .Returns(platforms);
+           .Setup(x => x.GetReadyPlatformsStation(It.IsAny<Station>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+           .Returns(platforms);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
         // when
-        var actual = _service.GetReadyPlatforms(45);
+        var actual = _service.GetReadyPlatforms(45, 45);
 
         // then
         _tripStationRepositoryMock.Verify(s => s.GetById(45), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
         CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    public void GetReadyPlatformsNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when then
+        Assert.Throws<NotFoundException>(() => _service.GetReadyPlatforms(10, 10));
+    }
+
+    [Test]
+    public void GetReadyPlatformsNegativeAuthorizationExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.GetReadyPlatforms(10, 10));
     }
 }
