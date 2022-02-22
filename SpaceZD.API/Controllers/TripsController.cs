@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
@@ -25,79 +26,103 @@ public class TripsController : ControllerBase
     [HttpGet]
     public ActionResult<List<TripShortOutputModel>> GetTrips()
     {
-        return Ok(_mapper.Map<List<TripShortOutputModel>>(_service.GetList()));
+        var entities = _service.GetList();
+        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Trips/2022-1-1
     [HttpGet("{date}")]
     public ActionResult<List<TripShortOutputModel>> GetTripsFromDate(DateTime date)
     {
-        return Ok(_mapper.Map<List<TripShortOutputModel>>(_service.GetList().Where(g => g.StartTime.Date == date.Date).ToList()));
+        var entities = _service.GetList().Where(g => g.StartTime.Date == date.Date);
+        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Trips/deleted
-    [AuthorizeRole(Role.Admin)]
     [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult<List<TripShortOutputModel>> GetDeletedTrips()
     {
-        return Ok(_mapper.Map<List<TripShortOutputModel>>(_service.GetListDeleted()));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _service.GetListDeleted(userId.Value);
+        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Trips/42
     [HttpGet("{id}")]
     public ActionResult<TripFullOutputModel> GetTripById(int id)
     {
-        return Ok(_mapper.Map<TripFullOutputModel>(_service.GetById(id)));
-    }
-
-    //api/Trips/42/free-seats
-    [HttpPost("{id}/free-seats")]
-    public ActionResult<List<CarriageSeatsOutputModel>> GetFreeSeatsByTripId(int id, [FromBody] StartEndIdStationsInputModel model)
-    {
-        return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId)));
+        var entities = _service.GetById(id);
+        var result = _mapper.Map<TripFullOutputModel>(entities);
+        return Ok(result);
     }
 
     //api/Trips/42/seats
-    [AuthorizeRole(Role.Admin)]
     [HttpPost("{id}/seats")]
     public ActionResult<List<CarriageSeatsOutputModel>> GetSeatsByTripId(int id, [FromBody] StartEndIdStationsInputModel model)
     {
-        return Ok(_mapper.Map<List<CarriageSeatsOutputModel>>(_service.GetFreeSeat(id, model.StartStationId, model.EndStationId, false)));
+        var entities = _service.GetFreeSeat(id, model.StartStationId, model.EndStationId);
+        var result = _mapper.Map<List<CarriageSeatsOutputModel>>(entities);
+        return Ok(result);
     }
 
     //api/Trips
-    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [HttpPost]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult AddTrip([FromBody] TripCreateInputModel trip)
     {
-        _service.Add(_mapper.Map<TripModel>(trip));
-        return StatusCode(StatusCodes.Status201Created);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<TripModel>(trip);
+        var idCreate = _service.Add(userId.Value, entity);
+        return StatusCode(StatusCodes.Status201Created, idCreate);
     }
 
     //api/Trips/42
-    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [HttpPut("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult EditTrip(int id, [FromBody] TripUpdateInputModel trip)
     {
-        _service.Update(id, _mapper.Map<TripModel>(trip));
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<TripModel>(trip);
+        _service.Update(userId.Value, id, entity);
         return NoContent();
     }
 
     //api/Trips/42
-    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [HttpDelete("{id}")]
+    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     public ActionResult DeleteTrip(int id)
     {
-        _service.Delete(id);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _service.Delete(userId.Value, id);
         return NoContent();
     }
 
     //api/Trips/42
-    [AuthorizeRole(Role.Admin)]
     [HttpPatch("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreTrip(int id)
     {
-        _service.Restore(id);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _service.Restore(userId.Value, id);
         return NoContent();
     }
 }

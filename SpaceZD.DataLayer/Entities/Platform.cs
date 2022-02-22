@@ -8,6 +8,7 @@ public class Platform
     public bool IsDeleted { get; set; }
     public virtual ICollection<PlatformMaintenance> PlatformMaintenances { get; set; }
     public virtual ICollection<TripStation> TripStations { get; set; }
+    public int StationId { get; set; }
 
     private bool Equals(Platform other)
     {

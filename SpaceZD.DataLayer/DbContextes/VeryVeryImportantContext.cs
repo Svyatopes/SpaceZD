@@ -50,6 +50,10 @@ public class VeryVeryImportantContext : DbContext
         modelBuilder.Entity<Transit>()
                     .HasIndex(p => new { p.StartStationId, p.EndStationId })
                     .IsUnique();
+        
+        modelBuilder.Entity<Platform>()
+                    .HasIndex(p => new { p.Number, p.StationId })
+                    .IsUnique();
     }
 
     public DbSet<Carriage> Carriages { get; set; }
