@@ -8,7 +8,7 @@ public class PlatformApiMappingProfile : Profile
 {
     public PlatformApiMappingProfile()
     {
-        CreateMap<PlatformInputModel, PlatformModel>();
+        CreateMap<PlatformUpdateInputModel, PlatformModel>();
 
         CreateMap<PlatformCreateInputModel, PlatformModel>()
             .ForMember(pm => pm.Station, opt => opt.MapFrom(pim => new StationModel { Id = pim.StationId }));

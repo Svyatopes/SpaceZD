@@ -2,7 +2,7 @@
 
 namespace SpaceZD.API.Models
 {
-    public class PlatformCreateInputModel : PlatformInputModel
+    public class PlatformCreateInputModel : PlatformUpdateInputModel
     {
         [Required]
         public int StationId { get; set; }

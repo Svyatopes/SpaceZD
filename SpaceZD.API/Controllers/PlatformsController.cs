@@ -71,7 +71,7 @@ public class PlatformsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public ActionResult EditPlatform(int id, [FromBody] PlatformInputModel platformInputModel)
+    public ActionResult EditPlatform(int id, [FromBody] PlatformUpdateInputModel platformInputModel)
     {
         var userId = this.GetUserId();
         if (userId == null)

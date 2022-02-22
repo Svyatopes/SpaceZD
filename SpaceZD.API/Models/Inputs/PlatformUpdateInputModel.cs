@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SpaceZD.API.Models;
 
-public class PlatformInputModel
+public class PlatformUpdateInputModel
 {
     [Required]
     [Range(0, 100)]
