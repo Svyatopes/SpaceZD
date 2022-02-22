@@ -1,69 +1,55 @@
 using AutoMapper;
-using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
 
 public class RouteService : BaseService, IRouteService
 {
-    private readonly IRepositorySoftDelete<Route> _routeRepository;
+    private readonly IRepositorySoftDelete<Route> _repository;
     private readonly IStationRepository _stationRepository;
+    private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-    public RouteService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Route> routeRepository, IStationRepository stationRepository) : base(mapper, userRepository)
+    public RouteService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Route> routeRepository,
+        IStationRepository stationRepository)
+        : base(mapper, userRepository)
     {
-        _routeRepository = routeRepository;
+        _repository = routeRepository;
         _stationRepository = stationRepository;
     }
 
-    public RouteModel GetById(int id)
+
+    public RouteModel GetById(int userId, int id)
     {
-        var entity = _routeRepository.GetById(id);
+        CheckUserRole(userId, _allowedRoles);
+
+        var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
         return _mapper.Map<RouteModel>(entity);
     }
 
-    public List<RouteModel> GetList() => _mapper.Map<List<RouteModel>>(_routeRepository.GetList());
-
-    public List<RouteModel> GetListDeleted() =>
-        _mapper.Map<List<RouteModel>>(_routeRepository.GetList(true).Where(t => t.IsDeleted));
-
-    public int Add(RouteModel routeModel)
+    public List<RouteModel> GetList(int userId)
     {
-        var startStation = _stationRepository.GetById(routeModel.StartStation.Id);
-        ThrowIfEntityNotFound(startStation, routeModel.StartStation.Id);
-        var endStation = _stationRepository.GetById(routeModel.EndStation.Id);
-        ThrowIfEntityNotFound(endStation, routeModel.EndStation.Id);
+        CheckUserRole(userId, _allowedRoles);
 
-        var route = _mapper.Map<Route>(routeModel);
-        route.StartStation = startStation!;
-        route.EndStation = endStation!;
-
-        return _routeRepository.Add(route);
+        var entities = _repository.GetList();
+        return _mapper.Map<List<RouteModel>>(entities);
     }
 
-    public void Delete(int id)
+    public List<RouteModel> GetListDeleted(int userId)
     {
-        var entity = _routeRepository.GetById(id);
-        ThrowIfEntityNotFound(entity, id);
+        CheckUserRole(userId, Role.Admin);
 
-        _routeRepository.Update(entity!, true);
+        var entities = _repository.GetList(true).Where(t => t.IsDeleted);
+        return _mapper.Map<List<RouteModel>>(entities);
     }
 
-    public void Restore(int id)
+    public int Add(int userId, RouteModel routeModel)
     {
-        var entity = _routeRepository.GetById(id);
-        ThrowIfEntityNotFound(entity, id);
-
-        _routeRepository.Update(entity!, false);
-    }
-
-    public void Update(int id, RouteModel routeModel)
-    {
-        var entity = _routeRepository.GetById(id);
-        ThrowIfEntityNotFound(entity, id);
+        CheckUserRole(userId, _allowedRoles);
 
         var startStation = _stationRepository.GetById(routeModel.StartStation.Id);
         ThrowIfEntityNotFound(startStation, routeModel.StartStation.Id);
@@ -74,6 +60,45 @@ public class RouteService : BaseService, IRouteService
         route.StartStation = startStation!;
         route.EndStation = endStation!;
 
-        _routeRepository.Update(entity!, route);
+        return _repository.Add(route);
+    }
+
+    public void Delete(int userId, int id)
+    {
+        CheckUserRole(userId, _allowedRoles);
+
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _repository.Update(entity!, true);
+    }
+
+    public void Restore(int userId, int id)
+    {
+        CheckUserRole(userId, Role.Admin);
+
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        _repository.Update(entity!, false);
+    }
+
+    public void Update(int userId, int id, RouteModel routeModel)
+    {
+        CheckUserRole(userId, _allowedRoles);
+
+        var entity = _repository.GetById(id);
+        ThrowIfEntityNotFound(entity, id);
+
+        var startStation = _stationRepository.GetById(routeModel.StartStation.Id);
+        ThrowIfEntityNotFound(startStation, routeModel.StartStation.Id);
+        var endStation = _stationRepository.GetById(routeModel.EndStation.Id);
+        ThrowIfEntityNotFound(endStation, routeModel.EndStation.Id);
+
+        var route = _mapper.Map<Route>(routeModel);
+        route.StartStation = startStation!;
+        route.EndStation = endStation!;
+
+        _repository.Update(entity!, route);
     }
 }
