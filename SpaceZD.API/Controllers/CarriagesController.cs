@@ -55,7 +55,7 @@ public class CarriagesController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var entities = _service.GetListDeleted(userId.Value);
-        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
+        var result = _mapper.Map<List<CarriageOutputModel>>(entities);
         return Ok(result);
     }
 

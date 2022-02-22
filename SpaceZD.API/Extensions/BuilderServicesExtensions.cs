@@ -70,6 +70,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IRouteService, RouteService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITrainService, TrainService>();
+        services.AddScoped<ICarriageService, CarriageService>();
         services.AddScoped<ITransitService, TransitService>();
         services.AddScoped<ITripStationService, TripStationService>();
         services.AddScoped<ITripService, TripService>();
