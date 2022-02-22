@@ -48,15 +48,20 @@ public class PlatformRepositoryTests
         Assert.AreEqual(platform, receivedPlatform);
     }
 
-    [TestCase(true)]
-    [TestCase(false)]
-    public void GetListAllIncludedTest(bool allIncluded)
+    [TestCase(true, 1)]
+    [TestCase(false, 1)]
+    [TestCase(true, 2)]
+    [TestCase(false, 2)]
+    public void GetListAllIncludedTest(bool allIncluded, int stationId)
     {
         //given
-        var platforms = _context.Platforms.Where(o => !o.IsDeleted || allIncluded);
+        var platforms = _context.Platforms
+            .Include(p => p.Station)
+            .Where(o => (!o.IsDeleted || allIncluded) && o.Station.Id == stationId)
+            .ToList();
 
         //when
-        var platformsInDB = (List<Platform>)_repository.GetList(allIncluded);
+        var platformsInDB = _repository.GetList(stationId, allIncluded);
 
         //then
         Assert.AreEqual(platforms, platformsInDB);
