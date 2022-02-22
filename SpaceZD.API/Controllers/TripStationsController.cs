@@ -62,8 +62,8 @@ public class TripStationsController : ControllerBase
         return NoContent();
     }
 
-    //api/TripStations/42/ready-platform
-    [HttpGet("{id}/ready-platform")]
+    //api/TripStations/42/ready-platforms
+    [HttpGet("{id}/ready-platforms")]
     public ActionResult<List<PlatformOutputModel>> GetReadyPlatforms(int id)
     {
         var userId = this.GetUserId();
@@ -71,6 +71,7 @@ public class TripStationsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var entities = _service.GetReadyPlatforms(userId.Value, id);
-        return Ok(_mapper.Map<List<PlatformOutputModel>>(entities));
+        var result = _mapper.Map<List<PlatformOutputModel>>(entities);
+        return Ok(result);
     }
 }
