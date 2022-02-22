@@ -12,11 +12,11 @@ public class TripStationService : BaseService, ITripStationService
 
     private readonly ITripStationRepository _repository;
     private readonly IStationRepository _stationRepository;
-    private readonly IRepositorySoftDelete<Platform> _platformRepository;
+    private readonly IPlatformRepository _platformRepository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
     public TripStationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, ITripStationRepository repository, IStationRepository stationRepository,
-        IRepositorySoftDelete<Platform> platformRepository)
+        IPlatformRepository platformRepository)
         : base(mapper, userRepository)
     {
         _repository = repository;
