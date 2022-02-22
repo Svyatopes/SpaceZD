@@ -46,7 +46,6 @@ public class CarriagesController : ControllerBase
             return Ok(carriage);
     }
 
-    //api/Trips/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<CarriageOutputModel>> GetDeletedCarriages()
@@ -81,13 +80,21 @@ public class CarriagesController : ControllerBase
 
         var entity = _mapper.Map<CarriageModel>(carriage);
         _service.Update(userId.Value, id, entity);
-        return NoContent();
+        return StatusCode(StatusCodes.Status200OK);
+
     }
 
     [HttpDelete("{id}")]
+    [AuthorizeRole(Role.Admin)]
     public ActionResult DeleteCarriage(int id)
     {
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _service.Delete(userId.Value, id);
+
+        return StatusCode(StatusCodes.Status200OK);
     }
 
     [HttpPatch("{id}")]

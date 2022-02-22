@@ -38,7 +38,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _service = new CarriageService(_mapper, _userRepositoryMock.Object, _carriageRepositoryMock.Object, _carriageTypeRepositoryMock.Object, _trainRepositoryMock.Object);
         }
 
-        //Add
+        // GetList
         [TestCaseSource(typeof(CarriageServiceTestCaseSource), nameof(CarriageServiceTestCaseSource.GetListTestCases))]
         public void GetListTest(List<Carriage> carriage, List<CarriageModel> expectedCarriageModels, Role role)
         {
@@ -55,6 +55,27 @@ namespace SpaceZD.BusinessLayer.Tests
             CollectionAssert.AreEqual(expectedCarriageModels, actual);
         }
 
+        [Test]
+        public void GetListNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetList(10));
+        }
+
+        [Test]
+        public void GetListNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.GetById(10, 10));
+        }
+
+        // GetById
         [TestCaseSource(typeof(CarriageServiceTestCaseSource), nameof(CarriageServiceTestCaseSource.GetByIdTestCases))]
         public void GetByIdTest(Carriage carriage, CarriageModel expectedCarriage, Role role)
         {
@@ -103,6 +124,7 @@ namespace SpaceZD.BusinessLayer.Tests
             Assert.Throws<AuthorizationException>(() => _service.GetById(10, 10));
         }
 
+        // Add
         [TestCase(45, Role.Admin)]
         [TestCase(45, Role.TrainRouteManager)]
         public void AddTest(int expected, Role role)
@@ -126,6 +148,17 @@ namespace SpaceZD.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [Test]
+        public void AddNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Add(10, new CarriageModel()));
+        }
+
+        //Update
         [TestCase(Role.Admin)]
         [TestCase(Role.TrainRouteManager)]
         public void UpdateTest(Role role)
@@ -140,15 +173,15 @@ namespace SpaceZD.BusinessLayer.Tests
 
             // when
 
-            _service.Update(10, 10, new CarriageModel
+            _service.Update(2, 2, new CarriageModel
             {
-                Type = new CarriageTypeModel { Id = 1 },
+                Type = new CarriageTypeModel { Id = 1, Name="ddd" },
                 Train = new TrainModel { Id = 2 }
             });
             // then
-            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.GetById(2), Times.Once);
             _carriageRepositoryMock.Verify(s => s.Update(carriage, It.IsAny<Carriage>()), Times.Once);
-            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(2), Times.Once);
         }
 
         [Test]
@@ -163,6 +196,17 @@ namespace SpaceZD.BusinessLayer.Tests
             Assert.Throws<NotFoundException>(() => _service.Update(45,10, new CarriageModel()));
         }
 
+        [Test]
+        public void UpdateNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Update(10, 10, new CarriageModel()));
+        }
+
+        //Delete
         [TestCase(Role.Admin)]
         public void DeleteTest(Role role)
         {

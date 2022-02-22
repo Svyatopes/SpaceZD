@@ -10,7 +10,7 @@ namespace SpaceZD.BusinessLayer.Services
     public class CarriageService : BaseService, ICarriageService
     {
         private readonly IRepositorySoftDelete<Carriage> _carriageRepository;
-        private readonly IRepositorySoftDelete<CarriageType> _carriagetypeRepository;
+        private readonly IRepositorySoftDelete<CarriageType> _carriageTypeRepository;
         private readonly IRepositorySoftDelete<Train> _trainRepository;
         private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
@@ -19,7 +19,7 @@ namespace SpaceZD.BusinessLayer.Services
             : base(mapper, userRepository)
         {
             _carriageRepository = repository;
-            _carriagetypeRepository = carriagetypeRepository;
+            _carriageTypeRepository = carriagetypeRepository;
             _trainRepository = trainRepository;
         }
 
@@ -61,11 +61,12 @@ namespace SpaceZD.BusinessLayer.Services
 
             var carriageEntity = GetCarriageById(id);
             var train = _trainRepository.GetById(carriageModel.Train.Id);
-            ThrowIfEntityNotFound(train, carriageModel.Train.Id);
 
-            carriageModel.Train = _mapper.Map<TrainModel>(train);
 
-            _carriageRepository.Update(carriageEntity, _mapper.Map<Carriage>(carriageModel));
+            var newEntity = _mapper.Map<Carriage>(carriageModel);
+            newEntity.Train = train;
+
+            _carriageRepository.Update(carriageEntity, newEntity);
         }
 
         public void Restore(int userId, int id)
