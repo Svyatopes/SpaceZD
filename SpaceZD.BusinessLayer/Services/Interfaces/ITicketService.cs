@@ -4,14 +4,14 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public interface ITicketService
     {
-        int Add(TicketModel entity, string login);
-        void Delete(int id, string login);
-        TicketModel GetById(int id, string login);
-        List<TicketModel> GetListByOrderId(int orderId, string login);
-        List<TicketModel> GetList(bool includeAll = false);
-        List<TicketModel> GetListDeleted(bool includeAll = true);
-        void Restore(int id);
-        void Update(int id, TicketModel entity, string login);
-        void UpdatePrice(int id, TicketModel entity, string login);
+        int Add(TicketModel entity, int userId);
+        void Delete(int id, int userId);
+        TicketModel GetById(int id, int userId);
+        List<TicketModel> GetListByOrderId(int orderId, int userId);
+        List<TicketModel> GetList(int userId);
+        List<TicketModel> GetListDeleted(int userId);
+        void Restore(int id, int userId);
+        void Update(int id, TicketModel entity, int userId);
+        void UpdatePrice(int id, TicketModel entity, int userId);
     }
 }

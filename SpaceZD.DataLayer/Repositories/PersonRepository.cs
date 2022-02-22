@@ -35,11 +35,11 @@ public class PersonRepository : BaseRepository, IPersonRepository
         _context.SaveChanges();
     }
 
-    public List<Person> GetByUserLogin(string login)
+    public List<Person> GetByUserId(int userId)
     {
         var entity = _context.Persons
                               .Where(p => !p.IsDeleted &&
-                                     p.User.Login == login)
+                                     p.User.Id == userId)
                               .ToList();
         return entity;
         

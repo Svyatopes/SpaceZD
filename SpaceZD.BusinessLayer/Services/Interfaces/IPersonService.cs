@@ -4,12 +4,13 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public interface IPersonService
     {
-        int Add(PersonModel entity, string login);
-        PersonModel GetById(int id);
-        List<PersonModel> GetByUserLogin(string login);
-        List<PersonModel> GetList(bool includeAll = false);
-        List<PersonModel> GetListDeleted(bool includeAll = true);
-        void Update(int id, bool isDeleted, string login);
-        void Update(int id, PersonModel entity, string login);
+        int Add(PersonModel entity, int userId);
+        void Delete(int id, int userId);
+        PersonModel GetById(int id, int userId);
+        List<PersonModel> GetByUserId(int userId);
+        List<PersonModel> GetList(int userId);
+        List<PersonModel> GetListDeleted(int userId);
+        void Restore(int id, int userId);
+        void Update(int id, PersonModel entity, int userId);
     }
 }

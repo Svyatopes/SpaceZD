@@ -4,6 +4,6 @@ namespace SpaceZD.DataLayer.Interfaces;
 
 public interface IUserRepository : IRepositorySoftDelete<User>
 {
-    User GetByLogin(string login);
+    User? GetByLogin(string login);
     List<Person> GetListUserPersons(int id);
 }

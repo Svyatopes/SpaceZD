@@ -13,6 +13,7 @@ public class TicketService : BaseService, ITicketService
     private readonly IOrderRepository _orderRepository;
     private readonly IPersonRepository _personRepository;
     private readonly IRepositorySoftDelete<Carriage> _carriageRepository;
+    private readonly Role[] _allowedRoles = { Role.Admin, Role.User };
 
 
     public TicketService(IMapper mapper, ITicketRepository ticketRepository,
@@ -25,75 +26,61 @@ public class TicketService : BaseService, ITicketService
         _carriageRepository = carriageRepository;
     }
 
-    public TicketModel GetById(int id, string login)
+    public TicketModel GetById(int id, int userId)
     {
+        CheckUserRole(userId, _allowedRoles);
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        var user = _userRepository.GetByLogin(login);
-        if (user.Role == Role.Admin)
-        {
+        var user = _userRepository.GetById(userId);
+
+        if (user.Role == Role.Admin || user.Orders.SelectMany(g => g.Tickets).Contains(entity))
             return _mapper.Map<TicketModel>(entity);
-        }
-        else
-        {
-            foreach (var order in user.Orders)
-            {
-                foreach (var ticket in order.Tickets)
-                {
-                    if (ticket.Id == id)
-                        return _mapper.Map<TicketModel>(entity);
-                    else
-                        throw new AccessViolationException();
-                }
-            }
-            return new TicketModel();
-        }
 
+        throw new AccessViolationException();
+        
     }
 
-    public List<TicketModel> GetList(bool includeAll = false)
+    
+    public List<TicketModel> GetList(int userId)
     {
-        var entities = _ticketRepository.GetList(includeAll);
+        CheckUserRole(userId, Role.Admin);
+
+        var entities = _ticketRepository.GetList(false);
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public List<TicketModel> GetListByOrderId(int orderId, string login)
+    public List<TicketModel> GetListByOrderId(int orderId, int userId)
     {
-        var user = _userRepository.GetByLogin(login);
-        if (user.Role == Role.Admin)
-        {
-            var tickets = _orderRepository.GetById(orderId).Tickets;
-            return _mapper.Map<List<TicketModel>>(tickets);
-        }
-        else
-        {
-            foreach (var item in user.Orders)
-            {
-                if (item.Id == orderId)
-                {
-                    var entity = _ticketRepository.GetListById(orderId);
-                    return _mapper.Map<List<TicketModel>>(entity);
-                }
-                else
-                    throw new AccessViolationException();
-            }
-            return new List<TicketModel>();
-        }
+        CheckUserRole(userId, _allowedRoles);
+        
+        var user = _userRepository.GetById(userId);
+        var order = _orderRepository.GetById(orderId);
+        ThrowIfEntityNotFound(order, orderId);
+
+        if (user.Role == Role.Admin || user.Orders.Contains(order))
+            return _mapper.Map<List<TicketModel>>(order.Tickets);               
+        
+        throw new AccessViolationException();
+                
     }
 
-    public List<TicketModel> GetListDeleted(bool includeAll = true)
+    public List<TicketModel> GetListDeleted(int userId)
     {
-        var entities = _ticketRepository.GetList(includeAll).Where(t => t.IsDeleted);
+        CheckUserRole(userId, Role.Admin);
+
+        var entities = _ticketRepository.GetList(true).Where(t => t.IsDeleted);
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public int Add(TicketModel entity, string login)
+    public int Add(TicketModel entity, int userId)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         if (entity.Carriage is null || entity.Person is null || entity.Order is null || entity.SeatNumber == 0)
         {
             throw new NullReferenceException();
         }
-        var user = _userRepository.GetByLogin(login);
+        var user = _userRepository.GetById(userId);
         var ticket = _mapper.Map<Ticket>(entity);
 
         var carriage = _carriageRepository.GetById(entity.Carriage.Id);
@@ -110,23 +97,25 @@ public class TicketService : BaseService, ITicketService
 
         if (person.User.Id == user.Id && order.User.Id == user.Id)
             return _ticketRepository.Add(ticket);
-        else
-            throw new AccessViolationException();
+        
+        throw new AccessViolationException();
 
     }
 
-    public void Update(int id, TicketModel entity, string login)
+    public void Update(int id, TicketModel entity, int userId)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         if (entity.Carriage is null || entity.Person is null || entity.SeatNumber == 0)
         {
             throw new NullReferenceException();
         }
-        var user = _userRepository.GetByLogin(login);
+        var user = _userRepository.GetById(userId);
         var ticketOld = _ticketRepository.GetById(id);
         var ticketNew = _mapper.Map<Ticket>(entity);
         ThrowIfEntityNotFound(ticketOld, id);
 
-        if (ticketOld.Order.User.Login == login || user.Role == Role.Admin)
+        if (ticketOld.Order.User.Id == userId || user.Role == Role.Admin)
         {
             var carriageNew = _carriageRepository.GetById(entity.Carriage.Id);
             ThrowIfEntityNotFound(carriageNew, carriageNew.Id);
@@ -147,26 +136,30 @@ public class TicketService : BaseService, ITicketService
         }
     }
 
-    public void UpdatePrice(int id, TicketModel entity, string login)
+    public void UpdatePrice(int id, TicketModel entity, int userId)
     {
+        CheckUserRole(userId, Role.Admin);
+
         if (entity.Price == 0)
         {
             throw new NullReferenceException();
         }
-        var user = _userRepository.GetByLogin(login);
+        var user = _userRepository.GetById(userId);
         var ticketOld = _ticketRepository.GetById(id);
         var ticketNew = _mapper.Map<Ticket>(entity);
         ThrowIfEntityNotFound(ticketOld, id);
 
-        if (ticketOld.Order.User.Login == login || user.Role == Role.Admin)
+        if (ticketOld.Order.User.Id == userId || user.Role == Role.Admin)
         {
             _ticketRepository.UpdatePrice(ticketOld, ticketNew);
         }
     }
 
-    public void Delete(int id, string login)
+    public void Delete(int id, int userId)
     {
-        var user = _userRepository.GetByLogin(login);
+        CheckUserRole(userId, _allowedRoles);
+
+        var user = _userRepository.GetById(userId);
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
         if (entity.IsDeleted && user.Role != Role.Admin)
@@ -180,7 +173,7 @@ public class TicketService : BaseService, ITicketService
 
     }
 
-    public void Restore(int id)
+    public void Restore(int id, int userId)
     {
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);

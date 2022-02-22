@@ -18,8 +18,9 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
             return null;
         entity.Orders = entity.Orders.Where(o => !o.IsDeleted).ToList();
         return entity;
-        
+
     }
+
     public User? GetByLogin(string login)
     {
         var entity = _context.Users
@@ -29,26 +30,25 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
             return null;
         entity.Orders = entity.Orders.Where(o => !o.IsDeleted).ToList();
         return entity;
-        
+
     }
 
     public List<User> GetList(bool includeAll = false)
-    { 
+    {
         var entities = _context.Users
-                               .Include(u => u.Orders.Where(o => !o.IsDeleted))                               
+                               .Include(u => u.Orders.Where(o => !o.IsDeleted))
                                .Where(u => !u.IsDeleted || includeAll).ToList();
 
         foreach (var user in entities)
             user.Orders = user.Orders.Where(o => !o.IsDeleted).ToList();
         return entities;
     }
-    
+
     public List<Person> GetListUserPersons(int id)
-    { 
+    {
         var entities = _context.Persons
-                               //.FirstOrDefault(u => u.Login == login)
                                .Where(p => p.User.Id == id).ToList();
-        
+
         return entities;
     }
 
@@ -80,5 +80,5 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
     {
         return _context.Users.FirstOrDefault(u => u.Login == login);
     }
-    
+
 }

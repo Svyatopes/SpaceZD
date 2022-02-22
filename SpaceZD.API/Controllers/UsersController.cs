@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
@@ -29,7 +30,11 @@ public class UsersController : ControllerBase
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<UserModel>> GetUsers()
     {
-        var userModel = _userService.GetList();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again"); 
+        
+        var userModel = _userService.GetList(userId.Value);
         var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
         if (user != null)
             return Ok(user);
@@ -37,13 +42,31 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("id/persons")]
+    [HttpGet("delete")]
+    [AuthorizeRole(Role.Admin)]
+    public ActionResult<List<UserModel>> GetUsersDelete()
+    {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again"); 
+        
+        var userModel = _userService.GetListDelete(userId.Value);
+        var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
+        if (user != null)
+            return Ok(user);
+        return BadRequest("Oh.....");
+    }
+
+
+    [HttpGet("users/persons")]
     [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<List<PersonModel>> GetListPersonsFromUser()
     {
-        var login = HttpContext.User.Identity.Name;
-        var userId = _userService.GetByLogin(login).Id;
-        var personModel = _userService.GetListUserPersons(userId);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+        
+        var personModel = _userService.GetListUserPersons(userId.Value);
         var user = _mapper.Map<List<PersonOutputModel>>(personModel);
         if (user != null)
             return Ok(user);
@@ -55,8 +78,11 @@ public class UsersController : ControllerBase
     [AuthorizeRole(Role.Admin)]
     public ActionResult<UserModel> GetUserById(int id)
     {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
 
-        var userModel = _userService.GetById(id);
+        var userModel = _userService.GetById(id, userId.Value);
         var user = _mapper.Map<UserFullOutputModel>(userModel);
         if (user != null)
             return Ok(user);
@@ -66,11 +92,15 @@ public class UsersController : ControllerBase
 
 
     [HttpGet("by-login")]
-    [AuthorizeRole(Role.Admin, Role.User)]
+    [Authorize]
     public ActionResult<UserModel> GetUserByLogin()
     {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again"); 
+        
         var login = HttpContext.User.Identity.Name;
-        var userModel = _userService.GetByLogin(login);
+        var userModel = _userService.GetByLogin(login, userId.Value);
         var user = _mapper.Map<UserFullOutputModel>(userModel);
         return Ok(user);
 
@@ -80,6 +110,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public ActionResult AddUser([FromBody] UserRegisterInputModel userModel)
     {
+                
         var user = _mapper.Map<UserModel>(userModel);
         var idAddedEntity = _userService.Add(user, userModel.Password);
 
@@ -89,12 +120,14 @@ public class UsersController : ControllerBase
 
     [HttpPut]
     [Authorize]
-    public ActionResult EditUser(UserUpdateInputModel user)
+    public ActionResult EditUser(int id, UserUpdateInputModel user)
     {
-        var login = HttpContext.User.Identity.Name;
-        var userModel = _userService.GetByLogin(login);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+        
         var userForEdit = _mapper.Map<UserModel>(user);
-        _userService.Update(userModel.Id, userForEdit);
+        _userService.Update(id, userForEdit, userId.Value);
         return Accepted();
 
     }
@@ -102,11 +135,13 @@ public class UsersController : ControllerBase
 
     [HttpDelete]
     [Authorize]
-    public ActionResult DeleteUser()
+    public ActionResult DeleteUser(int id)
     {
-        var login = HttpContext.User.Identity.Name;
-        var userModel = _userService.GetByLogin(login);
-        _userService.Update(userModel.Id, true);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+                
+        _userService.Delete(id, userId.Value);
         return Accepted();
 
     }
@@ -116,7 +151,11 @@ public class UsersController : ControllerBase
     [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreUser(int id)
     {
-        _userService.Update(id, false);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _userService.Restore(id, userId.Value);
         return Accepted();
 
     }

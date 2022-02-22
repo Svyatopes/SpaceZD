@@ -10,39 +10,51 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public class UserService : BaseService, IUserService
     {
+        private readonly Role[] _allowedAllRoles = { Role.Admin, Role.User , Role.StationManager, Role.TrainRouteManager};
+        private readonly Role[] _allowedRoles = { Role.Admin, Role.User};
                 
         public UserService(IUserRepository userRepository, IMapper mapper) : base(mapper, userRepository) {}
 
         
-        public UserModel GetById(int id)
+        public UserModel GetById(int id, int userId)
         {
+            CheckUserRole(userId, Role.Admin);
+
             var entity = _userRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
             return _mapper.Map<UserModel>(entity);
         }
-        public UserModel GetByLogin(string login)
+        public UserModel GetByLogin(string login, int userId)
         {
+            CheckUserRole(userId, _allowedAllRoles);
 
             var entity = _userRepository.GetByLogin(login);
             ThrowIfEntityNotFound(entity, entity.Id);
             return _mapper.Map<UserModel>(entity);
         }
 
-        public List<UserModel> GetList(bool includeAll = false)
+        public List<UserModel> GetList(int userId)
         {
-            var entities = _userRepository.GetList(includeAll);
+            CheckUserRole(userId, Role.Admin);
+
+            CheckUserRole(userId, _allowedRoles);
+            var entities = _userRepository.GetList(false);
             return _mapper.Map<List<UserModel>>(entities);
         }
 
-        public List<PersonModel> GetListUserPersons(int id)
+        public List<PersonModel> GetListUserPersons(int userId)
         {
-            var entities = _userRepository.GetListUserPersons(id);
+            CheckUserRole(userId, _allowedRoles);
+
+            var entities = _userRepository.GetListUserPersons(userId);
             return _mapper.Map<List<PersonModel>>(entities);
         }
 
-        public List<UserModel> GetListDeleted(bool includeAll = true)
+        public List<UserModel> GetListDelete(int userId)
         {
-            var entities = _userRepository.GetList(includeAll).Where(t => t.IsDeleted);
+            CheckUserRole(userId, Role.Admin);
+
+            var entities = _userRepository.GetList(true).Where(t => t.IsDeleted);
             return _mapper.Map<List<UserModel>>(entities);
 
         }
@@ -57,8 +69,12 @@ namespace SpaceZD.BusinessLayer.Services
             return id;
         }
 
-        public void Update(int id, UserModel entity)
+
+
+        public void Update(int id, UserModel entity, int userId)
         {
+            CheckUserRole(userId, _allowedAllRoles);
+
             var userOld = _userRepository.GetById(id);
             ThrowIfEntityNotFound(userOld, id);
             var userNew = _mapper.Map<User>(entity);
@@ -66,11 +82,23 @@ namespace SpaceZD.BusinessLayer.Services
 
         }
 
-        public void Update(int id, bool isDeleted)
+        public void Delete(int id, int userId)
         {
+            CheckUserRole(userId, _allowedAllRoles);
+
             var entity = _userRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
-            _userRepository.Update(entity, isDeleted);
+            _userRepository.Update(entity, true);
+
+        }
+        
+        public void Restore(int id, int userId)
+        {
+            CheckUserRole(userId, Role.Admin);
+
+            var entity = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(entity, id);
+            _userRepository.Update(entity, false);
 
         }
     }
