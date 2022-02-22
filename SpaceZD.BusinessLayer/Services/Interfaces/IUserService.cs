@@ -1,4 +1,5 @@
 ﻿using SpaceZD.BusinessLayer.Models;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.BusinessLayer.Services
 {
@@ -13,5 +14,6 @@ namespace SpaceZD.BusinessLayer.Services
         void Delete(int id, int userId);
         void Restore(int id, int userId);
         void Update(int Id, UserModel entity, int userId);
+        void UpdateRole(int id, Role role, int userId);
     }
 }

@@ -131,6 +131,20 @@ public class UsersController : ControllerBase
         return Accepted();
 
     }
+    
+    
+    [HttpPut("role")]
+    [AuthorizeRole(Role.Admin)]
+    public ActionResult EditRole(int id, Role role)
+    {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+        
+        _userService.UpdateRole(id, role, userId.Value);
+        return Accepted();
+
+    }
 
 
     [HttpDelete]

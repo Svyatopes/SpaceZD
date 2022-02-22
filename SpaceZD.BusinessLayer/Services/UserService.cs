@@ -81,6 +81,16 @@ namespace SpaceZD.BusinessLayer.Services
             _userRepository.Update(userOld, userNew);
 
         }
+        
+        public void UpdateRole(int id, Role role, int userId)
+        {
+            CheckUserRole(userId, Role.Admin);
+
+            var user = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(user, id);
+            _userRepository.UpdateRole(user, role);
+
+        }
 
         public void Delete(int id, int userId)
         {
