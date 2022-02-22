@@ -19,8 +19,8 @@ public class TicketService : BaseService, ITicketService
     public TicketService(IMapper mapper, ITicketRepository ticketRepository,
         IUserRepository userRepository, IOrderRepository orderRepository,
         IPersonRepository personRepository, IRepositorySoftDelete<Carriage> carriageRepository) : base(mapper, userRepository)
-    {        
-        _ticketRepository = ticketRepository;       
+    {
+        _ticketRepository = ticketRepository;
         _orderRepository = orderRepository;
         _personRepository = personRepository;
         _carriageRepository = carriageRepository;
@@ -37,10 +37,10 @@ public class TicketService : BaseService, ITicketService
             return _mapper.Map<TicketModel>(entity);
 
         throw new AccessViolationException();
-        
+
     }
 
-    
+
     public List<TicketModel> GetList(int userId)
     {
         CheckUserRole(userId, Role.Admin);
@@ -52,16 +52,16 @@ public class TicketService : BaseService, ITicketService
     public List<TicketModel> GetListByOrderId(int orderId, int userId)
     {
         CheckUserRole(userId, _allowedRoles);
-        
+
         var user = _userRepository.GetById(userId);
         var order = _orderRepository.GetById(orderId);
         ThrowIfEntityNotFound(order, orderId);
 
         if (user.Role == Role.Admin || user.Orders.Contains(order))
-            return _mapper.Map<List<TicketModel>>(order.Tickets);               
-        
+            return _mapper.Map<List<TicketModel>>(order.Tickets);
+
         throw new AccessViolationException();
-                
+
     }
 
     public List<TicketModel> GetListDeleted(int userId)
@@ -94,19 +94,27 @@ public class TicketService : BaseService, ITicketService
         ticket.Carriage = carriage;
         ticket.Person = person;
         ticket.Order = order;
+
         decimal? price = 0;
-        var starStationID = ticket.Order.StartStation.Id;
-        var endStationID = ticket.Order.EndStation.Id;
-        
-        var hhh = ticket.Order.Trip.Route.RouteTransits.Select(t => t.Transit).ToList();
-        foreach (var item in hhh)
+        var starStation = ticket.Order.StartStation.Station;
+        var endStation = ticket.Order.EndStation.Station;
+        var afterTheStart = false;
+
+        var transits = ticket.Order.Trip.Route.RouteTransits.Select(t => t.Transit).ToList();
+        foreach (var item in transits)
         {
-            if (item.Id >= starStationID && item.Id <= endStationID)
+            if (!afterTheStart && item.StartStation.Equals(starStation))
+                afterTheStart = true;
+
+            if (afterTheStart)
             {
                 price += item.Price;
+
+                if (item.EndStation.Equals(endStation))
+                    break;
             }
-            
         }
+
         if (entity.IsPetPlaceIncluded)
             price *= (decimal)1.5;
         if (entity.IsTeaIncluded)
@@ -116,10 +124,11 @@ public class TicketService : BaseService, ITicketService
 
         if (person.User.Id == user.Id && order.User.Id == user.Id)
             return _ticketRepository.Add(ticket);
-        
+
         throw new AccessViolationException();
 
     }
+
 
     public void Update(int id, TicketModel entity, int userId)
     {
@@ -155,7 +164,8 @@ public class TicketService : BaseService, ITicketService
         }
     }
 
-    
+
+
     public void Delete(int id, int userId)
     {
         CheckUserRole(userId, _allowedRoles);
