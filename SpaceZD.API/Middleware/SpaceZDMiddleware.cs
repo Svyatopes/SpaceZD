@@ -24,13 +24,21 @@ public class SpaceZdMiddleware
         {
             await HandleExceptionAsync(context, (HttpStatusCode)403, ex.Message);
         }
+        catch (AccessViolationException ex)
+        {
+            await HandleExceptionAsync(context, HttpStatusCode.Unauthorized, ex.Message);
+        }
         catch (NotFoundException ex)
         {
             await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
         }
-        catch (SqlException ex)
+        catch (SqlException)
         {
             await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "БД не алё");
+        }
+        catch (NullReferenceException)
+        {
+            await HandleExceptionAsync(context, HttpStatusCode.NotFound, "Не все данные заполнены");
         }
         catch (Exception ex)
         {

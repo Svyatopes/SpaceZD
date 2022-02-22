@@ -9,9 +9,9 @@ namespace SpaceZD.BusinessLayer.Services;
 public abstract class BaseService
 {
     protected readonly IMapper _mapper;
-    protected readonly IRepositorySoftDelete<User> _userRepository;
+    protected readonly IUserRepository _userRepository;
 
-    protected BaseService(IMapper mapper, IRepositorySoftDelete<User> userRepository)
+    protected BaseService(IMapper mapper, IUserRepository userRepository)
     {
         _mapper = mapper;
         _userRepository = userRepository;
@@ -28,12 +28,14 @@ public abstract class BaseService
         throw new AuthorizationException("Your current role doesn't have permissions to do this.");
     }
 
-    protected void CheckUserRole(int userId, params Role[] roles)
+    protected User CheckUserRole(int userId, params Role[] roles)
     {
         var user = _userRepository.GetById(userId);
         ThrowIfEntityNotFound(user, userId);
 
         if (!roles.Contains(user!.Role) || user.IsDeleted)
             ThrowIfRoleDoesntHavePermissions();
+
+        return user;
     }
 }

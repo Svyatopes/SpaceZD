@@ -8,11 +8,16 @@ public class TicketApiMappingProfile : Profile
 {
     public TicketApiMappingProfile()
     {
-        CreateMap<TicketInputModel, TicketModel>()
+        CreateMap<TicketCreateInputModel, TicketModel>()
             .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new CarriageModel { Id = tim.CarriageId }))
             .ForMember(tm => tm.Order, opt => opt.MapFrom(tim => new OrderModel { Id = tim.OrderId }))
             .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel { Id = tim.PersonId }));
 
+        CreateMap<TicketUpdateInputModel, TicketModel>()
+             .ForMember(tm => tm.Carriage, opt => opt.MapFrom(tim => new CarriageModel { Id = tim.CarriageId }))
+             .ForMember(tm => tm.Person, opt => opt.MapFrom(tim => new PersonModel { Id = tim.PersonId }));
+
+                    
         CreateMap<TicketModel, TicketOutputModel>()
             .ForMember(tom => tom.CarriageId, opt => opt.MapFrom(tm => tm.Carriage.Id))
             .ForMember(tom => tom.OrderId, opt => opt.MapFrom(tm => tm.Order.Id))

@@ -7,6 +7,7 @@
         public string LastName { get; set; }
         public string Patronymic { get; set; }
         public string Passport { get; set; }
+        public UserModel User { get; set; }
         public bool IsDeleted { get; set; }
 
         private bool Equals(PersonModel other)

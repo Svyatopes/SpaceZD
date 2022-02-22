@@ -19,7 +19,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 public class OrderServiceTests
 {
     private Mock<IOrderRepository> _orderRepositoryMock;
-    private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
+    private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IRepositorySoftDelete<Trip>> _tripRepositoryMock;
     private Mock<ITripStationRepository> _tripStationRepositoryMock;
     private readonly IMapper _mapper;
@@ -33,7 +33,7 @@ public class OrderServiceTests
     public void SetUp()
     {
         _orderRepositoryMock = new Mock<IOrderRepository>();
-        _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
+        _userRepositoryMock = new Mock<IUserRepository>();
         _tripRepositoryMock = new Mock<IRepositorySoftDelete<Trip>>();
         _tripStationRepositoryMock = new Mock<ITripStationRepository>();
     }

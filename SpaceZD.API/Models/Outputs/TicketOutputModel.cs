@@ -9,4 +9,5 @@ public class TicketOutputModel
     public bool IsTeaIncluded { get; set; }
     public bool IsPetPlaceIncluded { get; set; }
     public int PersonId { get; set; }
+    public decimal Price { get; set; }
 }

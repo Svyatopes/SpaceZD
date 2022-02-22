@@ -225,7 +225,7 @@ public class TicketRepositoryTests
         Assert.IsNotNull(updatedEntity);        
         Assert.AreEqual(7, updatedEntity.Carriage.Number);
         Assert.AreEqual(2, updatedEntity.SeatNumber);
-        Assert.AreEqual(677, updatedEntity.Price);
+        Assert.AreEqual(345, updatedEntity.Price);
         Assert.AreEqual("Petrov", updatedEntity.Person.LastName);
         //не должны были поменятся
         Assert.IsFalse(updatedEntity.IsPetPlaceIncluded);

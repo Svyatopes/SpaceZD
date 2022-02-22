@@ -16,7 +16,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 public class StationServiceTests
 {
     private Mock<IStationRepository> _stationRepositoryMock;
-    private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
+    private Mock<IUserRepository> _userRepositoryMock;
     private IStationService _service;
     private readonly IMapper _mapper;
 
@@ -29,7 +29,7 @@ public class StationServiceTests
     public void SetUp()
     {
         _stationRepositoryMock = new Mock<IStationRepository>();
-        _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
+        _userRepositoryMock = new Mock<IUserRepository>();
         _service = new StationService(_mapper, _userRepositoryMock.Object, _stationRepositoryMock.Object);
     }
 

@@ -14,9 +14,8 @@ public class TripService : BaseService, ITripService
     private readonly IRepositorySoftDelete<Train> _trainRepository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-    public TripService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
-        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository)
-        : base(mapper, userRepository)
+    public TripService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
+        IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper, userRepository)
     {
         _repository = repository;
         _stationRepository = stationRepository;

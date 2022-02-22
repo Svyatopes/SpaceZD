@@ -14,7 +14,8 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class UserServiceTest
 {
-    private Mock<IRepositorySoftDelete<User>> _repositoryMock;
+    /*
+    private Mock<IUserRepository> _repositoryMock;
     private readonly IMapper _mapper;
 
     public UserServiceTest()
@@ -24,7 +25,7 @@ public class UserServiceTest
     [SetUp]
     public void Setup()
     {
-        _repositoryMock = new Mock<IRepositorySoftDelete<User>>();
+        _repositoryMock = new Mock<IUserRepository>();
     }
 
     public static IEnumerable<TestCaseData> GetUser()
@@ -43,7 +44,7 @@ public class UserServiceTest
             new() { Id = 2, Name = "Masha", Login = "Mashaaa", PasswordHash = "ewdfrgthgfrde", Role = Role.User, IsDeleted = false },
             new() { Id = 3, Name = "Dasha", Login = "Dashaaa", PasswordHash = "hjngtrfewdrt", Role = Role.Admin, IsDeleted = false },
             new() { Id = 4, Name = "Pasha", Login = "Pashaaa", PasswordHash = "erfgthnjytgr", Role = Role.TrainRouteManager, IsDeleted = false }
-    });
+        });
         yield return new TestCaseData(new List<User>
         {
             new() { Id = 5, Name = "Natasha", Login = "Natashaaa", PasswordHash = "fgbhnjngfd", Role = Role.User, IsDeleted = false },
@@ -53,6 +54,18 @@ public class UserServiceTest
 
         });
     }
+
+    public List<Person> GetListPersonFromUser()
+    {
+        return new List<Person>
+        {
+            new() { Id = 1, FirstName = "Sasha", LastName = "Sashaaa", Patronymic = "Sashaaaaa", Passport = "4567", User = new User(){ Id = 1 }, IsDeleted = false },
+            new() { Id = 1, FirstName = "Masha", LastName = "Mashaaa", Patronymic = "Mashaaaaa", Passport = "8765", User = new User(){ Id = 2 }, IsDeleted = false },
+            new() { Id = 1, FirstName = "Pasha", LastName = "Pashaaa", Patronymic = "Pashaaaaa", Passport = "66666", User = new User(){ Id = 1 }, IsDeleted = false },
+            new() { Id = 1, FirstName = "Dasha", LastName = "Dashaaa", Patronymic = "Dashaaaaa", Passport = "987654", User = new User(){ Id = 3 }, IsDeleted = false }
+        };
+    }
+
     public static IEnumerable<TestCaseData> GetListUsersDeleted()
     {
         yield return new TestCaseData(new List<User>
@@ -97,6 +110,7 @@ public class UserServiceTest
         CollectionAssert.AreEqual(expected, actual);
     }
 
+
     [TestCaseSource(nameof(GetListUsersDeleted))]
     public void GetListDeletedTest(List<User> entities)
     {
@@ -121,6 +135,9 @@ public class UserServiceTest
     }
 
 
+
+    
+
     [TestCaseSource(nameof(GetUser))]
     public void GetByIdTest(User entity)
     {
@@ -134,6 +151,26 @@ public class UserServiceTest
         // then
         Assert.AreEqual(new UserModel
         {
+            Name = entity.Name,
+            Login = entity.Login,             
+            IsDeleted = entity.IsDeleted
+        }, actual);        
+    }
+    
+    [TestCaseSource(nameof(GetUser))]
+    public void GetByLogin(User entity)
+    {
+        // given
+        _repositoryMock.Setup(x => x.GetByLogin(It.IsAny<string>())).Returns(entity);
+        var service = new UserService(_repositoryMock.Object, _mapper);
+
+        // when
+        var actual = service.GetByLogin("Masha");
+
+        // then
+        Assert.AreEqual(new UserModel
+        {
+            Id = entity.Id,
             Name = entity.Name,
             Login = entity.Login,             
             IsDeleted = entity.IsDeleted
@@ -197,5 +234,6 @@ public class UserServiceTest
         _repositoryMock.Verify(s => s.GetById(5), Times.Once);
         _repositoryMock.Verify(s => s.Update(entity, It.IsAny<User>()), Times.Once);
     }
+    */
     
 }
