@@ -5,7 +5,7 @@ using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
 
-public class PlatformRepository : BaseRepository, IRepositorySoftDelete<Platform>
+public class PlatformRepository : BaseRepository, IPlatformRepository
 {
     public PlatformRepository(VeryVeryImportantContext context) : base(context) { }
 
@@ -14,7 +14,11 @@ public class PlatformRepository : BaseRepository, IRepositorySoftDelete<Platform
                 .Include(x => x.Station)
                 .FirstOrDefault(x => x.Id == id);
 
-    public List<Platform> GetList(bool includeAll = false) => _context.Platforms.Where(p => !p.IsDeleted || includeAll).ToList();
+    public List<Platform> GetList(int stationId, bool includeAll = false) =>
+        _context.Platforms
+                .Include(p => p.Station)
+                .Where(p => (!p.IsDeleted || includeAll) && p.Station.Id == stationId)
+                .ToList();
 
     public int Add(Platform platform)
     {
