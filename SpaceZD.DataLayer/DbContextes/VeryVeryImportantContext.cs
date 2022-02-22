@@ -6,7 +6,7 @@ namespace SpaceZD.DataLayer.DbContextes;
 
 public class VeryVeryImportantContext : DbContext
 {
-    public VeryVeryImportantContext(DbContextOptions<VeryVeryImportantContext> options) : base(options) { }
+    public VeryVeryImportantContext(DbContextOptions<VeryVeryImportantContext> options) : base(options) {}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +46,14 @@ public class VeryVeryImportantContext : DbContext
                     .HasPrecision(9, 2);
 
         modelBuilder.DisableCascadeDelete();
+
+        modelBuilder.Entity<Transit>()
+                    .HasIndex(p => new { p.StartStationId, p.EndStationId })
+                    .IsUnique();
+        
+        modelBuilder.Entity<Platform>()
+                    .HasIndex(p => new { p.Number, p.StationId })
+                    .IsUnique();
     }
 
     public DbSet<Carriage> Carriages { get; set; }

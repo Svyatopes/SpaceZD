@@ -1,6 +1,7 @@
 using AutoMapper;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
@@ -11,6 +12,7 @@ public class TripService : BaseService, ITripService
     private readonly IStationRepository _stationRepository;
     private readonly IRepositorySoftDelete<Route> _routeRepository;
     private readonly IRepositorySoftDelete<Train> _trainRepository;
+    private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
     public TripService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Trip> repository, IStationRepository stationRepository,
         IRepositorySoftDelete<Route> routeRepository, IRepositorySoftDelete<Train> trainRepository) : base(mapper, userRepository)
@@ -31,20 +33,34 @@ public class TripService : BaseService, ITripService
     }
 
 
-    public List<TripModel> GetList() => _mapper.Map<List<TripModel>>(_repository.GetList());
-
-    public List<TripModel> GetListDeleted() => _mapper.Map<List<TripModel>>(_repository.GetList(true).Where(t => t.IsDeleted));
-
-    public void Delete(int id)
+    public List<TripModel> GetList()
     {
+        var entities = _repository.GetList();
+        return _mapper.Map<List<TripModel>>(entities);
+    }
+
+    public List<TripModel> GetListDeleted(int userId)
+    {
+        CheckUserRole(userId, Role.Admin);
+
+        var entities = _repository.GetList(true).Where(t => t.IsDeleted);
+        return _mapper.Map<List<TripModel>>(entities);
+    }
+
+    public void Delete(int userId, int id)
+    {
+        CheckUserRole(userId, _allowedRoles);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
         _repository.Update(entity!, true);
     }
 
-    public void Restore(int id)
+    public void Restore(int userId, int id)
     {
+        CheckUserRole(userId, Role.Admin);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
@@ -52,8 +68,10 @@ public class TripService : BaseService, ITripService
     }
 
 
-    public void Update(int id, TripModel tripModel)
+    public void Update(int userId, int id, TripModel tripModel)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
         var train = _trainRepository.GetById(tripModel.Train.Id);
@@ -65,8 +83,10 @@ public class TripService : BaseService, ITripService
     }
 
 
-    public int Add(TripModel tripModel)
+    public int Add(int userId, TripModel tripModel)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         var route = _routeRepository.GetById(tripModel.Route.Id);
         ThrowIfEntityNotFound(route, tripModel.Route.Id);
         var train = _trainRepository.GetById(tripModel.Train.Id);
@@ -122,7 +142,7 @@ public class TripService : BaseService, ITripService
     }
 
 
-    public List<CarriageSeatsModel> GetFreeSeat(int idTrip, int idStartStation, int idEndStation, bool onlyFree = true)
+    public List<CarriageSeatsModel> GetFreeSeat(int idTrip, int idStartStation, int idEndStation)
     {
         var trip = _repository.GetById(idTrip);
         ThrowIfEntityNotFound(trip, idTrip);
@@ -136,10 +156,6 @@ public class TripService : BaseService, ITripService
         MarkingOccupiedSeats(trip.Orders.Where(order => stationsToTheEnd.Contains(order.StartStation) && stationsAfterTheStart.Contains(order.EndStation))
                                  .SelectMany(order => order.Tickets),
             allPlacesModels);
-
-        if (onlyFree)
-            foreach (var csm in allPlacesModels)
-                csm.Seats = csm.Seats.Where(g => g.IsFree).ToList();
 
         return allPlacesModels;
     }

@@ -1,9 +1,19 @@
-﻿namespace SpaceZD.API.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SpaceZD.API.Models;
 
 public class RouteInputModel
 {
-    public int Code { get; set; }
+    [Required]
+    [StringLength(100)]
+    public string Code { get; set; }
+
+    [Required]
     public DateTime StartTime { get; set; }
+
+    [Required]
     public int StartStationId { get; set; }
+
+    [Required]
     public int EndStationId { get; set; }
 }

@@ -33,7 +33,7 @@ public abstract class BaseService
         var user = _userRepository.GetById(userId);
         ThrowIfEntityNotFound(user, userId);
 
-        if (!roles.Contains(user!.Role))
+        if (!roles.Contains(user!.Role) || user.IsDeleted)
             ThrowIfRoleDoesntHavePermissions();
     }
 }
