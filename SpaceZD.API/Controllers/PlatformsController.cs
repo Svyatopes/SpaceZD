@@ -58,7 +58,7 @@ public class PlatformsController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult AddPlatform([FromBody] PlatformAddInputModel platformInputModel)
+    public ActionResult CreatePlatform([FromBody] PlatformCreateInputModel platformInputModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -81,7 +81,7 @@ public class PlatformsController : ControllerBase
         platform.Id = id;
 
         _platformService.Edit(userId.Value, platform);
-        return Ok();
+        return NoContent();
     }
 
 
@@ -93,7 +93,7 @@ public class PlatformsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         _platformService.Delete(userId.Value, id);
-        return Ok();
+        return NoContent();
     }
 
     [HttpPatch("{id}")]
@@ -105,6 +105,6 @@ public class PlatformsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         _platformService.Restore(userId.Value, id);
-        return Ok();
+        return NoContent();
     }
 }
