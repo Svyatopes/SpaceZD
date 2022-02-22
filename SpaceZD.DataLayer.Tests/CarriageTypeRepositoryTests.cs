@@ -19,8 +19,8 @@ public class CarriageTypeRepositoryTests
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<VeryVeryImportantContext>()
-                      .UseInMemoryDatabase("Test")
-                      .Options;
+                     .UseInMemoryDatabase("Test")
+                     .Options;
 
         _context = new VeryVeryImportantContext(options);
         _repository = new CarriageTypeRepository(_context);
@@ -32,8 +32,7 @@ public class CarriageTypeRepositoryTests
         _context.SaveChanges();
     }
 
-    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource),
-        nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
+    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource), nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetByIdTest))]
     public void GetByIdTest(int id, CarriageType expected)
     {
         // when
@@ -43,8 +42,7 @@ public class CarriageTypeRepositoryTests
         Assert.AreEqual(expected, actual);
     }
 
-    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource),
-        nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
+    [TestCaseSource(typeof(CarriageTypeRepositoryTestCaseSource), nameof(CarriageTypeRepositoryTestCaseSource.GetTestCaseDataForGetListTest))]
     public void GetListTest(bool includeAll, List<CarriageType> expected)
     {
         // when
@@ -77,7 +75,7 @@ public class CarriageTypeRepositoryTests
         // given
         var entityToEdit = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
         var entityUpdate = new CarriageType
-            { Name = "qwertyuiop", NumberOfSeats = 3, IsDeleted = !entityToEdit!.IsDeleted };
+            { Name = "qwertyuiop", NumberOfSeats = 3, PriceFactor = 4, IsDeleted = !entityToEdit!.IsDeleted };
 
         // when 
         _repository.Update(entityToEdit, entityUpdate);
@@ -85,6 +83,7 @@ public class CarriageTypeRepositoryTests
         // then
         Assert.AreEqual(entityUpdate.Name, entityToEdit.Name);
         Assert.AreEqual(entityUpdate.NumberOfSeats, entityToEdit.NumberOfSeats);
+        Assert.AreEqual(entityUpdate.PriceFactor, entityToEdit.PriceFactor);
         Assert.AreNotEqual(entityUpdate.IsDeleted, entityToEdit.IsDeleted);
     }
 

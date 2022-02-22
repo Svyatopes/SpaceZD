@@ -11,27 +11,27 @@ public class CarriageTypeServiceTestCaseSource
 {
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetByIdTest()
     {
-        yield return new TestCaseData(new CarriageType { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true }, Role.Admin);
-        yield return new TestCaseData(new CarriageType { Name = "Купе", NumberOfSeats = 3, IsDeleted = false }, Role.Admin);
-        yield return new TestCaseData(new CarriageType { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = false }, Role.Admin);
-        yield return new TestCaseData(new CarriageType { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = false }, Role.TrainRouteManager);
-        yield return new TestCaseData(new CarriageType { Name = "Плацкарт", NumberOfSeats = 4, IsDeleted = false }, Role.TrainRouteManager);
-        yield return new TestCaseData(new CarriageType { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true }, Role.TrainRouteManager);
+        yield return new TestCaseData(new CarriageType { Name = "Rbs", NumberOfSeats = 2, PriceFactor = 49, IsDeleted = true }, Role.Admin);
+        yield return new TestCaseData(new CarriageType { Name = "Купе", NumberOfSeats = 3, PriceFactor = 4, IsDeleted = false }, Role.Admin);
+        yield return new TestCaseData(new CarriageType { Name = "Ласточка", NumberOfSeats = 2, PriceFactor = 2.1, IsDeleted = false }, Role.Admin);
+        yield return new TestCaseData(new CarriageType { Name = "Сапсан", NumberOfSeats = 3, PriceFactor = 5.645, IsDeleted = false }, Role.TrainRouteManager);
+        yield return new TestCaseData(new CarriageType { Name = "Плацкарт", NumberOfSeats = 4, PriceFactor = 1.64, IsDeleted = false }, Role.TrainRouteManager);
+        yield return new TestCaseData(new CarriageType { Name = "Сидячие места", NumberOfSeats = 5, PriceFactor = 1.457, IsDeleted = true }, Role.TrainRouteManager);
     }
 
     internal static IEnumerable<TestCaseData> GetTestCaseDataForGetListTest()
     {
         var fistList = new List<CarriageType>
         {
-            new() { Name = "Купе", NumberOfSeats = 3, IsDeleted = false },
-            new() { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = false },
-            new() { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = false },
-            new() { Name = "Плацкарт", NumberOfSeats = 4, IsDeleted = false }
+            new() { Name = "Купе", NumberOfSeats = 3, PriceFactor = 4, IsDeleted = false },
+            new() { Name = "Ласточка", NumberOfSeats = 2, PriceFactor = 2.1, IsDeleted = false },
+            new() { Name = "Сапсан", NumberOfSeats = 3, PriceFactor = 5.645, IsDeleted = false },
+            new() { Name = "Плацкарт", NumberOfSeats = 4, PriceFactor = 1.64, IsDeleted = false }
         };
         var secondList = new List<CarriageType>
         {
-            new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = false },
-            new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = false }
+            new() { Name = "Rbs", NumberOfSeats = 2, PriceFactor = 49, IsDeleted = false },
+            new() { Name = "Сидячие места", NumberOfSeats = 5, PriceFactor = 1.457, IsDeleted = false }
         };
 
         yield return new TestCaseData(fistList, ConvertCarriageTypesToCarriageTypeModels(fistList));
@@ -42,15 +42,15 @@ public class CarriageTypeServiceTestCaseSource
     {
         var fistList = new List<CarriageType>
         {
-            new() { Name = "Купе", NumberOfSeats = 3, IsDeleted = false },
-            new() { Name = "Ласточка", NumberOfSeats = 2, IsDeleted = true },
-            new() { Name = "Сапсан", NumberOfSeats = 3, IsDeleted = true },
-            new() { Name = "Плацкарт", NumberOfSeats = 4, IsDeleted = true }
+            new() { Name = "Купе", NumberOfSeats = 3, PriceFactor = 4, IsDeleted = false },
+            new() { Name = "Ласточка", NumberOfSeats = 2, PriceFactor = 2.1, IsDeleted = true },
+            new() { Name = "Сапсан", NumberOfSeats = 3, PriceFactor = 5.645, IsDeleted = true },
+            new() { Name = "Плацкарт", NumberOfSeats = 4, PriceFactor = 1.64, IsDeleted = true }
         };
         var secondList = new List<CarriageType>
         {
-            new() { Name = "Rbs", NumberOfSeats = 2, IsDeleted = true },
-            new() { Name = "Сидячие места", NumberOfSeats = 5, IsDeleted = true }
+            new() { Name = "Rbs", NumberOfSeats = 2, PriceFactor = 49, IsDeleted = true },
+            new() { Name = "Сидячие места", NumberOfSeats = 5, PriceFactor = 1.457, IsDeleted = true }
         };
 
         yield return new TestCaseData(fistList, ConvertCarriageTypesToCarriageTypeModels(fistList, false));
@@ -65,6 +65,7 @@ public class CarriageTypeServiceTestCaseSource
                {
                    Name = carriageType.Name,
                    NumberOfSeats = carriageType.NumberOfSeats,
+                   PriceFactor = carriageType.PriceFactor,
                    IsDeleted = carriageType.IsDeleted
                })
                .ToList();

@@ -23,6 +23,7 @@ public class CarriageTypeRepository : BaseRepository, IRepositorySoftDelete<Carr
     {
         carriageTypeOld.Name = carriageTypeUpdate.Name;
         carriageTypeOld.NumberOfSeats = carriageTypeUpdate.NumberOfSeats;
+        carriageTypeOld.PriceFactor = carriageTypeUpdate.PriceFactor;
 
         _context.SaveChanges();
     }
