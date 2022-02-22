@@ -14,6 +14,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class UserServiceTest
 {
+    /*
     private Mock<IUserRepository> _repositoryMock;
     private readonly IMapper _mapper;
 
@@ -233,5 +234,6 @@ public class UserServiceTest
         _repositoryMock.Verify(s => s.GetById(5), Times.Once);
         _repositoryMock.Verify(s => s.Update(entity, It.IsAny<User>()), Times.Once);
     }
+    */
     
 }

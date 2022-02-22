@@ -12,7 +12,7 @@ namespace SpaceZD.BusinessLayer.Services
         private readonly IStationRepository _stationRepository;
 
         public PlatformService(IMapper mapper, IPlatformRepository platformRepository,
-            IRepositorySoftDelete<User> userRepository,
+            IUserRepository userRepository,
             IStationRepository stationRepository) : base(mapper, userRepository)
         {
             _platformRepository = platformRepository;

@@ -19,7 +19,7 @@ public class TripStationServiceTests
     private Mock<ITripStationRepository> _tripStationRepositoryMock;
     private Mock<IStationRepository> _stationRepositoryMock;
     private Mock<IPlatformRepository> _platformRepositoryMock;
-    private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
+    private Mock<IUserRepository> _userRepositoryMock;
     private ITripStationService _service;
     private readonly IMapper _mapper;
 
@@ -34,7 +34,7 @@ public class TripStationServiceTests
         _tripStationRepositoryMock = new Mock<ITripStationRepository>();
         _stationRepositoryMock = new Mock<IStationRepository>();
         _platformRepositoryMock = new Mock<IPlatformRepository>();
-        _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
+        _userRepositoryMock = new Mock<IUserRepository>();
         _service = new TripStationService(_mapper, _userRepositoryMock.Object, _tripStationRepositoryMock.Object, _stationRepositoryMock.Object, _platformRepositoryMock.Object);
     }
 

@@ -31,15 +31,6 @@ public class TripsController : ControllerBase
         return Ok(result);
     }
 
-    //api/Trips/2022-1-1
-    [HttpGet("{date}")]
-    public ActionResult<List<TripShortOutputModel>> GetTripsFromDate(DateTime date)
-    {
-        var entities = _service.GetList().Where(g => g.StartTime.Date == date.Date);
-        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
-        return Ok(result);
-    }
-
     //api/Trips/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]

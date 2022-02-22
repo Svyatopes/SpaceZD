@@ -16,7 +16,7 @@ namespace SpaceZD.BusinessLayer.Tests
     public class PlatformServiceTests
     {
         private Mock<IPlatformRepository> _platformRepositoryMock;
-        private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
+        private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IStationRepository> _stationRepositoryMock;
         private PlatformService _service;
         private readonly IMapper _mapper;
@@ -30,7 +30,7 @@ namespace SpaceZD.BusinessLayer.Tests
         public void SetUp()
         {
             _platformRepositoryMock = new Mock<IPlatformRepository>();
-            _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
+            _userRepositoryMock = new Mock<IUserRepository>();
             _stationRepositoryMock = new Mock<IStationRepository>();
 
             _service = new PlatformService(_mapper, _platformRepositoryMock.Object, _userRepositoryMock.Object,

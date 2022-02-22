@@ -14,7 +14,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class TicketServiceTests
 {
-    private Mock<ITicketRepository> _ticketRepositoryMock;
+    /*private Mock<ITicketRepository> _ticketRepositoryMock;
     private readonly IMapper _mapper;
 
     public TicketServiceTests()
@@ -141,6 +141,6 @@ public class TicketServiceTests
         // then
         _ticketRepositoryMock.Verify(s => s.GetById(5), Times.Once);
         _ticketRepositoryMock.Verify(s => s.Update(ticket, false), Times.Once);
-    }
+    }*/
 
 }

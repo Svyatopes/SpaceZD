@@ -15,7 +15,7 @@ namespace SpaceZD.BusinessLayer.Tests;
 public class TrainServiceTests
 {
     private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
-    private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
+    private Mock<IUserRepository> _userRepositoryMock;
     private readonly IMapper _mapper;
 
     public TrainServiceTests()
@@ -27,7 +27,7 @@ public class TrainServiceTests
     public void SetUp()
     {
         _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
-        _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
+        _userRepositoryMock = new Mock<IUserRepository>();
     }
 
 
