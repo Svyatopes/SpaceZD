@@ -15,7 +15,7 @@ public class OrderService : BaseService, IOrderService
 
     public OrderService(IMapper mapper,
         IOrderRepository orderRepository,
-        IRepositorySoftDelete<User> userRepository,
+        IUserRepository userRepository,
         IRepositorySoftDelete<Trip> tripRepository,
         ITripStationRepository tripStationRepository
         ) : base(mapper, userRepository)

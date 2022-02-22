@@ -12,9 +12,7 @@ public class RouteService : BaseService, IRouteService
     private readonly IStationRepository _stationRepository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-    public RouteService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Route> routeRepository,
-        IStationRepository stationRepository)
-        : base(mapper, userRepository)
+    public RouteService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Route> routeRepository, IStationRepository stationRepository) : base(mapper, userRepository)
     {
         _repository = routeRepository;
         _stationRepository = stationRepository;

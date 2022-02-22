@@ -15,9 +15,8 @@ public class TripStationService : BaseService, ITripStationService
     private readonly IPlatformRepository _platformRepository;
     private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
-    public TripStationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, ITripStationRepository repository, IStationRepository stationRepository,
-        IPlatformRepository platformRepository)
-        : base(mapper, userRepository)
+    public TripStationService(IMapper mapper, IUserRepository userRepository, ITripStationRepository repository, IStationRepository stationRepository,
+        IRepositorySoftDelete<Platform> platformRepository) : base(mapper, userRepository)
     {
         _repository = repository;
         _stationRepository = stationRepository;
