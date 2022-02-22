@@ -1,7 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.API.Models;
+using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
 
@@ -12,52 +14,74 @@ namespace SpaceZD.API.Controllers;
 [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
 public class CarriagesController : ControllerBase
 {
-    private readonly ICarriageService _carriageService;
+    private readonly ICarriageService _service;
     private readonly IMapper _mapper;
-    public CarriagesController(ICarriageService carriageService, IMapper mapper)
+    public CarriagesController(ICarriageService service, IMapper mapper)
     {
-        _carriageService = carriageService;
+        _service = service;
         _mapper = mapper;
     }
 
     [HttpGet]
-    public ActionResult<List<CarriageOutputModel>> GetCarriages(bool  allIncluded)
+    public ActionResult<List<CarriageOutputModel>> GetCarriages()
     {
-        var carriagModel = _carriageService.GetList(allIncluded);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var carriagModel = _service.GetList(userId.Value);
         var carriages = _mapper.Map<List<CarriageOutputModel>>(carriagModel);
-        if (carriages!=null)
             return Ok(carriages);
-        return BadRequest();
     }
 
     [HttpGet("{id}")]
     public ActionResult<CarriageOutputModel> GetCarriageById(int id)
     {
-        var carriagModel = _carriageService.GetById(id);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var carriagModel = _service.GetById(userId.Value, id);
         var carriage = _mapper.Map<CarriageOutputModel>(carriagModel);
-        if (carriage != null)
             return Ok(carriage);
-        return BadRequest();
     }
 
-    /*
-    TODO на подумать
-    [HttpGet("{id}/tickets")]
-    public ActionResult<List<TicketOutputModel>> GetGetGetCarriageByIdWithTickets(int id)
+    //api/Trips/deleted
+    [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
+    public ActionResult<List<CarriageOutputModel>> GetDeletedCarriages()
     {
-        return NotFound("Can't find(((((");
-    }*/
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _service.GetListDeleted(userId.Value);
+        var result = _mapper.Map<List<TripShortOutputModel>>(entities);
+        return Ok(result);
+    }
 
     [HttpPost]
-    public ActionResult AddCarriage(CarriageInputModel carriage)
+    public ActionResult AddCarriage([FromBody] CarriageInputModel carriage)
     {
-        return StatusCode(StatusCodes.Status201Created, carriage);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<CarriageModel>(carriage);
+        var idCreate = _service.Add(userId.Value, entity);
+        return StatusCode(StatusCodes.Status201Created, idCreate);
     }
 
     [HttpPut("{id}")]
-    public ActionResult EditCarriage(int id, CarriageInputModel carriage)
+    public ActionResult EditCarriage(int id, [FromBody] CarriageInputModel carriage)
     {
-        return BadRequest();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entity = _mapper.Map<CarriageModel>(carriage);
+        _service.Update(userId.Value, id, entity);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -67,8 +91,14 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+       [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreCarriage(int id)
     {
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _service.Restore(userId.Value, id);
+        return NoContent();
     }
 }

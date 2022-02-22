@@ -2,55 +2,84 @@
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class CarriageService : ICarriageService
+    public class CarriageService : BaseService, ICarriageService
     {
-        private readonly IMapper _mapper;
         private readonly IRepositorySoftDelete<Carriage> _carriageRepository;
+        private readonly IRepositorySoftDelete<CarriageType> _carriagetypeRepository;
+        private readonly IRepositorySoftDelete<Train> _trainRepository;
+        private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-        public CarriageService(IMapper mapper, IRepositorySoftDelete<Carriage> carriageRepository)
+        public CarriageService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Carriage> repository,
+            IRepositorySoftDelete<CarriageType> carriagetypeRepository, IRepositorySoftDelete<Train> trainRepository)
+            : base(mapper, userRepository)
         {
-            _mapper = mapper;
-            _carriageRepository = carriageRepository;
+            _carriageRepository = repository;
+            _carriagetypeRepository = carriagetypeRepository;
+            _trainRepository = trainRepository;
         }
 
-        public CarriageModel GetById(int id)
+        public CarriageModel GetById(int userId, int id)
         {
+            CheckUserRole(userId, _allowedRoles);
             var carriage = GetCarriageById(id);
             return _mapper.Map<CarriageModel>(carriage);
         }
 
-        public List<CarriageModel> GetList(bool allIncluded)
+        public List<CarriageModel> GetList(int userId)
         {
-            var carriage = _carriageRepository.GetList(allIncluded);
+            CheckUserRole(userId, _allowedRoles);
+
+            var carriage = _carriageRepository.GetList();
             return _mapper.Map<List<CarriageModel>>(carriage);
         }
 
-        public int Add(CarriageModel carriage)
+        public List<CarriageModel> GetListDeleted(int userId)
         {
-            var carriageEntity = _mapper.Map<Carriage>(carriage);
+            CheckUserRole(userId, Role.Admin);
+
+            var entities = _carriageRepository.GetList(true).Where(t => t.IsDeleted);
+            return _mapper.Map<List<CarriageModel>>(entities);
+        }
+
+        public int Add(int userId, CarriageModel carriageModel)
+        {
+            CheckUserRole(userId, _allowedRoles);
+
+            var carriageEntity = _mapper.Map<Carriage>(carriageModel);
             var id = _carriageRepository.Add(carriageEntity);
             return id;
         }
 
-        public void Update(int id, CarriageModel carriage)
+        public void Update(int userId, int id, CarriageModel carriageModel)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var carriageEntity = GetCarriageById(id);
-            var newcarriageEntity = _mapper.Map<Carriage>(carriage);
-            _carriageRepository.Update(carriageEntity, newcarriageEntity);
+            var train = _trainRepository.GetById(carriageModel.Train.Id);
+            ThrowIfEntityNotFound(train, carriageModel.Train.Id);
+
+            carriageModel.Train = _mapper.Map<TrainModel>(train);
+
+            _carriageRepository.Update(carriageEntity, _mapper.Map<Carriage>(carriageModel));
         }
 
-        public void Restore(int id)
+        public void Restore(int userId, int id)
         {
+            CheckUserRole(userId, Role.Admin);
+
             var carriage = GetCarriageById(id);
             _carriageRepository.Update(carriage, false);
         }
 
-        public void Delete(int id)
+        public void Delete(int userId, int id)
         {
+            CheckUserRole(userId, Role.Admin);
+
             var carriage = GetCarriageById(id);
             _carriageRepository.Update(carriage, true);
         }
