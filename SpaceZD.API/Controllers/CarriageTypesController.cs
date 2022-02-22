@@ -14,18 +14,18 @@ namespace SpaceZD.API.Controllers;
 public class CarriageTypesController : ControllerBase
 {
     private readonly IMapper _mapper;
-    private readonly ICarriageTypeService _carriageTypeService;
-    public CarriageTypesController(IMapper mapper, ICarriageTypeService carriageTypeService)
+    private readonly ICarriageTypeService _service;
+    public CarriageTypesController(IMapper mapper, ICarriageTypeService service)
     {
         _mapper = mapper;
-        _carriageTypeService = carriageTypeService;
+        _service = service;
     }
 
     //api/CarriageTypes
     [HttpGet]
     public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypes()
     {
-        var entities = _carriageTypeService.GetList();
+        var entities = _service.GetList();
         var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
         return Ok(result);
     }
@@ -39,7 +39,7 @@ public class CarriageTypesController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _carriageTypeService.GetListDeleted(userId.Value);
+        var entities = _service.GetListDeleted(userId.Value);
         var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
         return Ok(result);
     }
@@ -53,7 +53,7 @@ public class CarriageTypesController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _carriageTypeService.GetById(userId.Value, id);
+        var entities = _service.GetById(userId.Value, id);
         var result = _mapper.Map<CarriageTypeOutputModel>(entities);
         return Ok(result);
     }
@@ -68,7 +68,7 @@ public class CarriageTypesController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var entity = _mapper.Map<CarriageTypeModel>(carriageType);
-        var idCreate = _carriageTypeService.Add(userId.Value, entity);
+        var idCreate = _service.Add(userId.Value, entity);
         return StatusCode(StatusCodes.Status201Created, idCreate);
     }
 
@@ -82,7 +82,7 @@ public class CarriageTypesController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var entity = _mapper.Map<CarriageTypeModel>(carriageType);
-        _carriageTypeService.Update(userId.Value, id, entity);
+        _service.Update(userId.Value, id, entity);
         return NoContent();
     }
 
@@ -95,7 +95,7 @@ public class CarriageTypesController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        _carriageTypeService.Delete(userId.Value, id);
+        _service.Delete(userId.Value, id);
         return NoContent();
     }
 
@@ -108,7 +108,7 @@ public class CarriageTypesController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        _carriageTypeService.Restore(userId.Value, id);
+        _service.Restore(userId.Value, id);
         return NoContent();
     }
 }
