@@ -1,6 +1,7 @@
 using AutoMapper;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services;
@@ -12,25 +13,31 @@ public class TripStationService : BaseService, ITripStationService
     private readonly ITripStationRepository _repository;
     private readonly IStationRepository _stationRepository;
     private readonly IPlatformRepository _platformRepository;
+    private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
     public TripStationService(IMapper mapper, IRepositorySoftDelete<User> userRepository, ITripStationRepository repository, IStationRepository stationRepository,
-        IPlatformRepository platformRepository) : base(mapper, userRepository)
+        IPlatformRepository platformRepository)
+        : base(mapper, userRepository)
     {
         _repository = repository;
         _stationRepository = stationRepository;
         _platformRepository = platformRepository;
     }
 
-    public TripStationModel GetById(int id)
+    public TripStationModel GetById(int userId, int id)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
         return _mapper.Map<TripStationModel>(entity);
     }
 
-    public void Update(int id, TripStationModel model)
+    public void Update(int userId, int id, TripStationModel model)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
@@ -43,8 +50,10 @@ public class TripStationService : BaseService, ITripStationService
         _repository.Update(entity, tripStationNew);
     }
 
-    public void SetPlatform(int id, int idPlatform)
+    public void SetPlatform(int userId, int id, int idPlatform)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
@@ -60,8 +69,10 @@ public class TripStationService : BaseService, ITripStationService
         _repository.Update(entity, entity);
     }
 
-    public List<PlatformModel> GetReadyPlatforms(int id)
+    public List<PlatformModel> GetReadyPlatforms(int userId, int id)
     {
+        CheckUserRole(userId, _allowedRoles);
+
         var entity = _repository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
 
