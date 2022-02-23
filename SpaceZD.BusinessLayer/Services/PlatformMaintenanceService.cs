@@ -2,20 +2,25 @@
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class PlatformMaintenanceService : IPlatformMaintenanceServices
+    public class PlatformMaintenanceService : BaseService, IPlatformMaintenanceService
     {
         private readonly IMapper _mapper;
         private readonly IRepositorySoftDelete<PlatformMaintenance> _platformMaintenanceRepository;
+        private readonly IRepositorySoftDelete<Platform> _platformRepository;
+        private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
-        public PlatformMaintenanceService(IMapper mapper, IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository)
+        public PlatformMaintenanceService(IMapper mapper, IUserRepository userRepository,
+            IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository, IRepositorySoftDelete<Platform> platformRepository) : base(mapper, userRepository)
         {
-            _mapper = mapper;
             _platformMaintenanceRepository = platformMaintenanceRepository;
+            _platformRepository = platformRepository;
         }
+
 
         public PlatformMaintenanceModel GetById(int id)
         {
@@ -23,34 +28,52 @@ namespace SpaceZD.BusinessLayer.Services
             return _mapper.Map<PlatformMaintenanceModel>(platformMaintenance);
         }
 
-        public List<PlatformMaintenanceModel> GetList(bool allIncluded)
+        public List<PlatformMaintenanceModel> GetList(int userId)
         {
-            var platformsMaintenance = _platformMaintenanceRepository.GetList(allIncluded);
+            CheckUserRole(userId, _allowedRoles);
+
+            var platformsMaintenance = _platformMaintenanceRepository.GetList();
             return _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
         }
 
-        public int Add(PlatformMaintenanceModel platformMaintenance)
+        public List<CarriageTypeModel> GetListDeleted(int userId)
         {
-            var platformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
-            var id = _platformMaintenanceRepository.Add(platformMaintenanceEntity);
-            return id;
+            CheckUserRole(userId, Role.Admin);
+
+            var platformsMaintenance = _platformMaintenanceRepository.GetList(true).Where(t => t.IsDeleted);
+            return _mapper.Map<List<CarriageTypeModel>>(platformsMaintenance);
         }
 
-        public void Update(int id, PlatformMaintenanceModel platformMaintenance)
+        public int Add(int userId, PlatformMaintenanceModel platformMaintenance)
         {
+            CheckUserRole(userId, _allowedRoles);
+
+            var platformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
+            return _platformMaintenanceRepository.Add(platformMaintenanceEntity);
+
+        }
+
+        public void Update(int userId, int id, PlatformMaintenanceModel platformMaintenance)
+        {
+            CheckUserRole(userId, _allowedRoles);
+
             var platformMaintenanceEntity = GetPlatformMaintenanceById(id);
             var newPlatformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
             _platformMaintenanceRepository.Update(platformMaintenanceEntity, newPlatformMaintenanceEntity);
         }
 
-        public void Restore(int id)
+        public void Restore(int userId, int id)
         {
+            CheckUserRole(userId, Role.Admin);
+
             var platformMaintenance = GetPlatformMaintenanceById(id);
             _platformMaintenanceRepository.Update(platformMaintenance, false);
         }
 
-        public void Delete(int id)
+        public void Delete(int userId, int id)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var platformMaintenance = GetPlatformMaintenanceById(id);
             _platformMaintenanceRepository.Update(platformMaintenance, true);
         }
