@@ -83,6 +83,14 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
         _context.SaveChanges();
 
     }
+    
+    public void UpdatePassword(User user, string passwordHash)
+    {
+        user.PasswordHash = passwordHash;
+
+        _context.SaveChanges();
+
+    }
 
     public User? GetUserByLogin(string login)
     {

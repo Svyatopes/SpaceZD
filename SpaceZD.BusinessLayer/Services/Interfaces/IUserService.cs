@@ -15,5 +15,6 @@ namespace SpaceZD.BusinessLayer.Services
         void Restore(int id, int userId);
         void Update(int Id, UserModel entity, int userId);
         void UpdateRole(int id, Role role, int userId);
+        void UpdatePassword(string passwordOld, string passwordNew, int userId);
     }
 }

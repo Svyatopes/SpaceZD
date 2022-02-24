@@ -148,6 +148,21 @@ public class UsersController : ControllerBase
         return Accepted();
 
     }
+    
+    
+    [HttpPut("password")]
+    [Authorize]
+    public ActionResult EditPassword(UserUpdatePasswordInputModel userModel)
+    {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _userService.UpdatePassword(userModel.PasswordOld, userModel.PasswordNew, userId.Value);
+        return Accepted();
+
+
+    }
 
 
     [HttpDelete]

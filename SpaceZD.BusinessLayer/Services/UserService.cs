@@ -97,6 +97,24 @@ namespace SpaceZD.BusinessLayer.Services
             _userRepository.UpdateRole(user, role);
 
         }
+        
+        public void UpdatePassword(string passwordOld, string passwordNew, int userId)
+        {
+            CheckUserRole(userId, _allowedAllRoles);
+
+            var user = _userRepository.GetById(userId);
+            ThrowIfEntityNotFound(user, userId);
+
+            if (!SecurePasswordHasher.Verify(passwordOld, user.PasswordHash))
+                throw new AuthenticationException("Password is not correct for this user.");
+
+            var passwordHash = SecurePasswordHasher.Hash(passwordNew);
+
+            _userRepository.UpdatePassword(user, passwordHash);        
+
+
+
+        }
 
         public void Delete(int id, int userId)
         {
