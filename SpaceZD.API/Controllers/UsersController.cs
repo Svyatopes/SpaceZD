@@ -133,14 +133,17 @@ public class UsersController : ControllerBase
     }
     
     
-    [HttpPut("role")]
+    [HttpPut("{id}")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult EditRole(int id, Role role)
+    public ActionResult EditRole(int id, RoleInputModel roleModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
-        
+
+        var role = _mapper.Map<Role>(roleModel);
+
+
         _userService.UpdateRole(id, role, userId.Value);
         return Accepted();
 
@@ -161,7 +164,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPatch("{id}")]
+    [HttpPatch("role/{id}")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreUser(int id)
     {

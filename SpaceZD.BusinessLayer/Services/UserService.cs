@@ -64,9 +64,15 @@ namespace SpaceZD.BusinessLayer.Services
         {
             var addEntity = _mapper.Map<User>(entity);
             addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
-            addEntity.Role = Role.User;            
-            var id = _userRepository.Add(addEntity);            
-            return id;
+            addEntity.Role = Role.User;
+            var allUsers = _userRepository.GetByLogin(addEntity.Login);
+            if (allUsers is null)
+            {
+                var id = _userRepository.Add(addEntity);            
+                return id;
+            }
+            else
+                throw new AuthorizationException("This login is already taken");
         }
 
 
