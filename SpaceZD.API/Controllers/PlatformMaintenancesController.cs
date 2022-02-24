@@ -31,7 +31,20 @@ public class PlatformMaintenancesController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var entities = _service.GetList(userId.Value);
-        var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
+        var result = _mapper.Map<List<PlatformMaintenanceOutputModel>>(entities);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [AuthorizeRole(Role.Admin)]
+    public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenancesDeleted()
+    {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _service.GetListDeleted(userId.Value);
+        var result = _mapper.Map<List<PlatformMaintenanceOutputModel>>(entities);
         return Ok(result);
     }
 
@@ -39,7 +52,7 @@ public class PlatformMaintenancesController : ControllerBase
     public ActionResult<PlatformMaintenanceOutputModel> GetPlatformMaintenanceById(int id)
     {
         var entities = _service.GetById(id);
-        var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
+        var result = _mapper.Map<PlatformMaintenanceOutputModel>(entities);
         return Ok(result);
        
     }

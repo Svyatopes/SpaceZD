@@ -9,13 +9,13 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public class PlatformMaintenanceService : BaseService, IPlatformMaintenanceService
     {
-        private readonly IMapper _mapper;
         private readonly IRepositorySoftDelete<PlatformMaintenance> _platformMaintenanceRepository;
-        private readonly IRepositorySoftDelete<Platform> _platformRepository;
+        private readonly IPlatformRepository _platformRepository;
         private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
         public PlatformMaintenanceService(IMapper mapper, IUserRepository userRepository,
-            IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository, IRepositorySoftDelete<Platform> platformRepository) : base(mapper, userRepository)
+            IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository, IPlatformRepository platformRepository)
+            : base(mapper, userRepository)
         {
             _platformMaintenanceRepository = platformMaintenanceRepository;
             _platformRepository = platformRepository;
@@ -33,15 +33,16 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedRoles);
 
             var platformsMaintenance = _platformMaintenanceRepository.GetList();
-            return _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
+            var x = _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
+            return x;
         }
 
-        public List<CarriageTypeModel> GetListDeleted(int userId)
+        public List<PlatformMaintenanceModel> GetListDeleted(int userId)
         {
             CheckUserRole(userId, Role.Admin);
 
             var platformsMaintenance = _platformMaintenanceRepository.GetList(true).Where(t => t.IsDeleted);
-            return _mapper.Map<List<CarriageTypeModel>>(platformsMaintenance);
+            return _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
         }
 
         public int Add(int userId, PlatformMaintenanceModel platformMaintenance)
@@ -49,6 +50,8 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedRoles);
 
             var platformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
+            var platform = _platformRepository.GetById(platformMaintenance.Platform.Id);
+            platformMaintenanceEntity.Platform = platform;
             return _platformMaintenanceRepository.Add(platformMaintenanceEntity);
 
         }
@@ -59,6 +62,8 @@ namespace SpaceZD.BusinessLayer.Services
 
             var platformMaintenanceEntity = GetPlatformMaintenanceById(id);
             var newPlatformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
+            var platform = _platformRepository.GetById(newPlatformMaintenanceEntity.Platform.Id);
+            newPlatformMaintenanceEntity.Platform = platform;
             _platformMaintenanceRepository.Update(platformMaintenanceEntity, newPlatformMaintenanceEntity);
         }
 

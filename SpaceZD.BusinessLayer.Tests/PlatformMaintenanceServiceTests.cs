@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Moq;
@@ -9,13 +10,17 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Tests
 {
     public class PlatformMaintenanceServiceTests
     {
+        private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IRepositorySoftDelete<PlatformMaintenance>> _platformMaintenanceRepositoryMock;
+        private Mock<IPlatformRepository> _platformRepositoryMock;
+        private IPlatformMaintenanceService _service;
         private readonly IMapper _mapper;
 
         public PlatformMaintenanceServiceTests()
@@ -27,38 +32,94 @@ namespace SpaceZD.BusinessLayer.Tests
         public void SetUp()
         {
             _platformMaintenanceRepositoryMock = new Mock<IRepositorySoftDelete<PlatformMaintenance>>();
+            _platformRepositoryMock = new Mock<IPlatformRepository>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _service = new PlatformMaintenanceService(_mapper, _userRepositoryMock.Object, _platformMaintenanceRepositoryMock.Object, _platformRepositoryMock.Object);
         }
 
-        //Add
+        // GetList
         [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetListTestCases))]
-        public void GetListTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, bool allIncluded)
+        public void GetListTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, Role role)
         {
             // given
-            var platformsMaintenanceFiltredByIsDeletedProp = platformMaintenance.Where(pm => !pm.IsDeleted || allIncluded).ToList();
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetList(It.IsAny<bool>()))
-                .Returns(platformsMaintenanceFiltredByIsDeletedProp);
-
-            expectedPlatformMaintenanceModels = expectedPlatformMaintenanceModels.Where(pm => !pm.IsDeleted || allIncluded).ToList();
-
-            var platformMaintenanceService = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetList(false)).Returns(platformMaintenance);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var platformMaintenanceModels = platformMaintenanceService.GetList(allIncluded);
+            var platformMaintenanceModels = _service.GetList(10);
 
             // then
+            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(x => x.GetList(false), Times.Once);
             CollectionAssert.AreEqual(expectedPlatformMaintenanceModels, platformMaintenanceModels);
-            _platformMaintenanceRepositoryMock.Verify(pm => pm.GetList(It.IsAny<bool>()), Times.Once);
         }
 
+        [Test]
+        public void GetListNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetList(10));
+        }
+
+        [Test]
+        public void GetListNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.GetList(10));
+        }
+
+        // GetListDeleted
+        [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetListDeletdTestCases))]
+        public void GetListDeletedTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, Role role)
+        {
+            // given
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetList(true)).Returns(platformMaintenance);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
+            // when
+            var platformMaintenanceModels = _service.GetListDeleted(10);
+
+            // then
+            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(x => x.GetList(true), Times.Once);
+            CollectionAssert.AreEqual(expectedPlatformMaintenanceModels, platformMaintenanceModels);
+        }
+
+        [Test]
+        public void GetListDeletedNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetListDeleted(10));
+        }
+
+        [Test]
+        public void GetListDeletedNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.StationManager });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(10));
+        }
+
+        // GetById
         [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetByIdTestCases))]
         public void GetByIdTest(PlatformMaintenance platformMaintenance, PlatformMaintenanceModel expectedPlatformMaintenance)
         {
             // given
             _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
 
             // when
-            var actual = service.GetById(42);
+            var actual = _service.GetById(42);
 
             // then
             Assert.AreEqual(expectedPlatformMaintenance, actual);
@@ -70,21 +131,31 @@ namespace SpaceZD.BusinessLayer.Tests
         public void GetByIdNegativeTest()
         {
             _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((PlatformMaintenance?)null);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
 
-            Assert.Throws<NotFoundException>(() => service.GetById(42));
+            Assert.Throws<NotFoundException>(() => _service.GetById(42));
             _platformMaintenanceRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
         }
 
-        [TestCase(10)]
-        public void AddTest(int expected)
+        [Test]
+        public void GetByIdNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetById(10));
+        }
+
+        //Add
+        [TestCase(10, Role.Admin)]
+        [TestCase(10, Role.StationManager)]
+        public void AddTest(int expected, Role role)
         {
             // given
             _platformMaintenanceRepositoryMock.Setup(x => x.Add(It.IsAny<PlatformMaintenance>())).Returns(expected);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
-
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
             // when
-            int actual = service.Add(new PlatformMaintenanceModel
+            int actual = _service.Add(10, new PlatformMaintenanceModel
             {
                 Platform = new PlatformModel { Id = 1 }
             });
@@ -95,96 +166,183 @@ namespace SpaceZD.BusinessLayer.Tests
         }
 
         [Test]
-        public void UpdateTest()
+        public void AddNegativeNotFoundExceptionTest()
         {
             // given
-            var order = new PlatformMaintenance();
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.Add(10, new PlatformMaintenanceModel()));
+        }
+
+        [Test]
+        public void AddNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Add(10, new PlatformMaintenanceModel()));
+        }
+
+        //Update
+        [TestCase(Role.Admin)]
+        [TestCase(Role.StationManager)]
+        public void UpdateTest(Role role)
+        {
+            // given
+            var platformMaintenance = new PlatformMaintenance();
             _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), It.IsAny<PlatformMaintenance>()));
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(order);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
+
 
             // when
-            service.Update(10, new PlatformMaintenanceModel());
+            _service.Update(10, 10, new PlatformMaintenanceModel
+            {
+                Platform = new PlatformModel
+                {
+                    Number = 111,
+                    Station = new StationModel
+                    {
+                        Name = "aaa",
+                        Platforms = new List<PlatformModel>
+                            {
+                                new()
+                                {
+                                    Number=11
+                                },
+                                new()
+                                {
+                                    Number=22
+                                }
+                            }
+                    }
+                },
+                StartTime = new DateTime(2000, 1, 1),
+                EndTime = new DateTime(2001, 1, 1),
+                IsDeleted = false
+            });
 
             // then
             _platformMaintenanceRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(s => s.Update(order, It.IsAny<PlatformMaintenance>()), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.Update(platformMaintenance, It.IsAny<PlatformMaintenance>()), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+
         }
 
         [Test]
         public void UpdateNegativeTest()
         {
             // given
-            var order = new PlatformMaintenance();
             _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), It.IsAny<PlatformMaintenance>()));
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((PlatformMaintenance?)null);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Update(42, new PlatformMaintenanceModel()));
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(s => s.Update(order, It.IsAny<PlatformMaintenance>()), Times.Never);
+            Assert.Throws<NotFoundException>(() => _service.Update(10, 10, new PlatformMaintenanceModel()));
         }
 
         [Test]
-        public void DeleteTest()
+        public void UpdateNegativeNotFoundExceptionTest()
         {
             // given
-            var order = new PlatformMaintenance();
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.Update(10, 10, new PlatformMaintenanceModel()));
+        }
+
+        [Test]
+        public void UpdateNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Update(10, 10, new PlatformMaintenanceModel()));
+        }
+
+
+        //Delete
+        [TestCase(Role.Admin)]
+        [TestCase(Role.StationManager)]
+        public void DeleteTest(Role role)
+        {
+            // given
+            var platformMaintenance = new PlatformMaintenance();
             _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), true));
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(order);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            service.Delete(42);
+            _service.Delete(10, 10);
 
             // then
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(s => s.Update(order, true), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.Update(platformMaintenance, true), Times.Once);
         }
+
         [Test]
-        public void DeleteNegativeTest()
+        public void DeleteNegativeNotFoundExceptionTest()
         {
             // given
-            _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), true));
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((PlatformMaintenance?)null);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Delete(42));
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(s => s.Update(It.IsAny<PlatformMaintenance>(), true), Times.Never);
+            Assert.Throws<NotFoundException>(() => _service.Delete(10, 10));
         }
 
+        [Test]
+        public void DeleteNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Delete(10, 10));
+        }
 
         //Restore
-        [Test]
-        public void RestoreTest()
+        [TestCase(Role.Admin)]
+        public void RestoreTest(Role role)
         {
             // given
-            var order = new PlatformMaintenance();
-            _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), false));
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(order);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            var platformMaintenance = new PlatformMaintenance();
+            _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), true));
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
 
             // when
-            service.Restore(42);
+            _service.Restore(10, 10);
 
             // then
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(s => s.Update(order, false), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.Update(platformMaintenance, false), Times.Once);
         }
+
         [Test]
-        public void RestoreNegativeTest()
+        public void RestoreNegativeNotFoundExceptionTest()
         {
             // given
-            _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), false));
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((PlatformMaintenance?)null);
-            var service = new PlatformMaintenanceService(_mapper, _platformMaintenanceRepositoryMock.Object);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Restore(42));
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(42), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(s => s.Update(It.IsAny<PlatformMaintenance>(), true), Times.Never);
+            Assert.Throws<NotFoundException>(() => _service.Restore(10, 10));
         }
+
+        [Test]
+        public void RestoreNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.StationManager });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Restore(10, 10));
+        }
+
     }
 }
