@@ -12,8 +12,8 @@ using SpaceZD.DataLayer.DbContextes;
 namespace SpaceZD.DataLayer.Migrations
 {
     [DbContext(typeof(VeryVeryImportantContext))]
-    [Migration("20220223080121_AddPriceFactorFromCarriageType")]
-    partial class AddPriceFactorFromCarriageType
+    [Migration("20220224130640_AddPriceCoefficientFromCarriageType")]
+    partial class AddPriceCoefficientFromCarriageType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -76,11 +76,11 @@ namespace SpaceZD.DataLayer.Migrations
                     b.Property<int>("NumberOfSeats")
                         .HasColumnType("int");
 
-                    b.Property<double>("PriceFactor")
+                    b.Property<decimal>("PriceCoefficient")
                         .ValueGeneratedOnAdd()
                         .HasPrecision(6, 3)
-                        .HasColumnType("float(6)")
-                        .HasDefaultValue(1.0);
+                        .HasColumnType("decimal(6,3)")
+                        .HasDefaultValue(1m);
 
                     b.HasKey("Id");
 

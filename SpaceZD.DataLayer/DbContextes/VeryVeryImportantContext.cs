@@ -46,7 +46,7 @@ public class VeryVeryImportantContext : DbContext
                     .HasPrecision(9, 2);
 
         modelBuilder.Entity<CarriageType>()
-                    .Property(p => p.PriceFactor)
+                    .Property(p => p.PriceCoefficient)
                     .HasPrecision(6, 3)
                     .HasDefaultValue(1);
 

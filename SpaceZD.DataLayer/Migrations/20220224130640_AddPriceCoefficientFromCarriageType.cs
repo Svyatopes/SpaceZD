@@ -4,24 +4,24 @@
 
 namespace SpaceZD.DataLayer.Migrations
 {
-    public partial class AddPriceFactorFromCarriageType : Migration
+    public partial class AddPriceCoefficientFromCarriageType : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<double>(
-                name: "PriceFactor",
+            migrationBuilder.AddColumn<decimal>(
+                name: "PriceCoefficient",
                 table: "CarriageType",
-                type: "float(6)",
+                type: "decimal(6,3)",
                 precision: 6,
                 scale: 3,
                 nullable: false,
-                defaultValue: 1.0);
+                defaultValue: 1m);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "PriceFactor",
+                name: "PriceCoefficient",
                 table: "CarriageType");
         }
     }

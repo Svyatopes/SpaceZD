@@ -75,7 +75,7 @@ public class CarriageTypeRepositoryTests
         // given
         var entityToEdit = _context.CarriageTypes.FirstOrDefault(o => o.Id == id);
         var entityUpdate = new CarriageType
-            { Name = "qwertyuiop", NumberOfSeats = 3, PriceFactor = 4, IsDeleted = !entityToEdit!.IsDeleted };
+            { Name = "qwertyuiop", NumberOfSeats = 3, PriceCoefficient = 4, IsDeleted = !entityToEdit!.IsDeleted };
 
         // when 
         _repository.Update(entityToEdit, entityUpdate);
@@ -83,7 +83,7 @@ public class CarriageTypeRepositoryTests
         // then
         Assert.AreEqual(entityUpdate.Name, entityToEdit.Name);
         Assert.AreEqual(entityUpdate.NumberOfSeats, entityToEdit.NumberOfSeats);
-        Assert.AreEqual(entityUpdate.PriceFactor, entityToEdit.PriceFactor);
+        Assert.AreEqual(entityUpdate.PriceCoefficient, entityToEdit.PriceCoefficient);
         Assert.AreNotEqual(entityUpdate.IsDeleted, entityToEdit.IsDeleted);
     }
 

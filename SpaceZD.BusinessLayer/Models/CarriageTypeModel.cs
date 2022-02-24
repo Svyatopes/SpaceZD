@@ -5,7 +5,7 @@ public class CarriageTypeModel
     public int Id { get; set; }
     public string Name { get; set; }
     public int NumberOfSeats { get; set; }
-    public double PriceFactor { get; set; }
+    public decimal PriceCoefficient { get; set; }
     public bool IsDeleted { get; set; }
 
 
@@ -13,7 +13,7 @@ public class CarriageTypeModel
     {
         return Name == other.Name &&
             NumberOfSeats == other.NumberOfSeats &&
-            Math.Abs(PriceFactor - other.PriceFactor) < 0.001 &&
+            PriceCoefficient == other.PriceCoefficient &&
             IsDeleted == other.IsDeleted;
     }
 

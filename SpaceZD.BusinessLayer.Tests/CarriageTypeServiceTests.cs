@@ -89,7 +89,7 @@ public class CarriageTypeServiceTests
         Assert.AreEqual(
             new CarriageTypeModel
             {
-                Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, PriceFactor = carriageType.PriceFactor, IsDeleted = carriageType.IsDeleted
+                Name = carriageType.Name, NumberOfSeats = carriageType.NumberOfSeats, PriceCoefficient = carriageType.PriceCoefficient, IsDeleted = carriageType.IsDeleted
             },
             actual);
     }
