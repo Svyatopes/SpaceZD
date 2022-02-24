@@ -50,9 +50,9 @@ public class TripStationsController : ControllerBase
         return NoContent();
     }
 
-    //api/TripStations/42/set-platform/2
-    [HttpPut("{id}/set-platform/{idPlatform}")]
-    public ActionResult SetPlatformTripStation(int id, int idPlatform)
+    //api/TripStations/42/set-platform?idPlatform=22
+    [HttpPut("{id}/set-platform")]
+    public ActionResult SetPlatformTripStation(int id, [FromQuery] int idPlatform)
     {
         var userId = this.GetUserId();
         if (userId == null)
