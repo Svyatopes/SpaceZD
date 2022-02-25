@@ -9,13 +9,18 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Tests
 {
-    internal class CarriageServiceTests
+    public class CarriageServiceTests
     {
+        private Mock<IRepositorySoftDelete<CarriageType>> _carriageTypeRepositoryMock;
+        private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
+        private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IRepositorySoftDelete<Carriage>> _carriageRepositoryMock;
+        private ICarriageService _service;
         private readonly IMapper _mapper;
 
         public CarriageServiceTests()
@@ -27,38 +32,60 @@ namespace SpaceZD.BusinessLayer.Tests
         public void SetUp()
         {
             _carriageRepositoryMock = new Mock<IRepositorySoftDelete<Carriage>>();
+            _carriageTypeRepositoryMock = new Mock<IRepositorySoftDelete<CarriageType>>();
+            _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _service = new CarriageService(_mapper, _userRepositoryMock.Object, _carriageRepositoryMock.Object, _carriageTypeRepositoryMock.Object, _trainRepositoryMock.Object);
         }
 
-        //Add
+        // GetList
         [TestCaseSource(typeof(CarriageServiceTestCaseSource), nameof(CarriageServiceTestCaseSource.GetListTestCases))]
-        public void GetListTest(List<Carriage> carriage, List<CarriageModel> expectedCarriageModels, bool allIncluded)
+        public void GetListTest(List<Carriage> carriage, List<CarriageModel> expectedCarriageModels, Role role)
         {
             // given
-            var CarriageFiltredByIsDeletedProp = carriage.Where(c => !c.IsDeleted || allIncluded).ToList();
-            _carriageRepositoryMock.Setup(x => x.GetList(It.IsAny<bool>()))
-                .Returns(CarriageFiltredByIsDeletedProp);
-
-            expectedCarriageModels = expectedCarriageModels.Where(c => !c.IsDeleted || allIncluded).ToList();
-
-            var carriageService = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _carriageRepositoryMock.Setup(x => x.GetList(false)).Returns(carriage);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var carriageModels = carriageService.GetList(allIncluded);
+            var actual = _service.GetList(10);
 
             // then
-            CollectionAssert.AreEqual(expectedCarriageModels, carriageModels);
-            _carriageRepositoryMock.Verify(c => c.GetList(It.IsAny<bool>()), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.GetList(false), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            CollectionAssert.AreEqual(expectedCarriageModels, actual);
         }
 
-        [TestCaseSource(typeof(CarriageServiceTestCaseSource), nameof(CarriageServiceTestCaseSource.GetByIdTestCases))]
-        public void GetByIdTest(Carriage Carriage, CarriageModel expectedCarriage)
+        [Test]
+        public void GetListNegativeNotFoundExceptionTest()
         {
             // given
-            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(Carriage);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetList(10));
+        }
+
+        [Test]
+        public void GetListNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.GetById(10, 10));
+        }
+
+        // GetById
+        [TestCaseSource(typeof(CarriageServiceTestCaseSource), nameof(CarriageServiceTestCaseSource.GetByIdTestCases))]
+        public void GetByIdTest(Carriage carriage, CarriageModel expectedCarriage, Role role)
+        {
+            // given
+            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriage);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
 
             // when
-            var actual = service.GetById(10);
+            var actual = _service.GetById(45, 10);
 
             // then
             Assert.AreEqual(expectedCarriage, actual);
@@ -69,78 +96,133 @@ namespace SpaceZD.BusinessLayer.Tests
         [Test]
         public void GetByIdNegativeTest()
         {
+            // given
             _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Carriage?)null);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
-            Assert.Throws<NotFoundException>(() => service.GetById(10));
-            _carriageRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetById(45, 10));
         }
 
-        [TestCase(10)]
-        public void AddTest(int expected)
+        [Test]
+        public void GetByIdNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetById(10, 10));
+        }
+
+        [Test]
+        public void GetByIdNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.GetById(10, 10));
+        }
+
+        // Add
+        [TestCase(45, Role.Admin)]
+        [TestCase(45, Role.TrainRouteManager)]
+        public void AddTest(int expected, Role role)
         {
             // given
             _carriageRepositoryMock.Setup(x => x.Add(It.IsAny<Carriage>())).Returns(expected);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
-
+            _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new CarriageType());
+            _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
             // when
-            int actual = service.Add(new CarriageModel
+            int actual = _service.Add(45, new CarriageModel
             {
                 Type = new CarriageTypeModel { Id = 1 },
                 Train = new TrainModel { Id = 2 }
             });
 
             // then
+            
             _carriageRepositoryMock.Verify(s => s.Add(It.IsAny<Carriage>()), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(45), Times.Once);
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public void UpdateTest()
+        public void AddNegativeAuthorizationExceptionTest()
         {
             // given
-            var order = new Carriage();
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Add(10, new CarriageModel()));
+        }
+
+        //Update
+        [TestCase(Role.Admin)]
+        [TestCase(Role.TrainRouteManager)]
+        public void UpdateTest(Role role)
+        {
+            // given
+            var carriage = new Carriage();
             _carriageRepositoryMock.Setup(x => x.Update(It.IsAny<Carriage>(), It.IsAny<Carriage>()));
-            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(order);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriage);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+            _carriageTypeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new CarriageType());
+            _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
 
             // when
-            service.Update(10, new CarriageModel());
 
+            _service.Update(2, 2, new CarriageModel
+            {
+                Type = new CarriageTypeModel { Id = 1, Name="ddd" },
+                Train = new TrainModel { Id = 2 }
+            });
             // then
-            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _carriageRepositoryMock.Verify(s => s.Update(order, It.IsAny<Carriage>()), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.GetById(2), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.Update(carriage, It.IsAny<Carriage>()), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(2), Times.Once);
         }
 
         [Test]
         public void UpdateNegativeTest()
         {
             // given
-            var order = new Carriage();
             _carriageRepositoryMock.Setup(x => x.Update(It.IsAny<Carriage>(), It.IsAny<Carriage>()));
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Carriage?)null);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Update(10, new CarriageModel()));
-            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _carriageRepositoryMock.Verify(s => s.Update(order, It.IsAny<Carriage>()), Times.Never);
+            Assert.Throws<NotFoundException>(() => _service.Update(45,10, new CarriageModel()));
         }
 
         [Test]
-        public void DeleteTest()
+        public void UpdateNegativeAuthorizationExceptionTest()
         {
             // given
-            var order = new Carriage();
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Update(10, 10, new CarriageModel()));
+        }
+
+        //Delete
+        [TestCase(Role.Admin)]
+        public void DeleteTest(Role role)
+        {
+            // given
+            var carriage = new Carriage();
             _carriageRepositoryMock.Setup(x => x.Update(It.IsAny<Carriage>(), true));
-            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(order);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriage);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            service.Delete(10);
+            _service.Delete(10, 10);
 
             // then
             _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _carriageRepositoryMock.Verify(s => s.Update(order, true), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.Update(carriage, true), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
         }
 
         [Test]
@@ -149,30 +231,48 @@ namespace SpaceZD.BusinessLayer.Tests
             // given
             _carriageRepositoryMock.Setup(x => x.Update(It.IsAny<Carriage>(), true));
             _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Carriage?)null);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Delete(10));
-            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _carriageRepositoryMock.Verify(s => s.Update(It.IsAny<Carriage>(), true), Times.Never);
+            Assert.Throws<NotFoundException>(() => _service.Delete(45,10));  
+        }
+
+        [Test]
+        public void GetListDeletedNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.GetListDeleted(10));
+        }
+
+        [Test]
+        public void GetListDeletedNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.TrainRouteManager });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(10));
         }
 
         //Restore
         [Test]
         public void RestoreTest()
         {
-            // given
-            var order = new Carriage();
+            var carriage = new Carriage();
             _carriageRepositoryMock.Setup(x => x.Update(It.IsAny<Carriage>(), false));
-            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(order);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
+            _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(carriage);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
             // when
-            service.Restore(10);
+            _service.Restore(1, 1);
 
             // then
-            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _carriageRepositoryMock.Verify(s => s.Update(order, false), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.GetById(1), Times.Once);
+            _carriageRepositoryMock.Verify(s => s.Update(carriage, false), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(1), Times.Once);
         }
 
         [Test]
@@ -181,12 +281,29 @@ namespace SpaceZD.BusinessLayer.Tests
             // given
             _carriageRepositoryMock.Setup(x => x.Update(It.IsAny<Carriage>(), false));
             _carriageRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Carriage?)null);
-            var service = new CarriageService(_mapper, _carriageRepositoryMock.Object);
 
             // when then
-            Assert.Throws<NotFoundException>(() => service.Restore(10));
-            _carriageRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _carriageRepositoryMock.Verify(s => s.Update(It.IsAny<Carriage>(), true), Times.Never);
+            Assert.Throws<NotFoundException>(() => _service.Restore(50, 10));
+        }
+
+        [Test]
+        public void RestoreNegativeNotFoundExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.Restore(10, 10));
+        }
+
+        [Test]
+        public void RestoreNegativeAuthorizationExceptionTest()
+        {
+            // given
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.TrainRouteManager });
+
+            // when then
+            Assert.Throws<AuthorizationException>(() => _service.Restore(10, 10));
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
 {
@@ -9,16 +11,21 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
     {
         public static IEnumerable<TestCaseData> GetListTestCases()
         {
-            yield return new TestCaseData(GetCarriage(), GetCarriageModel(), false);
-            yield return new TestCaseData(GetCarriage(), GetCarriageModel(), true);
+            yield return new TestCaseData(GetCarriage(), ConvertCarriageToCarriageModels(GetCarriage()), Role.Admin);
+            yield return new TestCaseData(GetCarriage(), ConvertCarriageToCarriageModels(GetCarriage()), Role.TrainRouteManager);
         }
 
+        public static IEnumerable<TestCaseData> GetTestCaseDataForGetListDeletedTest()
+        {
+            yield return new TestCaseData(GetCarriage(), ConvertCarriageToCarriageModels(GetCarriage()), false);
+            yield return new TestCaseData(GetCarriage(), ConvertCarriageToCarriageModels(GetCarriage()));
+        }
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var carriage = GetCarriage();
-            var carriageModels = GetCarriageModel();
-            yield return new TestCaseData(carriage[0], carriageModels[0]);
-            yield return new TestCaseData(carriage[1], carriageModels[1]);
+            var carriageModels = ConvertCarriageToCarriageModels(GetCarriage());
+            yield return new TestCaseData(carriage[0], carriageModels[0], Role.Admin);
+            yield return new TestCaseData(carriage[0], carriageModels[0], Role.TrainRouteManager);
         }
 
         private static List<Carriage> GetCarriage() => new List<Carriage>
@@ -26,57 +33,107 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
             new Carriage
             {
                     Number=1,
-                    Type = new CarriageType()
+                    Train=new Train
                     {
-                        Name = "Плацкарт"
-                    }
+                        Carriages = new List<Carriage>()
+                        {
+                        new Carriage()
+                        {
+                            Number = 1,
+                            IsDeleted = false,
+                            Type = new CarriageType()
+                            {
+                                Name = "ffff",
+                                NumberOfSeats = 1,
+                                IsDeleted = false
+                            }
+                        }
+                        },
+                    IsDeleted = false
+                    },
+                    Type = new CarriageType{ Name="ffffff"},
+                    IsDeleted=false
+            },
+        new Carriage
+            {
+                    Number=2,
+                    Train=new Train
+                    {
+                        Carriages = new List<Carriage>()
+                        {
+                        new Carriage()
+                        {
+                            Number = 2,
+                            IsDeleted = false,
+                            Type = new CarriageType()
+                            {
+                                Name = "aaaa",
+                                NumberOfSeats = 2,
+                                IsDeleted = false
+                            }
+                        }
+                        },
+                    IsDeleted = false
+                    },
+                    Type = new CarriageType{ Name="aaaa"},
+                    IsDeleted=false
             },
             new Carriage
             {
-                    Number=2,
-                    Type = new CarriageType()
-                    {
-                        Name = "Ласточка"
-                    }
-            },
-                new Carriage
-                {
                     Number=3,
-                    Type = new CarriageType()
+                    Train=new Train
                     {
-                        Name = "Купе",
-                        IsDeleted=true
-                    }
-                }
-            };
+                        Carriages = new List<Carriage>()
+                        {
+                        new Carriage()
+                        {
+                            Number = 3,
+                            IsDeleted = false,
+                            Type = new CarriageType()
+                            {
+                                Name = "ssss",
+                                NumberOfSeats = 3,
+                                IsDeleted = false
+                            }
+                        }
+                        },
+                    IsDeleted = false
+                    },
+                    Type = new CarriageType{ Name="sss"},
+                    IsDeleted=false
+            }
+        };
 
-        private static List<CarriageModel> GetCarriageModel() => new List<CarriageModel>
+
+
+
+        private static List<CarriageModel> ConvertCarriageToCarriageModels(List<Carriage> carriages, bool includeAll = true)
         {
-            new CarriageModel
-            {
-                    Number=1,
-                    Type = new CarriageTypeModel()
-                    {
-                        Name = "Плацкарт"
-                    }
-            },
-            new CarriageModel
-            {
-                    Number=2,
-                    Type = new CarriageTypeModel()
-                    {
-                        Name = "Ласточка"
-                    }
-            },
-                new CarriageModel
-                {
-                    Number=3,
-                    Type = new CarriageTypeModel()
-                    {
-                        Name = "Купе",
-                        IsDeleted=true
-                    }
-                }
-            };
+            return carriages
+                   .Where(c => includeAll || c.IsDeleted)
+                   .Select(carriage => new CarriageModel
+                   {
+                       Number = carriage.Number,
+                       Train = new TrainModel
+                       {
+                           Carriages = new List<CarriageModel>
+                           {
+                                new CarriageModel
+                                {
+                                    Number = 1,
+                                    Type = new CarriageTypeModel
+                                    {
+                                        Name = "СВ",
+                                        NumberOfSeats = 1
+                                    }
+                                }
+                           }
+                       },
+                       Type = new CarriageTypeModel { Name = carriage.Type.Name, NumberOfSeats = carriage.Type.NumberOfSeats, IsDeleted = carriage.Type.IsDeleted },
+                       IsDeleted = carriage.IsDeleted
+
+                   })
+                   .ToList();
+        }
     }
 }

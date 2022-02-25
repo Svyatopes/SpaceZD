@@ -4,11 +4,12 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public interface ICarriageService
     {
-        int Add(CarriageModel carriage);
-        void Delete(int id);
-        CarriageModel GetById(int id);
-        List<CarriageModel> GetList(bool allIncluded);
-        void Restore(int id);
-        void Update(int id, CarriageModel carriage);
+        int Add(int userId, CarriageModel carriageModel);
+        void Delete(int userId, int id);
+        CarriageModel GetById(int userId, int id);
+        List<CarriageModel> GetList(int userId);
+        List<CarriageModel> GetListDeleted(int userId);
+        void Restore(int userId, int id);
+        void Update(int userId, int id, CarriageModel carriageModel);
     }
 }
