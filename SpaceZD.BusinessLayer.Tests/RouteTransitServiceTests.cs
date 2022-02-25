@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Moq;
@@ -9,12 +10,14 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.BusinessLayer.Tests
 {
     public class RouteTransitServiceTests
     {
+        private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IRepositorySoftDelete<RouteTransit>> _routeTransitRepositoryMock;
         private readonly IMapper _mapper;
 

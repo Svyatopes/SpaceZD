@@ -78,6 +78,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<ITripService, TripService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IPlatformService, PlatformService>();
+        services.AddScoped<IRouteTransitService, RouteTransitService>();
     }
 
     public static void AddSwaggerGenWithOptions(this IServiceCollection services)
