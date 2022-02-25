@@ -14,7 +14,7 @@ namespace SpaceZD.BusinessLayer.Services
         private readonly IRepositorySoftDelete<Train> _trainRepository;
         private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
-        public CarriageService(IMapper mapper, IRepositorySoftDelete<User> userRepository, IRepositorySoftDelete<Carriage> repository,
+        public CarriageService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Carriage> repository,
             IRepositorySoftDelete<CarriageType> carriagetypeRepository, IRepositorySoftDelete<Train> trainRepository)
             : base(mapper, userRepository)
         {

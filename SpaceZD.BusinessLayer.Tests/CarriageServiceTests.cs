@@ -18,7 +18,7 @@ namespace SpaceZD.BusinessLayer.Tests
     {
         private Mock<IRepositorySoftDelete<CarriageType>> _carriageTypeRepositoryMock;
         private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
-        private Mock<IRepositorySoftDelete<User>> _userRepositoryMock;
+        private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IRepositorySoftDelete<Carriage>> _carriageRepositoryMock;
         private ICarriageService _service;
         private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _carriageRepositoryMock = new Mock<IRepositorySoftDelete<Carriage>>();
             _carriageTypeRepositoryMock = new Mock<IRepositorySoftDelete<CarriageType>>();
             _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
-            _userRepositoryMock = new Mock<IRepositorySoftDelete<User>>();
+            _userRepositoryMock = new Mock<IUserRepository>();
             _service = new CarriageService(_mapper, _userRepositoryMock.Object, _carriageRepositoryMock.Object, _carriageTypeRepositoryMock.Object, _trainRepositoryMock.Object);
         }
 
