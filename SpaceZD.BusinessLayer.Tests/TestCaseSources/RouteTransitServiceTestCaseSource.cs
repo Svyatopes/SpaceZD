@@ -23,8 +23,8 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var routeTransit = GetRouteTransit();
-            yield return new TestCaseData(routeTransit[0], ConvertRouteTransitToRouteTransitModels(GetRouteTransit())[0]);
-            yield return new TestCaseData(routeTransit[1], ConvertRouteTransitToRouteTransitModels(GetRouteTransit())[1]);
+            yield return new TestCaseData(routeTransit[0], ConvertRouteTransitToRouteTransitModels(GetRouteTransit())[0], Role.Admin);
+            yield return new TestCaseData(routeTransit[1], ConvertRouteTransitToRouteTransitModels(GetRouteTransit())[1], Role.TrainRouteManager);
         }
 
         private static List<RouteTransit> GetRouteTransit() => new List<RouteTransit>

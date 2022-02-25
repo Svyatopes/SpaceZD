@@ -34,7 +34,7 @@ public class RouteTransitsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("deleted")]
+    [HttpGet]
     public ActionResult<List<RouteTransitOutputModel>> GetRouteTransits()
     {
         var userId = this.GetUserId();
@@ -46,7 +46,7 @@ public class RouteTransitsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<RouteTransitOutputModel>> GetRouteTransitsDeleted()
     {
@@ -72,7 +72,7 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public ActionResult EditRouteTransit(int id,[FromBody] RouteTransitInputModel routetransit)
+    public ActionResult EditRouteTransit(int id, [FromBody] RouteTransitInputModel routetransit)
     {
         var userId = this.GetUserId();
         if (userId == null)
