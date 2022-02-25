@@ -16,7 +16,7 @@ public class TicketRepository : BaseRepository, ITicketRepository
                 .Include(t => t.Person)
                 .FirstOrDefault(t => t.Id == id);
     
-    public List<Ticket> GetListById(int orderId) =>
+    public List<Ticket> GetListByOrderId(int orderId) =>
         _context.Tickets
                 .Include(t => t.Carriage)                
                 .Include(t => t.Person)

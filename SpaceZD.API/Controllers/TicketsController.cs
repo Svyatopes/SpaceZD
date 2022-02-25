@@ -102,20 +102,7 @@ public class TicketsController : ControllerBase
 
     }
 
-    [HttpPut("{id}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
-    public ActionResult EditTicket(int id, [FromBody] TicketUpdateInputModel ticketModel)
-    {
-        var userId = this.GetUserId();
-        if (userId == null)
-            return Unauthorized("Not valid token, try login again");
-
-        var ticket = _mapper.Map<TicketModel>(ticketModel);
-        _ticketService.Update(id, ticket, userId.Value);
-        return Accepted();
-    }
-
-
+    
 
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]

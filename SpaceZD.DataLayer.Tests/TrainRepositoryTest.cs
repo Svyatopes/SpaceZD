@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestMocks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,159 +12,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class TrainRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private TrainRepository _repository;
-
-    private Train GetTestEntity() => new Train()
-    {
-        Carriages = new List<Carriage>()
-        {
-            new()
-            {
-                Number = 5,
-                Type = new CarriageType()
-                {
-                    Name = "Econom",
-                    NumberOfSeats = 67
-                },
-                Tickets = new List<Ticket>
-                {
-                    new() { Price = 147 },
-                    new() { Price = 100 },
-                    new() { Price = 124 }
-                }
-            },
-            new()
-            {
-                Number = 45,
-                Type = new CarriageType()
-                {
-                    Name = "Premium",
-                    NumberOfSeats = 4
-                },
-                Tickets = new List<Ticket>
-                {
-                    new() { Price = 547 },
-                    new() { Price = 500 },
-                    new() { Price = 524 }
-                }
-            }
-
-        }
-    };
-
-    private List<Train> GetListTestEntities() => new List<Train>()
-    {
-        new()
-        {
-            Carriages = new List<Carriage>()
-            {
-                new()
-                {
-                    Number = 5,
-                    Type = new CarriageType()
-                    {
-                        Name = "Econom",
-                        NumberOfSeats = 67
-                    },
-                    Tickets = new List<Ticket>
-                    {
-                        new() { Price = 147 },
-                        new() { Price = 100 },
-                        new() { Price = 124 }
-                    }
-                },
-                new()
-                {
-                    Number = 45,
-                    Type = new CarriageType()
-                    {
-                        Name = "Premium",
-                        NumberOfSeats = 4
-                    },
-                    Tickets = new List<Ticket>
-                    {
-                        new() { Price = 547 },
-                        new() { Price = 500 },
-                        new() { Price = 524 }
-                    }
-                }
-
-            }
-        },new()
-        {
-            Carriages = new List<Carriage>()
-            {
-                new()
-                {
-                    Number = 45,
-                    Type = new CarriageType()
-                    {
-                        Name = "Econom",
-                        NumberOfSeats = 67
-                    },
-                    Tickets = new List<Ticket>
-                    {
-                        new() { Price = 147 },
-                        new() { Price = 100 },
-                        new() { Price = 124 }
-                    }
-                },
-                new()
-                {
-                    Number = 45,
-                    Type = new CarriageType()
-                    {
-                        Name = "Premium",
-                        NumberOfSeats = 4
-                    },
-                    Tickets = new List<Ticket>
-                    {
-                        new() { Price = 547 },
-                        new() { Price = 500 },
-                        new() { Price = 524 }
-                    }
-                }
-
-            }
-        },
-        new()
-        {
-            Carriages = new List<Carriage>()
-            {
-                new()
-                {
-                    Number = 7,
-                    Type = new CarriageType()
-                    {
-                        Name = "Cafe",
-                        NumberOfSeats = 5
-                    },
-                    Tickets = new List<Ticket>
-                    {
-                        new() { Price = 555 },
-                        new() { Price = 678 },
-                        new() { Price = 222 }
-                    }
-                },
-                new()
-                {
-                    Number = 59,
-                    Type = new CarriageType()
-                    {
-                        Name = "Econom",
-                        NumberOfSeats = 78
-                    },
-                    Tickets = new List<Ticket>
-                    {
-                        new() { Price = 678 },
-                        new() { Price = 345 },
-                        new() { Price = 134 }
-                    }
-                }
-
-            }
-        }
-    };
+    private TrainRepository _repository;   
 
 
 
@@ -190,7 +39,7 @@ public class TrainRepositoryTests
     public void GetByIdTest(int id)
     {
         //given
-        var entityToAdd = GetListTestEntities();
+        var entityToAdd = TrainRepositoryMocks.GetListTestEntities();
         foreach (var item in entityToAdd)
         {
             _context.Trains.Add(item);
@@ -216,7 +65,7 @@ public class TrainRepositoryTests
     public void GetListTest(bool includeAll)
     {
         //given
-        var entitiesToAdd = GetListTestEntities();
+        var entitiesToAdd = TrainRepositoryMocks.GetListTestEntities();
         entitiesToAdd.Last().IsDeleted = true;
         foreach (var item in entitiesToAdd)
         {
@@ -242,7 +91,7 @@ public class TrainRepositoryTests
     public void AddTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = TrainRepositoryMocks.GetTestEntity();
 
         //when 
         int id = _repository.Add(entityToAdd);
@@ -260,11 +109,11 @@ public class TrainRepositoryTests
     public void UpdateEntityTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = TrainRepositoryMocks.GetTestEntity();
         _context.Trains.Add(entityToAdd);
         _context.SaveChanges();
 
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = TrainRepositoryMocks.GetTestEntity();
         entityToEdit.Id = entityToAdd.Id;
         entityToEdit.Id = 7;
         entityToEdit.Carriages = entityToAdd.Carriages;
@@ -287,7 +136,7 @@ public class TrainRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         //given
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = TrainRepositoryMocks.GetTestEntity();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Trains.Add(entityToEdit);
         _context.SaveChanges();

@@ -66,13 +66,12 @@ namespace SpaceZD.BusinessLayer.Services
             addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
             addEntity.Role = Role.User;
             var allUsers = _userRepository.GetByLogin(addEntity.Login);
-            if (allUsers is null)
-            {
-                var id = _userRepository.Add(addEntity);            
-                return id;
-            }
-            else
+
+            if (allUsers is not null)
                 throw new AuthorizationException("This login is already taken");
+            
+            var id = _userRepository.Add(addEntity);            
+            return id;            
         }
 
 

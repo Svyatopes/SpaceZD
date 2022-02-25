@@ -58,7 +58,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("user/persons")]
+    [HttpGet("id/persons")]
     [AuthorizeRole(Role.User)]
     public ActionResult<List<PersonModel>> GetListPersonsFromUser()
     {
@@ -67,9 +67,9 @@ public class UsersController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var personModel = _userService.GetListUserPersons(userId.Value);
-        var user = _mapper.Map<List<PersonOutputModel>>(personModel);
-        if (user != null)
-            return Ok(user);
+        var persons = _mapper.Map<List<PersonOutputModel>>(personModel);
+        if (persons != null)
+            return Ok(persons);
         return BadRequest("Oh.....");
     }
 

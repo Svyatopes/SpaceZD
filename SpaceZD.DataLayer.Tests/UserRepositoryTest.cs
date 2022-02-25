@@ -4,6 +4,7 @@ using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestMocks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,141 +15,7 @@ public class UserRepositoryTests
     private VeryVeryImportantContext _context;
     private UserRepository _repository;
 
-    private User GetTestEntity() => new User()
-    {
-        Name = "Sasha",
-        Login = "SashahsaS",
-        PasswordHash = "hdebuvjcbh",
-        Role = Role.TrainRouteManager,
-        Orders = new List<Order>()
-        {
-            new()
-            {
-                StartStation = new TripStation()
-                {
-                    Station = new Station()
-                    {
-                        Name = "Spb"
-                    }
-                },
-                EndStation = new TripStation()
-                {
-                    Station = new Station()
-                    {
-                        Name = "Msk"
-                    }
-                }
-            }
-        }
-    };
-    private List<User> GetListTestEntities() => new List<User>()
-    {
-        new()
-        {
-            Name = "Sasha",
-            Login = "SashahsaS",
-            PasswordHash = "hdebuvjcbh",
-            Role = Role.TrainRouteManager,
-            Orders = new List<Order>()
-            {
-                new()
-                {
-                    StartStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Spb"
-                        }
-                    },
-                    EndStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Msk"
-                        }
-                    }
-                }
-            }
-        },
-        new()
-        {
-            Name = "Masha",
-            Login = "MashahsaM",
-            PasswordHash = "wertyu",
-            Role = Role.User,
-            Orders = new List<Order>()
-            {
-                new()
-                {
-                    StartStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Pskov"
-                        }
-                    },
-                    EndStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Sbp"
-                        }
-                    }
-                }
-            }
-        },
-        new()
-        {
-            Name = "Pasha",
-            Login = "PashahsaP",
-            PasswordHash = "asdfghj",
-            Role = Role.TrainRouteManager,
-            Orders = new List<Order>()
-            {
-                new()
-                {
-                    StartStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Msk"
-                        }
-                    },
-                    EndStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Vladivostok"
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    private List<Person> GetPersons() => new List<Person>
-    {
-            new Person
-            {
-                FirstName = "Klark",
-                LastName = "Kent",
-                Patronymic = "KalEl",
-                Passport = "7777666555",
-                User = new User(){ Name = "K" , Login = "KK", PasswordHash ="hgeurgeerj"}
-            },
-            new Person
-            {
-                FirstName = "Sara",
-                LastName = "Konor",
-                Patronymic = "Vyacheslavovna",
-                Passport = "3005123456",
-                IsDeleted = true,
-                User = new User(){ Name = "S" , Login = "SS", PasswordHash ="kjhgytfdr"}
-            }
-
-    };
-
-
+    
     [SetUp]
     public void Setup()
     {
@@ -161,6 +28,7 @@ public class UserRepositoryTests
         _context.Database.EnsureCreated();
 
         _repository = new UserRepository(_context);
+                
     }
 
 
@@ -168,7 +36,7 @@ public class UserRepositoryTests
     public void GetByIdTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = UserRepositoryMocks.GetTestEntity();
         _context.Users.Add(entityToAdd);
         _context.SaveChanges();
 
@@ -190,7 +58,7 @@ public class UserRepositoryTests
     public void GetByLoginTest(string login)
     {
         //given
-        var entitiesToAdd = GetListTestEntities();
+        var entitiesToAdd = UserRepositoryMocks.GetListTestEntities();
         foreach (var item in entitiesToAdd)
         {
             _context.Users.Add(item);
@@ -213,7 +81,7 @@ public class UserRepositoryTests
     public void GetListTest(bool includeAll)
     {
         //given
-        var entitiesToAdd = GetListTestEntities();
+        var entitiesToAdd = UserRepositoryMocks.GetListTestEntities();
         entitiesToAdd.Last().IsDeleted = true;
         foreach (var item in entitiesToAdd)
         {
@@ -239,7 +107,7 @@ public class UserRepositoryTests
     public void GetListUserPersons(int id)
     {
         //given
-        var entitiesToAdd = GetPersons();
+        var entitiesToAdd = UserRepositoryMocks.GetPersons();
         foreach (var item in entitiesToAdd)
         {
             _context.Persons.Add(item);
@@ -264,7 +132,7 @@ public class UserRepositoryTests
     public void AddTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = UserRepositoryMocks.GetTestEntity();
 
         //when 
         int id = _repository.Add(entityToAdd);
@@ -283,11 +151,11 @@ public class UserRepositoryTests
     public void UpdateEntityTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = UserRepositoryMocks.GetTestEntity();
         _context.Users.Add(entityToAdd);
         _context.SaveChanges();
 
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
         entityToEdit.Id = entityToAdd.Id;
         entityToEdit.Name = "Masha";
         entityToEdit.Login = "MashahsaM";
@@ -313,7 +181,7 @@ public class UserRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         //given
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Users.Add(entityToEdit);
         _context.SaveChanges();
@@ -331,7 +199,7 @@ public class UserRepositoryTests
     public void UpdateRoleTest(Role role)
     {
         //given
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
         _context.Users.Add(entityToEdit);
         _context.SaveChanges();
 
@@ -348,7 +216,7 @@ public class UserRepositoryTests
     public void UpdatePasswordHashTest(string passwordHash)
     {
         //given
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
         _context.Users.Add(entityToEdit);
         _context.SaveChanges();
 
