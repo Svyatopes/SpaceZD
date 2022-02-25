@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using SpaceZD.API.Attributes;
 using SpaceZD.API.Models;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.StationManager)]
 public class PlatformMaintenancesController : ControllerBase
 {
     [HttpGet]
