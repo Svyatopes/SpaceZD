@@ -32,7 +32,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _routeTransitRepositoryMock = new Mock<IRepositorySoftDelete<RouteTransit>>();
         }
 
-        //Add
+       /* //Add
         [TestCaseSource(typeof(RouteTransitServiceTestCaseSource), nameof(RouteTransitServiceTestCaseSource.GetListTestCases))]
         public void GetListTest(List<RouteTransit> routeTransit, List<RouteTransitModel> expectedRouteTransitModels, bool allIncluded)
         {
@@ -190,6 +190,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _routeTransitRepositoryMock.Verify(rt => rt.GetById(10), Times.Once);
             _routeTransitRepositoryMock.Verify(rt => rt.Update(It.IsAny<RouteTransit>(), true), Times.Never);
         }
+       */
 
     }
 }
