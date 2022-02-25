@@ -32,8 +32,8 @@ public class UsersController : ControllerBase
     {
         var userId = this.GetUserId();
         if (userId == null)
-            return Unauthorized("Not valid token, try login again"); 
-        
+            return Unauthorized("Not valid token, try login again");
+
         var userModel = _userService.GetList(userId.Value);
         var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
         if (user != null)
@@ -42,14 +42,14 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("delete")]
+    [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<UserModel>> GetUsersDelete()
     {
         var userId = this.GetUserId();
         if (userId == null)
-            return Unauthorized("Not valid token, try login again"); 
-        
+            return Unauthorized("Not valid token, try login again");
+
         var userModel = _userService.GetListDelete(userId.Value);
         var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
         if (user != null)
@@ -58,14 +58,14 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("users/persons")]
+    [HttpGet("user/persons")]
     [AuthorizeRole(Role.User)]
     public ActionResult<List<PersonModel>> GetListPersonsFromUser()
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
-        
+
         var personModel = _userService.GetListUserPersons(userId.Value);
         var user = _mapper.Map<List<PersonOutputModel>>(personModel);
         if (user != null)
@@ -97,8 +97,8 @@ public class UsersController : ControllerBase
     {
         var userId = this.GetUserId();
         if (userId == null)
-            return Unauthorized("Not valid token, try login again"); 
-        
+            return Unauthorized("Not valid token, try login again");
+
         var login = HttpContext.User.Identity.Name;
         var userModel = _userService.GetByLogin(login, userId.Value);
         var user = _mapper.Map<UserFullOutputModel>(userModel);
@@ -110,7 +110,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public ActionResult AddUser([FromBody] UserRegisterInputModel userModel)
     {
-                
+
         var user = _mapper.Map<UserModel>(userModel);
         var idAddedEntity = _userService.Add(user, userModel.Password);
 
@@ -118,24 +118,24 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPut]
+    [HttpPut("{id}")]
     [Authorize]
-    public ActionResult EditUser(int id, UserUpdateInputModel user)
+    public ActionResult EditUser(int id, [FromBody] UserUpdateInputModel user)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
-        
+
         var userForEdit = _mapper.Map<UserModel>(user);
         _userService.Update(id, userForEdit, userId.Value);
         return Accepted();
 
     }
-    
-    
-    [HttpPut("{id}")]
+
+
+    [HttpPut("{id}/role")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult EditRole(int id, RoleInputModel roleModel)
+    public ActionResult EditRole(int id, [FromBody] RoleInputModel roleModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -148,11 +148,11 @@ public class UsersController : ControllerBase
         return Accepted();
 
     }
-    
-    
-    [HttpPut("password")]
+
+
+    [HttpPut("{id}/password")]
     [Authorize]
-    public ActionResult EditPassword(UserUpdatePasswordInputModel userModel)
+    public ActionResult EditPassword([FromBody] UserUpdatePasswordInputModel userModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -165,21 +165,21 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [Authorize]
     public ActionResult DeleteUser(int id)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
-                
+
         _userService.Delete(id, userId.Value);
         return Accepted();
 
     }
 
 
-    [HttpPatch("role/{id}")]
+    [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult RestoreUser(int id)
     {

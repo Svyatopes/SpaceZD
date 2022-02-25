@@ -14,6 +14,5 @@ public class UserUpdatePasswordInputModel
     
     [Required]
     [Compare("PasswordNew")]
-    [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Пароль должен содержать только цифры и буквы")]
     public string PasswordNewRepeat { get; set; }
 }
