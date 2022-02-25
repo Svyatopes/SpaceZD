@@ -20,7 +20,7 @@ public class TicketRepository : BaseRepository, ITicketRepository
         _context.Tickets
                 .Include(t => t.Carriage)                
                 .Include(t => t.Person)
-                .Where(t => t.Order.Id == orderId).ToList();
+                .Where(t => t.Order.Id == orderId && !t.IsDeleted).ToList();
 
     public List<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 

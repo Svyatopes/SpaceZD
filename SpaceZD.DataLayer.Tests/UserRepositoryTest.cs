@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Repositories;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ public class UserRepositoryTests
         Name = "Sasha",
         Login = "SashahsaS",
         PasswordHash = "hdebuvjcbh",
-        Role = Enums.Role.TrainRouteManager,
+        Role = Role.TrainRouteManager,
         Orders = new List<Order>()
         {
             new()
@@ -47,7 +48,7 @@ public class UserRepositoryTests
             Name = "Sasha",
             Login = "SashahsaS",
             PasswordHash = "hdebuvjcbh",
-            Role = Enums.Role.TrainRouteManager,
+            Role = Role.TrainRouteManager,
             Orders = new List<Order>()
             {
                 new()
@@ -67,14 +68,14 @@ public class UserRepositoryTests
                         }
                     }
                 }
-            } 
+            }
         },
         new()
         {
             Name = "Masha",
             Login = "MashahsaM",
             PasswordHash = "wertyu",
-            Role = Enums.Role.User,
+            Role = Role.User,
             Orders = new List<Order>()
             {
                 new()
@@ -101,7 +102,7 @@ public class UserRepositoryTests
             Name = "Pasha",
             Login = "PashahsaP",
             PasswordHash = "asdfghj",
-            Role = Enums.Role.TrainRouteManager,
+            Role = Role.TrainRouteManager,
             Orders = new List<Order>()
             {
                 new()
@@ -124,7 +125,29 @@ public class UserRepositoryTests
             }
         }
     };
-   
+
+    private List<Person> GetPersons() => new List<Person>
+    {
+            new Person
+            {
+                FirstName = "Klark",
+                LastName = "Kent",
+                Patronymic = "KalEl",
+                Passport = "7777666555",
+                User = new User(){ Name = "K" , Login = "KK", PasswordHash ="hgeurgeerj"}
+            },
+            new Person
+            {
+                FirstName = "Sara",
+                LastName = "Konor",
+                Patronymic = "Vyacheslavovna",
+                Passport = "3005123456",
+                IsDeleted = true,
+                User = new User(){ Name = "S" , Login = "SS", PasswordHash ="kjhgytfdr"}
+            }
+
+    };
+
 
     [SetUp]
     public void Setup()
@@ -141,14 +164,14 @@ public class UserRepositoryTests
     }
 
 
-    [Test]    
+    [Test]
     public void GetByIdTest()
     {
         //given
         var entityToAdd = GetTestEntity();
         _context.Users.Add(entityToAdd);
         _context.SaveChanges();
-        
+
         var user = _context.Users.Find(1);
 
         //when
@@ -158,6 +181,29 @@ public class UserRepositoryTests
         Assert.AreEqual(user, received);
         Assert.AreEqual("Sasha", received.Name);
         Assert.AreEqual("SashahsaS", received.Login);
+
+    }
+
+    [TestCase("MashahsaM")]
+    [TestCase("SashahsaS")]
+    [TestCase("PashahsaP")]
+    public void GetByLoginTest(string login)
+    {
+        //given
+        var entitiesToAdd = GetListTestEntities();
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Users.Add(item);
+            _context.SaveChanges();
+        }
+
+        var user = _context.Users.FirstOrDefault(t => t.Login == login);
+
+        //when
+        var received = _repository.GetByLogin(login);
+
+        //then
+        Assert.AreEqual(user, received);
 
     }
 
@@ -187,7 +233,32 @@ public class UserRepositoryTests
 
     }
 
-    
+
+    [TestCase(1)]
+    [TestCase(2)]
+    public void GetListUserPersons(int id)
+    {
+        //given
+        var entitiesToAdd = GetPersons();
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Persons.Add(item);
+            _context.SaveChanges();
+
+        }
+        var expected = _context.Persons.Where(p => p.User.Id == id && !p.IsDeleted).ToList();
+
+        //when
+        var entities = _repository.GetListUserPersons(id);
+
+        //then
+        Assert.IsNotNull(entities);
+        Assert.AreEqual(expected.Count, entities.Count);
+        CollectionAssert.AreEqual(expected, entities);
+
+    }
+
+
 
     [Test]
     public void AddTest()
@@ -201,7 +272,7 @@ public class UserRepositoryTests
         //then
         var createdEntity = _context.Users.FirstOrDefault(o => o.Id == id);
 
-        
+
         Assert.AreEqual("Sasha", createdEntity.Name);
         Assert.AreEqual("SashahsaS", createdEntity.Login);
         Assert.AreEqual("hdebuvjcbh", createdEntity.PasswordHash);
@@ -229,7 +300,7 @@ public class UserRepositoryTests
         //then
         var updatedEntity = _context.Users.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
-        
+
         Assert.AreEqual("Masha", updatedEntity.Name);
         //не должно меняться
         Assert.AreEqual("SashahsaS", updatedEntity.Login);
@@ -251,8 +322,42 @@ public class UserRepositoryTests
         _repository.Update(entityToEdit, isDeleted);
 
         //then
-        
+
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
+    }
+
+    [TestCase(Role.User)]
+    [TestCase(Role.StationManager)]
+    public void UpdateRoleTest(Role role)
+    {
+        //given
+        var entityToEdit = GetTestEntity();
+        _context.Users.Add(entityToEdit);
+        _context.SaveChanges();
+
+        //when 
+        _repository.UpdateRole(entityToEdit, role);
+
+        //then
+
+        Assert.AreEqual(role, entityToEdit.Role);
+    }
+    
+    [TestCase("sdfghjkhgfd")]
+    [TestCase("ertyuioiuytre")]
+    public void UpdatePasswordHashTest(string passwordHash)
+    {
+        //given
+        var entityToEdit = GetTestEntity();
+        _context.Users.Add(entityToEdit);
+        _context.SaveChanges();
+
+        //when 
+        _repository.UpdatePassword(entityToEdit, passwordHash);
+
+        //then
+
+        Assert.AreEqual(passwordHash, entityToEdit.PasswordHash);
     }
 
 

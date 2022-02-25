@@ -48,7 +48,7 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
     public List<Person> GetListUserPersons(int id)
     {
         var entities = _context.Persons
-                               .Where(p => p.User.Id == id).ToList();
+                               .Where(p => p.User.Id == id && !p.IsDeleted).ToList();
 
         return entities;
     }

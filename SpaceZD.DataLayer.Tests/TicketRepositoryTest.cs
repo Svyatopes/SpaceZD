@@ -176,6 +176,34 @@ public class TicketRepositoryTests
         CollectionAssert.AreEqual(expected, entities);
 
     }
+    
+    
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void GetListByOrderId(int orderId)
+    {
+        //given
+        var entitiesToAdd = GetListTestEntities();
+        entitiesToAdd.Last().IsDeleted = true;
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Tickets.Add(item);
+            _context.SaveChanges();
+        }
+            
+    
+        var expected = _context.Tickets.Where(t =>  t.Order.Id == orderId && !t.IsDeleted).ToList();
+
+        //when
+        var entities = (List<Ticket>)_repository.GetListById(orderId);
+
+        //then
+        Assert.IsNotNull(entities);
+        Assert.AreEqual(expected.Count, entities.Count);
+        CollectionAssert.AreEqual(expected, entities);
+
+    }
 
 
     [Test]
@@ -222,12 +250,12 @@ public class TicketRepositoryTests
         //then
         var updatedEntity = _context.Tickets.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
-        Assert.IsNotNull(updatedEntity);        
+        Assert.IsNotNull(updatedEntity);
         Assert.AreEqual(7, updatedEntity.Carriage.Number);
         Assert.AreEqual(2, updatedEntity.SeatNumber);
-        Assert.AreEqual(677, updatedEntity.Price);
         Assert.AreEqual("Petrov", updatedEntity.Person.LastName);
         //не должны были поменятся
+        Assert.AreEqual(345, updatedEntity.Price);
         Assert.IsFalse(updatedEntity.IsPetPlaceIncluded);
         Assert.IsFalse(updatedEntity.IsTeaIncluded);
     }
