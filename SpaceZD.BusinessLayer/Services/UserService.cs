@@ -13,9 +13,7 @@ namespace SpaceZD.BusinessLayer.Services
         private readonly Role[] _allowedAllRoles = { Role.Admin, Role.User , Role.StationManager, Role.TrainRouteManager};
         private readonly Role[] _allowedRoles = { Role.Admin, Role.User};
                 
-        public UserService(IMapper mapper, IUserRepository userRepository) : base(mapper, userRepository) 
-        {            
-        }
+        public UserService(IMapper mapper, IUserRepository userRepository) : base(mapper, userRepository) {}
 
         
         public UserModel GetById(int id, int userId)
@@ -26,6 +24,7 @@ namespace SpaceZD.BusinessLayer.Services
             ThrowIfEntityNotFound(entity, id);
             return _mapper.Map<UserModel>(entity);
         }
+
         public UserModel GetByLogin(string login, int userId)
         {
             CheckUserRole(userId, _allowedAllRoles);

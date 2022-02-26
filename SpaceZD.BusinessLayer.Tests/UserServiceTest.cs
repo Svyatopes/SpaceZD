@@ -38,7 +38,6 @@ public class UserServiceTest
     {
         // given
         _userRepositoryMock.Setup(u => u.Add(It.IsAny<User>())).Returns(expected);
-        
 
         // when
         int actual = _service.Add(new UserModel(), "gtgt");
@@ -67,7 +66,7 @@ public class UserServiceTest
         // then       
         CollectionAssert.AreEqual(expectedFiltredByIsDeletedProp, actual);
         _userRepositoryMock.Verify(s => s.GetList(false), Times.Once);
-        
+
     }
 
 
@@ -81,7 +80,7 @@ public class UserServiceTest
 
         // when        
         // then
-        Assert.Throws<AuthorizationException>(()=>_service.GetList(5));
+        Assert.Throws<AuthorizationException>(() => _service.GetList(5));
     }
 
 
@@ -104,7 +103,7 @@ public class UserServiceTest
         CollectionAssert.AreEqual(expectedFiltredByIsDeletedProp, actual);
         _userRepositoryMock.Verify(s => s.GetList(true), Times.Once);
         _userRepositoryMock.Verify(s => s.GetById(userId), Times.Once);
-        
+
     }
 
 
@@ -121,6 +120,95 @@ public class UserServiceTest
         Assert.Throws<AuthorizationException>(() => _service.GetListDelete(5));
     }
 
+
+    [Test]
+    public void DeleteTest()
+    {
+        // given
+        var entity = new User() { Role = Role.User };
+        _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+
+        // when
+        _service.Delete(5, 1);
+
+        // then
+        _userRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        _userRepositoryMock.Verify(s => s.Update(entity, true), Times.Once);
+
+    }
+
+
+    [Test]
+    public void DeleteNegativeAuthorizationExceptionTest()
+    {
+        // given
+        var entity = new User() { };
+        _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+
+        // when
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.Delete(5, 1));
+
+    }
+
+
+    [TestCase(Role.Admin, 10)]
+    public void RestoreTest(Role role, int userId)
+    {
+        // given
+        var entity = new User() { Role = Role.User, Name = "h", Login = "l", PasswordHash = "uj" };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role, Id = userId });
+        _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), false));
+
+        // when
+        _service.Restore(15, userId);
+
+        // then
+        _userRepositoryMock.Verify(s => s.Update(It.IsAny<User>(), false), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Exactly(2));
+    }
+
+
+
+    [TestCase(Role.User, 10)]
+    [TestCase(Role.TrainRouteManager, 10)]
+    [TestCase(Role.StationManager, 10)]
+    public void RestoreNegativeAuthorizationExceptionTest(Role role, int userId)
+    {
+        // given
+        var entity = new User() { Role = Role.User, Name = "h", Login = "l", PasswordHash = "uj" };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role, Id = userId });
+        _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), false));
+
+        // when     
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.Restore(15, userId));
+
+    }
+
+
+    [Test]
+    public void RestoreNegativeNotFoundExceptionTest()
+    {
+        // given
+        var entity = new User() { Id = 6, Role = Role.User, Name = "h", Login = "l", PasswordHash = "uj" };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin, Id = 1 });
+        _userRepositoryMock.Setup(x => x.Update(entity, false));
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when     
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Restore(6, 1));
+
+    }
+
+
+    //GetById
+    //GetByLogin
+    //Update
+    //GetListUserPersons
 
 
     //[TestCaseSource(nameof(GetUser))]
@@ -161,30 +249,6 @@ public class UserServiceTest
     //        IsDeleted = entity.IsDeleted
     //    }, actual);        
     //}
-
-
-
-
-
-    //[TestCase(true, 1)]
-    //[TestCase(false, 1)]
-    //public void DeleteTest(bool isDeleted, int userId)
-    //{
-    //    // given
-    //    var entity = new User();
-    //    _repositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
-    //    _repositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
-    //    var service = new UserService(_repositoryMock.Object, _mapper);
-
-    //    // when
-    //    //service.Update(5, isDeleted, userId);
-
-    //    // then
-    //    _repositoryMock.Verify(s => s.GetById(5), Times.Once);
-    //    _repositoryMock.Verify(s => s.Update(entity, isDeleted), Times.Once);
-
-    //}
-
 
 
 
