@@ -29,7 +29,7 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedAllRoles);
 
             var entity = _userRepository.GetByLogin(login);
-            ThrowIfEntityNotFound(entity, entity.Id);
+            ThrowIfEntityNotFound(entity, userId);
             return _mapper.Map<UserModel>(entity);
         }
 
@@ -118,10 +118,15 @@ namespace SpaceZD.BusinessLayer.Services
         public void Delete(int id, int userId)
         {
             CheckUserRole(userId, _allowedAllRoles);
+            var userAllowed = _userRepository.GetById(userId);
 
-            var entity = _userRepository.GetById(id);
-            ThrowIfEntityNotFound(entity, id);
-            _userRepository.Update(entity, true);
+            var user = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(user, id);
+
+            if (userAllowed.Id == id || userAllowed.Role == Role.Admin)          
+                _userRepository.Update(user, true);
+            else
+                throw new AccessViolationException();
 
         }
         

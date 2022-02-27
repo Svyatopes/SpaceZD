@@ -35,9 +35,9 @@ public class UsersController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var userModel = _userService.GetList(userId.Value);
-        var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
-        if (user != null)
-            return Ok(user);
+        var users = _mapper.Map<List<UserShortOutputModel>>(userModel);
+        if (users != null)
+            return Ok(users);
         return BadRequest("Oh.....");
     }
 
@@ -51,29 +51,14 @@ public class UsersController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var userModel = _userService.GetListDelete(userId.Value);
-        var user = _mapper.Map<List<UserShortOutputModel>>(userModel);
-        if (user != null)
-            return Ok(user);
+        var users = _mapper.Map<List<UserShortOutputModel>>(userModel);
+        if (users != null)
+            return Ok(users);
         return BadRequest("Oh.....");
     }
 
 
-    [HttpGet("id/persons")]
-    [AuthorizeRole(Role.User)]
-    public ActionResult<List<PersonModel>> GetListPersonsFromUser()
-    {
-        var userId = this.GetUserId();
-        if (userId == null)
-            return Unauthorized("Not valid token, try login again");
-
-        var personModel = _userService.GetListUserPersons(userId.Value);
-        var persons = _mapper.Map<List<PersonOutputModel>>(personModel);
-        if (persons != null)
-            return Ok(persons);
-        return BadRequest("Oh.....");
-    }
-
-
+    
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult<UserModel> GetUserById(int id)
