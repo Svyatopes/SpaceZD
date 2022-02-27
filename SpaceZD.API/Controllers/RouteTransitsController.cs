@@ -29,8 +29,8 @@ public class RouteTransitsController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _service.GetById(userId.Value, id);
-        var result = _mapper.Map<RouteTransitOutputModel>(entities);
+        var routeTransitModel = _service.GetById(userId.Value, id);
+        var result = _mapper.Map<RouteTransitOutputModel>(routeTransitModel);
         return Ok(result);
     }
 
@@ -41,8 +41,8 @@ public class RouteTransitsController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _service.GetList(userId.Value);
-        var result = _mapper.Map<List<RouteTransitOutputModel>>(entities);
+        var routeTransitListModel = _service.GetList(userId.Value);
+        var result = _mapper.Map<List<RouteTransitOutputModel>>(routeTransitListModel);
         return Ok(result);
     }
 
@@ -54,32 +54,32 @@ public class RouteTransitsController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _service.GetListDeleted(userId.Value);
-        var result = _mapper.Map<List<RouteTransitOutputModel>>(entities);
+        var routeTransitListModel = _service.GetListDeleted(userId.Value);
+        var result = _mapper.Map<List<RouteTransitOutputModel>>(routeTransitListModel);
         return Ok(result);
     }
 
     [HttpPost]
-    public ActionResult AddRouteTransit([FromBody] RouteTransitInputModel routetransit)
+    public ActionResult AddRouteTransit([FromBody] RouteTransitInputModel routeTransitInputModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _mapper.Map<RouteTransitModel>(routetransit);
-        var idRouteTransitCreate = _service.Add(userId.Value, entities);
+        var routeTransitModel = _mapper.Map<RouteTransitModel>(routeTransitInputModel);
+        var idRouteTransitCreate = _service.Add(userId.Value, routeTransitModel);
         return StatusCode(StatusCodes.Status201Created, idRouteTransitCreate);
     }
 
     [HttpPut("{id}")]
-    public ActionResult EditRouteTransit(int id, [FromBody] RouteTransitInputModel routetransit)
+    public ActionResult EditRouteTransit(int id, [FromBody] RouteTransitInputModel routeTransitInputModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _mapper.Map<RouteTransitModel>(routetransit);
-        _service.Update(userId.Value, id, entities);
+        var routeTransit = _mapper.Map<RouteTransitModel>(routeTransitInputModel);
+        _service.Update(userId.Value, id, routeTransit);
 
         return StatusCode(StatusCodes.Status202Accepted);
     }

@@ -29,7 +29,8 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedRoles);
 
             var routeTransit = GetRouteTransitById(id);
-            return _mapper.Map<RouteTransitModel>(routeTransit);
+            var routeTransitModel = _mapper.Map<RouteTransitModel>(routeTransit);
+            return routeTransitModel;
         }
 
         public List<RouteTransitModel> GetList(int userId)
@@ -37,7 +38,8 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedRoles);
 
             var routeTransit = _routeTransitRepository.GetList();
-            return _mapper.Map<List<RouteTransitModel>>(routeTransit);
+            var routeTransitListModel = _mapper.Map<List<RouteTransitModel>>(routeTransit);
+            return routeTransitListModel;
         }
 
         public List<RouteTransitModel> GetListDeleted(int userId)
@@ -45,32 +47,42 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, Role.Admin);
 
             var routeTransit = _routeTransitRepository.GetList(true).Where(t => t.IsDeleted);
-            return _mapper.Map<List<RouteTransitModel>>(routeTransit);
+            var routeTransitListModel = _mapper.Map<List<RouteTransitModel>>(routeTransit);
+            return routeTransitListModel;
         }
 
-        public int Add(int userId, RouteTransitModel routeTransit)
+        public int Add(int userId, RouteTransitModel routeTransitModel)
         {
             CheckUserRole(userId, _allowedRoles);
 
-            var routeTransitEntity = _mapper.Map<RouteTransit>(routeTransit);
-            var route = _routeRepository.GetById(routeTransitEntity.Route.Id);
-            var transit = _transitRepository.GetById(routeTransitEntity.Transit.Id);
-            routeTransitEntity.Transit = transit;
-            routeTransitEntity.Route = route;
-            return _routeTransitRepository.Add(routeTransitEntity);
+            var routeTransit = _mapper.Map<RouteTransit>(routeTransitModel);
+            var route = _routeRepository.GetById(routeTransit.Route.Id);
+            ThrowIfEntityNotFound(route, routeTransit.Route.Id);
+
+            var transit = _transitRepository.GetById(routeTransit.Transit.Id);
+            ThrowIfEntityNotFound(transit, routeTransit.Transit.Id);
+
+            routeTransit.Transit = transit;
+            routeTransit.Route = route;
+            return _routeTransitRepository.Add(routeTransit);
         }
 
-        public void Update(int userId, int id, RouteTransitModel routeTransit)
+        public void Update(int userId, int id, RouteTransitModel routeTransitModel)
         {
             CheckUserRole(userId, _allowedRoles);
 
-            var routeTransitEntity = GetRouteTransitById(id);
-            var newRouteTransitEntity = _mapper.Map<RouteTransit>(routeTransit);
-            var route = _routeRepository.GetById(newRouteTransitEntity.Route.Id);
-            var transit = _transitRepository.GetById(newRouteTransitEntity.Transit.Id);
-            newRouteTransitEntity.Transit = transit;
-            newRouteTransitEntity.Route = route;
-            _routeTransitRepository.Update(routeTransitEntity, newRouteTransitEntity);
+            var routeTransit = GetRouteTransitById(id);
+            var newRouteTransit = _mapper.Map<RouteTransit>(routeTransitModel);
+
+            var route = _routeRepository.GetById(routeTransitModel.Route.Id);
+            ThrowIfEntityNotFound(route, routeTransitModel.Route.Id);
+
+            var transit = _transitRepository.GetById(routeTransitModel.Transit.Id);
+            ThrowIfEntityNotFound(transit, routeTransitModel.Transit.Id);
+
+            newRouteTransit.Transit = transit;
+            newRouteTransit.Route = route;
+            _routeTransitRepository.Update(routeTransit, newRouteTransit);
         }
 
         public void Restore(int userId, int id)
