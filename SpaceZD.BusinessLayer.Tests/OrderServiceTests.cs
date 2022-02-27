@@ -192,7 +192,15 @@ public class OrderServiceTests
     {
         // given
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
-        var trip = new Trip { Id = tripId };
+        var trip = new Trip 
+        { 
+            Id = tripId,
+            Stations = new List<TripStation>
+            {
+                new TripStation { Id = tripStationStartId},
+                new TripStation { Id = tripStationEndId}
+            }
+        };
 
         _tripRepositoryMock.Setup(x => x.GetById(tripId)).Returns(trip);
 
@@ -379,6 +387,48 @@ public class OrderServiceTests
         _orderRepositoryMock.Verify(s => s.Add(It.IsAny<Order>()), Times.Never);
     }
 
+    [TestCase(1, 2, 3)]
+    public void AddArgumentExceptionTest(int tripId, int tripStationStartId, int tripStationEndId)
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
+        var trip = new Trip
+        {
+            Id = tripId,
+            Stations = new List<TripStation>
+            {
+                new TripStation { Id = tripStationEndId},
+                new TripStation { Id = tripStationStartId}
+            }
+        };
+
+        _tripRepositoryMock.Setup(x => x.GetById(tripId)).Returns(trip);
+
+        _tripStationRepositoryMock.Setup(x => x.GetById(tripStationStartId))
+            .Returns(new TripStation { Id = tripStationStartId, Trip = trip });
+
+        _tripStationRepositoryMock.Setup(x => x.GetById(tripStationEndId))
+            .Returns(new TripStation { Id = tripStationEndId, Trip = trip });
+
+        var orderService = new OrderService(_mapper, _orderRepositoryMock.Object,
+             _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
+
+        // when then
+        Assert.Throws<ArgumentException>(() => orderService.Add(
+            1,
+            new OrderModel
+            {
+                Trip = new TripModel { Id = tripId },
+                StartStation = new TripStationModel { Id = tripStationStartId },
+                EndStation = new TripStationModel { Id = tripStationEndId }
+            }));
+
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        _tripRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        _tripStationRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Exactly(2));
+        _orderRepositoryMock.Verify(s => s.Add(It.IsAny<Order>()), Times.Never);
+    }
+
 
     [TestCase(42, 1, 2, 3)]
     public void EditTest(int expected, int tripId, int tripStationStartId, int tripStationEndId)
@@ -386,7 +436,15 @@ public class OrderServiceTests
         // given
         var userId = 1;
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User, Id = userId });
-        var trip = new Trip { Id = tripId };
+        var trip = new Trip
+        {
+            Id = tripId,
+            Stations = new List<TripStation>
+            {
+                new TripStation { Id = tripStationStartId, Station = new Station{Id = tripStationStartId } },
+                new TripStation { Id = tripStationEndId, Station = new Station{Id = tripStationEndId} }
+            }
+        };
 
         _tripRepositoryMock.Setup(x => x.GetById(tripId)).Returns(trip);
 
@@ -399,6 +457,7 @@ public class OrderServiceTests
         _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(
             new Order
             {
+                Status = OrderStatus.Draft,
                 Trip = new Trip(),
                 StartStation = new TripStation(),
                 EndStation = new TripStation(),
@@ -453,15 +512,16 @@ public class OrderServiceTests
         _orderRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), It.IsAny<Order>()), Times.Never);
     }
 
-    [TestCase(Role.StationManager, 1, 1)]
-    [TestCase(Role.TrainRouteManager, 1, 1)]
-    [TestCase(Role.User, 1, 2)]
-    public void EditUserAuthorizationExceptionTest(Role role, int userId, int userIdInOrder)
+    [TestCase(Role.StationManager, 1, 1, OrderStatus.Draft)]
+    [TestCase(Role.TrainRouteManager, 1, 1, OrderStatus.Draft)]
+    [TestCase(Role.User, 1, 2, OrderStatus.Draft)]
+    [TestCase(Role.User, 1, 2, OrderStatus.Buyed)]
+    public void EditUserAuthorizationExceptionTest(Role role, int userId, int userIdInOrder, OrderStatus status)
     {
         // given
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Id = userId, Role = role });
         _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(
-            new Order { User = new User { Id = userIdInOrder } });
+            new Order { User = new User { Id = userIdInOrder }, Status = status });
 
         var orderService = new OrderService(_mapper, _orderRepositoryMock.Object,
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
@@ -545,6 +605,7 @@ public class OrderServiceTests
         _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(
             new Order
             {
+                Status = OrderStatus.Draft,
                 Trip = new Trip(),
                 StartStation = new TripStation(),
                 EndStation = new TripStation(),
@@ -632,6 +693,7 @@ public class OrderServiceTests
         _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(
             new Order
             {
+                Status = OrderStatus.Draft,
                 Trip = new Trip(),
                 StartStation = new TripStation(),
                 EndStation = new TripStation(),
@@ -654,6 +716,62 @@ public class OrderServiceTests
             }));
 
         _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+        _orderRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), It.IsAny<Order>()), Times.Never);
+    }
+
+    [TestCase(1, 2, 3)]
+    public void EditArgumentExceptionTest(int tripId, int tripStationStartId, int tripStationEndId)
+    {
+        // given
+        var userId = 1;
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User, Id = userId });
+        var trip = new Trip
+        {
+            Id = tripId,
+            Stations = new List<TripStation>
+            {
+                new TripStation { Id = tripStationEndId, Station = new Station{Id = tripStationEndId} },
+                new TripStation { Id = tripStationStartId, Station = new Station{Id = tripStationStartId } },
+            }
+        };
+
+        _tripRepositoryMock.Setup(x => x.GetById(tripId)).Returns(trip);
+
+        _tripStationRepositoryMock.Setup(x => x.GetById(tripStationStartId))
+            .Returns(new TripStation { Id = tripStationStartId, Trip = trip });
+
+        _tripStationRepositoryMock.Setup(x => x.GetById(tripStationEndId))
+            .Returns(new TripStation { Id = tripStationEndId, Trip = trip });
+
+        _orderRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(
+            new Order
+            {
+                Status = OrderStatus.Draft,
+                Trip = new Trip(),
+                StartStation = new TripStation(),
+                EndStation = new TripStation(),
+                User = new User { Id = userId }
+            });
+
+        var orderService = new OrderService(_mapper, _orderRepositoryMock.Object,
+             _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
+
+        // when
+        Assert.Throws<ArgumentException>(() => orderService.Edit(
+            userId,
+            2,
+            new OrderModel
+            {
+                Trip = new TripModel { Id = tripId },
+                StartStation = new TripStationModel { Id = tripStationStartId },
+                EndStation = new TripStationModel { Id = tripStationEndId }
+            }));
+
+        // then
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        _tripRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        _tripStationRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Exactly(2));
+        _orderRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
         _orderRepositoryMock.Verify(s => s.Update(It.IsAny<Order>(), It.IsAny<Order>()), Times.Never);
     }
 
