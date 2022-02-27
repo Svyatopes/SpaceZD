@@ -14,47 +14,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
             yield return new TestCaseData(GetUsers(), GetUserModels(), 2);
             
         }
-        public static IEnumerable<TestCaseData> GetListWithDeleteTestCases()
-        {
-            yield return new TestCaseData(GetUsers(), GetUserModels(), false, 1);
-            yield return new TestCaseData(GetUsers(), GetUserModels(), true, 1);
-            yield return new TestCaseData(GetUsers(), GetUserModels(), false, 2);
-            yield return new TestCaseData(GetUsers(), GetUserModels(), true, 2);
-        }
-
-        public static IEnumerable<TestCaseData> GetByIdTestCases()
-        {
-            var users = GetUsers();
-            var userModels = GetUserModels();
-            yield return new TestCaseData(users[0], userModels[0], Role.User, 42);
-            yield return new TestCaseData(users[1], userModels[1], Role.Admin, 1);
-        }
-
-        public static IEnumerable<TestCaseData> GetListPersonsFromUserTestCases()
-        {
-            yield return new TestCaseData(GetPersonsFromUser(), GetPersonsFromUserModel(), false, 1);
-            yield return new TestCaseData(GetPersonsFromUser(), GetPersonsFromUserModel(), true, 1);
-            yield return new TestCaseData(GetPersonsFromUser(), GetPersonsFromUserModel(), false, 2);
-            yield return new TestCaseData(GetPersonsFromUser(), GetPersonsFromUserModel(), true, 2);
-        }
-
-        private static List<Person> GetPersonsFromUser() => new List<Person>
-        {
-            new Person() { FirstName = "Sasha", LastName = "Sashaaa", Patronymic = "Sashaaaaa", Passport = "4567", User = new User(){ Login = "ii" }, IsDeleted = false },
-            new Person() { FirstName = "Masha", LastName = "Mashaaa", Patronymic = "Mashaaaaa", Passport = "8765", User = new User(){ Login = "rr" }, IsDeleted = true },
-            new Person() { FirstName = "Pasha", LastName = "Pashaaa", Patronymic = "Pashaaaaa", Passport = "66666", User = new User(){ Login = "dd" }, IsDeleted = false },
-            new Person() { FirstName = "Dasha", LastName = "Dashaaa", Patronymic = "Dashaaaaa", Passport = "987654", User = new User(){ Login = "hh" }, IsDeleted = true }
-        };
-
-
-        private static List<PersonModel> GetPersonsFromUserModel() => new List<PersonModel>
-        {
-            new PersonModel() { FirstName = "Sasha", LastName = "Sashaaa", Patronymic = "Sashaaaaa", Passport = "4567", User = new UserModel(){ Login = "ii" }, IsDeleted = false },
-            new PersonModel() { FirstName = "Masha", LastName = "Mashaaa", Patronymic = "Mashaaaaa", Passport = "8765", User = new UserModel(){ Login = "rr" }, IsDeleted = true },
-            new PersonModel() { FirstName = "Pasha", LastName = "Pashaaa", Patronymic = "Pashaaaaa", Passport = "66666", User = new UserModel(){ Login = "dd" }, IsDeleted = false },
-            new PersonModel() { FirstName = "Dasha", LastName = "Dashaaa", Patronymic = "Dashaaaaa", Passport = "987654", User = new UserModel(){ Login = "hh" }, IsDeleted = true }
-        };
-
+                
         private static List<User> GetUsers() => new List<User>
         {
             new User

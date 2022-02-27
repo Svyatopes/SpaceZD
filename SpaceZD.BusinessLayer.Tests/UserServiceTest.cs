@@ -202,72 +202,130 @@ public class UserServiceTest
         // then
         Assert.Throws<NotFoundException>(() => _service.Restore(6, 1));
 
+    }     
+
+
+    [Test]        
+    public void GetByIdTest()
+    {
+        // given
+        var user = new User() { Name = "f", Role = Role.Admin, IsDeleted = false, Login = "y" };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(user);
+        
+        // when
+        var actual = _service.GetById(2, user.Id);
+
+        // then
+        Assert.AreEqual(new UserModel
+        {
+            Name = user.Name,
+            Login = user.Login,
+            Role = user.Role,
+            IsDeleted = user.IsDeleted
+        }, actual);
+    }
+    
+    
+    [Test]        
+    public void GetByIdNegativeAuthorizationExceptionTest()
+    {
+        // given
+        var user = new User() { Name = "f", Role = Role.User, IsDeleted = false, Login = "y" };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(user);
+        
+        // when
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.GetById(2, user.Id));
+
+    }
+    
+    [Test]        
+    public void GetByIdNegativeNotFoundExceptionTest()
+    {
+        // given
+        var user = new User() { Name = "f", Role = Role.User, IsDeleted = false, Login = "y" };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+        
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.GetById(2, user.Id));
+
     }
 
 
-    //GetById
-    //GetByLogin
-    //Update
-    //GetListUserPersons
+    [Test]
+    public void GetByLoginTest()
+    {
+        // given
+        var user = new User() { Name = "f", Role = Role.Admin, IsDeleted = false, Login = "y" };
 
+        _userRepositoryMock.Setup(x => x.GetByLogin(It.IsAny<string>())).Returns(user);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(user);
 
-    //[TestCaseSource(nameof(GetUser))]
-    //public void GetByIdTest(User entity, int userId)
-    //{
-    //    // given
-    //    _repositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
-    //    var service = new UserService(_repositoryMock.Object, _mapper);
+        // when
+        var actual = _service.GetByLogin("y", user.Id);
 
-    //    // when
-    //    var actual = service.GetById(2, userId);
+        // then
+        _userRepositoryMock.Verify(s => s.GetByLogin(It.IsAny<string>()), Times.Once);
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        Assert.AreEqual(new UserModel
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Login = user.Login,
+            IsDeleted = user.IsDeleted
+        }, actual);
+    }
+    
+    
+    [Test]
+    public void GetByLoginNegativeNotFoundExceptionTest()
+    {
+        // given
+        var user = new User() { Role = Role.Admin, Login = "y" };
 
-    //    // then
-    //    Assert.AreEqual(new UserModel
-    //    {
-    //        Name = entity.Name,
-    //        Login = entity.Login,             
-    //        IsDeleted = entity.IsDeleted
-    //    }, actual);        
-    //}
+        _userRepositoryMock.Setup(x => x.GetByLogin(It.IsAny<string>())).Returns((User?)null);
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(user);
 
-    //[TestCaseSource(nameof(GetUser))]
-    //public void GetByLogin(User entity, int userId)
-    //{
-    //    // given
-    //    _repositoryMock.Setup(x => x.GetByLogin(It.IsAny<string>())).Returns(entity);
-    //    var service = new UserService(_repositoryMock.Object, _mapper);
-
-    //    // when
-    //    var actual = service.GetByLogin("Masha", userId);
-
-    //    // then
-    //    Assert.AreEqual(new UserModel
-    //    {
-    //        Id = entity.Id,
-    //        Name = entity.Name,
-    //        Login = entity.Login,             
-    //        IsDeleted = entity.IsDeleted
-    //    }, actual);        
-    //}
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.GetByLogin("y", user.Id));
+    }
 
 
 
-    //[Test]
-    //public void UpdateTest(int userId)
-    //{
-    //    // given
-    //    var entity = new User();
-    //    _repositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
-    //    _repositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
-    //    var service = new UserService(_repositoryMock.Object, _mapper);
-    //    var entityNew = new UserModel() { Name = "test" };
-    //    // when
-    //    service.Update(5, entityNew, userId);
+    [TestCase(Role.User)]
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    [TestCase(Role.StationManager)]
+    public void UpdateTest(Role role)
+    {
+        // given
+        var entity = new User() { Role= role};
+        _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+        var entityNew = new UserModel() { Name = "test" };
+        // when
+        _service.Update(5, entityNew, entity.Id);
 
-    //    // then
-    //    _repositoryMock.Verify(s => s.GetById(5), Times.Once);
-    //    _repositoryMock.Verify(s => s.Update(entity, It.IsAny<User>()), Times.Once);
-    //}
+        // then
+        _userRepositoryMock.Verify(s => s.GetById(5), Times.Once);
+        _userRepositoryMock.Verify(s => s.Update(entity, It.IsAny<User>()), Times.Once);
+    }
+
+
+    [TestCase(Role.User)]
+    public void UpdateNegativeNotFoundExceptionTest(Role role)
+    {
+        // given
+        var entity = new User() { Role = role };
+        _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+        var entityNew = new UserModel() { Name = "test" };
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Update(5, entityNew, entity.Id));
+    }
 
 
 }

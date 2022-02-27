@@ -30,7 +30,7 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedAllRoles);
 
             var entity = _userRepository.GetByLogin(login);
-            ThrowIfEntityNotFound(entity, entity.Id);
+            ThrowIfEntityNotFound(entity, userId);
             return _mapper.Map<UserModel>(entity);
         }
 
