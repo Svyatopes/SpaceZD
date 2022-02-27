@@ -77,7 +77,6 @@ namespace SpaceZD.DataLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("PriceCoefficient")
-                        .ValueGeneratedOnAdd()
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal(6,3)")
                         .HasDefaultValue(1m);

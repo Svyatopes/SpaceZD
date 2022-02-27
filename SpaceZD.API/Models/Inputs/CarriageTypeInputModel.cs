@@ -14,5 +14,5 @@ public class CarriageTypeInputModel
     
     [Required]
     [Range(0.001, 999)]
-    public decimal PriceFactor { get; set; }
+    public decimal PriceCoefficient { get; set; }
 }
