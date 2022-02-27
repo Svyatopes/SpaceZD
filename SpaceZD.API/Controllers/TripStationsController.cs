@@ -50,15 +50,15 @@ public class TripStationsController : ControllerBase
         return NoContent();
     }
 
-    //api/TripStations/42/set-platform?idPlatform=22
+    //api/TripStations/42/set-platform?platformId=22
     [HttpPut("{id}/set-platform")]
-    public ActionResult SetPlatformTripStation(int id, [FromQuery] int idPlatform)
+    public ActionResult SetPlatformTripStation(int id, [FromQuery] int platformId)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        _service.SetPlatform(userId.Value, id, idPlatform);
+        _service.SetPlatform(userId.Value, id, platformId);
         return NoContent();
     }
 
