@@ -9,6 +9,7 @@ using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using SpaceZD.DataLayer.Repositories;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ namespace SpaceZD.BusinessLayer.Tests
     public class RouteTransitServiceTests
     {
         private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IRepositorySoftDelete<RouteTransit>> _routeTransitRepositoryMock;
+        private Mock<IRouteTransitRepository> _routeTransitRepositoryMock;
         private Mock<IRepositorySoftDelete<Route>> _routeRepositoryMock;
         private Mock<IRepositorySoftDelete<Transit>> _transitRepositoryMock;
         private IRouteTransitService _service;
@@ -32,7 +33,7 @@ namespace SpaceZD.BusinessLayer.Tests
         [SetUp]
         public void SetUp()
         {
-            _routeTransitRepositoryMock = new Mock<IRepositorySoftDelete<RouteTransit>>();
+            _routeTransitRepositoryMock = new Mock<IRouteTransitRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _routeRepositoryMock = new Mock<IRepositorySoftDelete<Route>>();
             _transitRepositoryMock = new Mock<IRepositorySoftDelete<Transit>>();
@@ -45,15 +46,15 @@ namespace SpaceZD.BusinessLayer.Tests
         public void GetListTest(List<RouteTransit> routeTransit, List<RouteTransitModel> expectedRouteTransitModels, Role role)
         {
             // given
-            _routeTransitRepositoryMock.Setup(x => x.GetList(false)).Returns(routeTransit);
+            _routeTransitRepositoryMock.Setup(x => x.GetList(It.IsAny<int>(), false)).Returns(routeTransit);
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var routeTransitModels = _service.GetList(10);
+            var routeTransitModels = _service.GetListByRoute(10,10);
 
             // then
             _userRepositoryMock.Verify(x => x.GetById(10), Times.Once());
-            _routeTransitRepositoryMock.Verify(rt => rt.GetList(It.IsAny<bool>()), Times.Once);
+            _routeTransitRepositoryMock.Verify(rt => rt.GetList(It.IsAny<int>(), It.IsAny<bool>()), Times.Once);
             CollectionAssert.AreEqual(expectedRouteTransitModels, routeTransitModels);
         }
 
@@ -64,7 +65,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetList(10));
+            Assert.Throws<NotFoundException>(() => _service.GetListByRoute(10,10));
         }
 
         [Test]
@@ -74,7 +75,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
 
             // when then
-            Assert.Throws<AuthorizationException>(() => _service.GetList(10));
+            Assert.Throws<AuthorizationException>(() => _service.GetListByRoute(10, 10));
         }
 
         // GetList
@@ -82,15 +83,15 @@ namespace SpaceZD.BusinessLayer.Tests
         public void GetListDeletedTest(List<RouteTransit> routeTransit, List<RouteTransitModel> expectedRouteTransitModels, Role role)
         {
             // given
-            _routeTransitRepositoryMock.Setup(x => x.GetList(true)).Returns(routeTransit);
+            _routeTransitRepositoryMock.Setup(x => x.GetList(It.IsAny<int>(), true)).Returns(routeTransit);
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var routeTransitModels = _service.GetListDeleted(10);
+            var routeTransitModels = _service.GetListByRouteDeleted(10, 10);
 
             // then
             _userRepositoryMock.Verify(x => x.GetById(10), Times.Once());
-            _routeTransitRepositoryMock.Verify(rt => rt.GetList(true), Times.Once);
+            _routeTransitRepositoryMock.Verify(rt => rt.GetList(It.IsAny<int>(), true), Times.Once);
             CollectionAssert.AreEqual(expectedRouteTransitModels, routeTransitModels);
         }
 
@@ -101,7 +102,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetListDeleted(10));
+            Assert.Throws<NotFoundException>(() => _service.GetListByRouteDeleted(10, 10));
         }
 
         [Test]
@@ -111,7 +112,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
 
             // when then
-            Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(10));
+            Assert.Throws<AuthorizationException>(() => _service.GetListByRouteDeleted(10, 10));
         }
 
         // GetById
@@ -161,12 +162,14 @@ namespace SpaceZD.BusinessLayer.Tests
             // given
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
             _routeTransitRepositoryMock.Setup(rt => rt.Add(It.IsAny<RouteTransit>())).Returns(expected);
+            _routeRepositoryMock.Setup(rt => rt.GetById(It.IsAny<int>())).Returns(new Route());
+            _transitRepositoryMock.Setup(rt => rt.GetById(It.IsAny<int>())).Returns(new Transit());
 
             // when
             int actual = _service.Add(10, new RouteTransitModel
             {
-                Transit = new TransitModel { Id = 1 },
-                Route = new RouteModel { Id = 2 }
+                Transit = new TransitModel { Id = 0 },
+                Route = new RouteModel { Id = 0 }
             });
 
             // then
@@ -203,6 +206,8 @@ namespace SpaceZD.BusinessLayer.Tests
             var routeTransit = new RouteTransit();
             _routeTransitRepositoryMock.Setup(rt => rt.Update(It.IsAny<RouteTransit>(), It.IsAny<RouteTransit>()));
             _routeTransitRepositoryMock.Setup(rt => rt.GetById(It.IsAny<int>())).Returns(routeTransit);
+            _routeRepositoryMock.Setup(rt => rt.GetById(It.IsAny<int>())).Returns(new Route());
+            _transitRepositoryMock.Setup(rt => rt.GetById(It.IsAny<int>())).Returns(new Transit());
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when

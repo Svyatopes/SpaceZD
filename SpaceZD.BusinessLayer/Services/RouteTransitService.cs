@@ -4,6 +4,7 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using SpaceZD.DataLayer.Repositories;
 
 namespace SpaceZD.BusinessLayer.Services
 {
@@ -11,12 +12,12 @@ namespace SpaceZD.BusinessLayer.Services
     {
         private readonly IRepositorySoftDelete<Transit> _transitRepository;
         private readonly IRepositorySoftDelete<Route> _routeRepository;
-        private readonly IRepositorySoftDelete<RouteTransit> _routeTransitRepository;
+        private readonly IRouteTransitRepository _routeTransitRepository;
         private readonly Role[] _allowedRoles = { Role.Admin, Role.TrainRouteManager };
 
 
         public RouteTransitService(IMapper mapper, IUserRepository userRepository,
-            IRepositorySoftDelete<RouteTransit> routeTransitRepository, IRepositorySoftDelete<Transit> transitRepository, IRepositorySoftDelete<Route> routeRepository)
+            IRouteTransitRepository routeTransitRepository, IRepositorySoftDelete<Transit> transitRepository, IRepositorySoftDelete<Route> routeRepository)
             : base(mapper, userRepository)
         {
             _routeTransitRepository = routeTransitRepository;
@@ -33,20 +34,20 @@ namespace SpaceZD.BusinessLayer.Services
             return routeTransitModel;
         }
 
-        public List<RouteTransitModel> GetList(int userId)
+        public List<RouteTransitModel> GetListByRoute(int userId, int routeId)
         {
             CheckUserRole(userId, _allowedRoles);
 
-            var routeTransit = _routeTransitRepository.GetList();
+            var routeTransit = _routeTransitRepository.GetList(routeId);
             var routeTransitListModel = _mapper.Map<List<RouteTransitModel>>(routeTransit);
             return routeTransitListModel;
         }
 
-        public List<RouteTransitModel> GetListDeleted(int userId)
+        public List<RouteTransitModel> GetListByRouteDeleted(int userId, int routeId)
         {
             CheckUserRole(userId, Role.Admin);
 
-            var routeTransit = _routeTransitRepository.GetList(true).Where(t => t.IsDeleted);
+            var routeTransit = _routeTransitRepository.GetList(routeId, true).Where(t => t.IsDeleted);
             var routeTransitListModel = _mapper.Map<List<RouteTransitModel>>(routeTransit);
             return routeTransitListModel;
         }

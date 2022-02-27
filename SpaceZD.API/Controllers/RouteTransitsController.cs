@@ -35,26 +35,26 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<RouteTransitOutputModel>> GetRouteTransits()
+    public ActionResult<List<RouteTransitOutputModel>> GetRouteTransits(int routeId)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var routeTransitListModel = _service.GetList(userId.Value);
+        var routeTransitListModel = _service.GetListByRoute(userId.Value, routeId);
         var result = _mapper.Map<List<RouteTransitOutputModel>>(routeTransitListModel);
         return Ok(result);
     }
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<List<RouteTransitOutputModel>> GetRouteTransitsDeleted()
+    public ActionResult<List<RouteTransitOutputModel>> GetRouteTransitsByRouteDeleted(int routeId)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var routeTransitListModel = _service.GetListDeleted(userId.Value);
+        var routeTransitListModel = _service.GetListByRouteDeleted(userId.Value, routeId);
         var result = _mapper.Map<List<RouteTransitOutputModel>>(routeTransitListModel);
         return Ok(result);
     }
