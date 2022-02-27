@@ -11,6 +11,7 @@ namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.User)]
 
 public class PersonsController : ControllerBase
 {
@@ -58,7 +59,6 @@ public class PersonsController : ControllerBase
 
 
     [HttpGet("by-user-login")]
-    [AuthorizeRole(Role.Admin, Role.User)]
     public ActionResult<PersonModel> GetPersonByUserId()
     {
         var userId = this.GetUserId();
@@ -73,7 +73,6 @@ public class PersonsController : ControllerBase
 
 
     [HttpPost]
-    [AuthorizeRole(Role.User, Role.Admin)]
     public ActionResult AddPerson([FromBody] PersonInputModel personModel)
     {
         var userId = this.GetUserId();
@@ -88,7 +87,6 @@ public class PersonsController : ControllerBase
 
 
     [HttpPut("{id}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
     public ActionResult EditPerson(int id, PersonInputModel person)
     {
         var userId = this.GetUserId();
@@ -103,7 +101,6 @@ public class PersonsController : ControllerBase
     
 
     [HttpDelete("{id}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
     public ActionResult DeletePerson(int id)
     {
         var userId = this.GetUserId();
