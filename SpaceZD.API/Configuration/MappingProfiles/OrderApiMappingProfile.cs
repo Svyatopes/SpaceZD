@@ -8,7 +8,7 @@ public class OrderApiMappingProfile : Profile
 {
     public OrderApiMappingProfile()
     {
-         CreateMap<OrderInputModel, OrderModel>()
+         CreateMap<OrderAddInputModel, OrderModel>()
              .ForMember(om => om.Trip, opt => opt.MapFrom(oim => new TripModel { Id = oim.TripId }))
              .ForMember(om => om.StartStation, opt => opt.MapFrom(oim => new TripStationModel { Id = oim.StartTripStationId }))
              .ForMember(om => om.EndStation, opt => opt.MapFrom(oim => new TripStationModel { Id = oim.EndTripStationId }));

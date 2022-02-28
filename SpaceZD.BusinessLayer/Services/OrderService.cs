@@ -101,7 +101,6 @@ public class OrderService : BaseService, IOrderService
         updatedOrderEntiry.StartStation = startStation!;   
         updatedOrderEntiry.EndStation = endStation!;
         updatedOrderEntiry.Trip = trip!;
-        updatedOrderEntiry.Status = order.Status;
 
         _orderRepository.Update(orderEntity!, updatedOrderEntiry);
     }
@@ -165,14 +164,10 @@ public class OrderService : BaseService, IOrderService
         for (int i = 0; i < stations.Count; i++)
         {
             if (stations[i].Id == endStation.Id)
-            {
                 break;
-            }
 
             if (stations[i].Id == startStation.Id)
-            {
                 findStartStation = true;
-            }
         }
 
         if (!findStartStation)

@@ -29,7 +29,7 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult<List<OrderModel>> GetOrders()
+    public ActionResult<List<OrderShortOutputModel>> GetOrders()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -49,7 +49,7 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult<List<OrderModel>> GetOrders(int userId)
+    public ActionResult<List<OrderShortOutputModel>> GetOrders(int userId)
     {
         var adminId = this.GetUserId();
         if (adminId == null)
@@ -63,12 +63,12 @@ public class OrdersController : ControllerBase
 
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin, Role.User)]
-    [ProducesResponseType(typeof(List<OrderFullOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OrderFullOutputModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult<OrderModel> GetOrderById(int id)
+    public ActionResult<OrderFullOutputModel> GetOrderById(int id)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -86,7 +86,7 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult AddOrder([FromBody] OrderInputModel order)
+    public ActionResult AddOrder([FromBody] OrderAddInputModel order)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -106,7 +106,7 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult EditOrder(int id, [FromBody] OrderInputModel order)
+    public ActionResult EditOrder(int id, [FromBody] OrderEditInputModel order)
     {
         var userId = this.GetUserId();
         if (userId == null)
