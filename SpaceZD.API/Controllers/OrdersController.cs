@@ -6,6 +6,7 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using System.ComponentModel;
 
 namespace SpaceZD.API.Controllers;
 
@@ -24,11 +25,12 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [AuthorizeRole(Role.User)]
+    [Description("Get orders of actual authorized user")]
     [ProducesResponseType(typeof(List<OrderShortOutputModel>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<OrderShortOutputModel>> GetOrders()
     {
         var userId = this.GetUserId();
@@ -44,11 +46,12 @@ public class OrdersController : ControllerBase
     [HttpGet]
     [Route("by-user/{userId}")]
     [AuthorizeRole(Role.Admin)]
+    [Description("Get orders of some user by UserId. Only for Admin")]
     [ProducesResponseType(typeof(List<OrderShortOutputModel>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<OrderShortOutputModel>> GetOrders(int userId)
     {
         var adminId = this.GetUserId();
@@ -63,11 +66,12 @@ public class OrdersController : ControllerBase
 
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin, Role.User)]
+    [Description("Get order by Id. Only order that belongs this user or user is in admin role")]
     [ProducesResponseType(typeof(OrderFullOutputModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<OrderFullOutputModel> GetOrderById(int id)
     {
         var userId = this.GetUserId();
@@ -81,11 +85,12 @@ public class OrdersController : ControllerBase
 
     [HttpPost]
     [AuthorizeRole(Role.User)]
+    [Description("Adding draft order to authorized user")]
     [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult AddOrder([FromBody] OrderAddInputModel order)
     {
         var userId = this.GetUserId();
@@ -101,11 +106,12 @@ public class OrdersController : ControllerBase
 
     [HttpPut("{id}")]
     [AuthorizeRole(Role.Admin, Role.User)]
+    [Description("Editing draft order")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult EditOrder(int id, [FromBody] OrderEditInputModel order)
     {
         var userId = this.GetUserId();
@@ -122,11 +128,12 @@ public class OrdersController : ControllerBase
 
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.Admin, Role.User)]
+    [Description("Deleting order by id for authorized user")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult DeleteOrder(int id)
     {
         var userId = this.GetUserId();
@@ -140,11 +147,12 @@ public class OrdersController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [Description("Restoring order by id. Only for admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult RestoreOrder(int id)
     {
         var userId = this.GetUserId();
