@@ -12,15 +12,16 @@ using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using SpaceZD.DataLayer.Repositories;
 
 namespace SpaceZD.BusinessLayer.Tests
 {
     public class PlatformMaintenanceServiceTests
     {
         private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IRepositorySoftDelete<PlatformMaintenance>> _platformMaintenanceRepositoryMock;
+        private Mock<IPlatformMaintenanceRepository> _platformMaintenanceRepositoryMock;
         private Mock<IPlatformRepository> _platformRepositoryMock;
-        private IPlatformMaintenanceService _service;
+        private PlatformMaintenanceService _service;
         private readonly IMapper _mapper;
 
         public PlatformMaintenanceServiceTests()
@@ -31,26 +32,26 @@ namespace SpaceZD.BusinessLayer.Tests
         [SetUp]
         public void SetUp()
         {
-            _platformMaintenanceRepositoryMock = new Mock<IRepositorySoftDelete<PlatformMaintenance>>();
+            _platformMaintenanceRepositoryMock = new Mock<IPlatformMaintenanceRepository>();
             _platformRepositoryMock = new Mock<IPlatformRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _service = new PlatformMaintenanceService(_mapper, _userRepositoryMock.Object, _platformMaintenanceRepositoryMock.Object, _platformRepositoryMock.Object);
         }
 
         // GetList
-        [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetListTestCases))]
-        public void GetListTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, Role role)
+        [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetListByIdStationTestCases))]
+        public void GetListTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, Role role, int stationId)
         {
             // given
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetList(false)).Returns(platformMaintenance);
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetListByStationId(It.IsAny<int>(), false)).Returns(platformMaintenance);
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var platformMaintenanceModels = _service.GetList(10);
+            var platformMaintenanceModels = _service.GetListByStationId(stationId, 10);
 
             // then
             _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(x => x.GetList(false), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(x => x.GetListByStationId((It.IsAny<int>()), false), Times.Once);
             CollectionAssert.AreEqual(expectedPlatformMaintenanceModels, platformMaintenanceModels);
         }
 
@@ -61,7 +62,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetList(10));
+            Assert.Throws<NotFoundException>(() => _service.GetListByStationId(10,10));
         }
 
         [Test]
@@ -71,25 +72,26 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
 
             // when then
-            Assert.Throws<AuthorizationException>(() => _service.GetList(10));
+            Assert.Throws<AuthorizationException>(() => _service.GetListByStationId(10,10));
         }
 
         // GetListDeleted
-        [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetListDeletdTestCases))]
-        public void GetListDeletedTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, Role role)
+        [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetListDeletdByIdStationTestCases))]
+        public void GetListDeletedTest(List<PlatformMaintenance> platformMaintenance, List<PlatformMaintenanceModel> expectedPlatformMaintenanceModels, Role role,int stationId)
         {
             // given
-            _platformMaintenanceRepositoryMock.Setup(x => x.GetList(true)).Returns(platformMaintenance);
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetListByStationId(stationId, true)).Returns(platformMaintenance);
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var platformMaintenanceModels = _service.GetListDeleted(10);
+            var platformMaintenanceModels = _service.GetListDeletedByStationId(stationId, 10);
 
             // then
             _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
-            _platformMaintenanceRepositoryMock.Verify(x => x.GetList(true), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(x => x.GetListByStationId((It.IsAny<int>()), true), Times.Once);
             CollectionAssert.AreEqual(expectedPlatformMaintenanceModels, platformMaintenanceModels);
         }
+    
 
         [Test]
         public void GetListDeletedNegativeNotFoundExceptionTest()
@@ -98,7 +100,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetListDeleted(10));
+            Assert.Throws<NotFoundException>(() => _service.GetListDeletedByStationId(10, 10));
         }
 
         [Test]
@@ -108,18 +110,20 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.StationManager });
 
             // when then
-            Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(10));
+            Assert.Throws<AuthorizationException>(() => _service.GetListDeletedByStationId(10,10));
         }
 
         // GetById
         [TestCaseSource(typeof(PlatformMaintenanceServiceTestCaseSource), nameof(PlatformMaintenanceServiceTestCaseSource.GetByIdTestCases))]
-        public void GetByIdTest(PlatformMaintenance platformMaintenance, PlatformMaintenanceModel expectedPlatformMaintenance)
+        public void GetByIdTest(PlatformMaintenance platformMaintenance, PlatformMaintenanceModel expectedPlatformMaintenance, Role role)
         {
             // given
             _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
 
             // when
-            var actual = _service.GetById(42);
+            var actual = _service.GetById(10,10);
 
             // then
             Assert.AreEqual(expectedPlatformMaintenance, actual);
@@ -131,8 +135,9 @@ namespace SpaceZD.BusinessLayer.Tests
         public void GetByIdNegativeTest()
         {
             _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((PlatformMaintenance?)null);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
 
-            Assert.Throws<NotFoundException>(() => _service.GetById(42));
+            Assert.Throws<NotFoundException>(() => _service.GetById(10 ,42));
             _platformMaintenanceRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
         }
 
@@ -143,7 +148,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetById(10));
+            Assert.Throws<NotFoundException>(() => _service.GetById(10, 10));
         }
 
         //Add
@@ -153,6 +158,7 @@ namespace SpaceZD.BusinessLayer.Tests
         {
             // given
             _platformMaintenanceRepositoryMock.Setup(x => x.Add(It.IsAny<PlatformMaintenance>())).Returns(expected);
+            _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Platform());
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
             // when
             int actual = _service.Add(10, new PlatformMaintenanceModel
@@ -190,16 +196,18 @@ namespace SpaceZD.BusinessLayer.Tests
         [TestCase(Role.StationManager)]
         public void UpdateTest(Role role)
         {
+            
             // given
             var platformMaintenance = new PlatformMaintenance();
             _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), It.IsAny<PlatformMaintenance>()));
             _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
+            _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Platform());
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
 
 
             // when
-            _service.Update(10, 10, new PlatformMaintenanceModel
+            _service.Update(1, 1, new PlatformMaintenanceModel
             {
                 Platform = new PlatformModel
                 {
@@ -226,9 +234,9 @@ namespace SpaceZD.BusinessLayer.Tests
             });
 
             // then
-            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _platformMaintenanceRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
             _platformMaintenanceRepositoryMock.Verify(s => s.Update(platformMaintenance, It.IsAny<PlatformMaintenance>()), Times.Once);
-            _userRepositoryMock.Verify(s => s.GetById(10), Times.Once);
+            _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
 
         }
 

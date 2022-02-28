@@ -10,27 +10,22 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
 {
     internal class PlatformMaintenanceServiceTestCaseSource
     {
-        public static IEnumerable<TestCaseData> GetListTestCases()
+        public static IEnumerable<TestCaseData> GetListByIdStationTestCases()
         {
-            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), Role.Admin);
-            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), Role.StationManager);
+            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), Role.Admin, 1);
+            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), Role.StationManager, 1);
         }
 
-        public static IEnumerable<TestCaseData> GetListDeletdTestCases()
+        public static IEnumerable<TestCaseData> GetListDeletdByIdStationTestCases()
         {
-            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenanceDeleted()), Role.Admin);
+            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenanceDeleted()), Role.Admin, 0);
         }
 
-        public static IEnumerable<TestCaseData> GetListDeleteTestCases()
-        {
-            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), false);
-            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), true);
-        }
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var platformsMaintenance = GetPlatformMaintenance();
-            yield return new TestCaseData(platformsMaintenance[0], ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance())[0]);
-            yield return new TestCaseData(platformsMaintenance[1], ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance())[1]);
+            yield return new TestCaseData(platformsMaintenance[0], ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance())[0], Role.Admin);
+            yield return new TestCaseData(platformsMaintenance[1], ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance())[1], Role.StationManager);
         }
 
         private static List<PlatformMaintenance> GetPlatformMaintenance() => new List<PlatformMaintenance>

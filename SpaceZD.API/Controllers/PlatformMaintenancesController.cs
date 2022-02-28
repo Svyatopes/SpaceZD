@@ -11,6 +11,7 @@ namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.StationManager)]
 public class PlatformMaintenancesController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -23,27 +24,28 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpGet]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
-    public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenances()
+    [Route("list-by-station/{stationId}")]
+    public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenances(int stationId)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _service.GetList(userId.Value);
+        var entities = _service.GetListByStationId(stationId, userId.Value);
         var result = _mapper.Map<List<PlatformMaintenanceOutputModel>>(entities);
         return Ok(result);
     }
 
     [HttpGet]
+    [Route("list-by-station-deleted/{stationId}")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenancesDeleted()
+    public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenancesDeleted(int stationId)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var entities = _service.GetListDeleted(userId.Value);
+        var entities = _service.GetListDeletedByStationId(stationId, userId.Value);
         var result = _mapper.Map<List<PlatformMaintenanceOutputModel>>(entities);
         return Ok(result);
     }
@@ -51,14 +53,17 @@ public class PlatformMaintenancesController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<PlatformMaintenanceOutputModel> GetPlatformMaintenanceById(int id)
     {
-        var entities = _service.GetById(id);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var entities = _service.GetById(id, userId.Value);
         var result = _mapper.Map<PlatformMaintenanceOutputModel>(entities);
         return Ok(result);
        
     }
 
     [HttpPost]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
     public ActionResult AddPlatformMaintenance([FromBody] PlatformMaintenanceInputModel platformMaintenance)
     {
         var userId = this.GetUserId();
@@ -71,7 +76,6 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
     public ActionResult EditPlatformMaintenance(int id, [FromBody] PlatformMaintenanceInputModel platformMaintenance)
     {
         var userId = this.GetUserId();
@@ -85,7 +89,6 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
     public ActionResult DeletePlatformMaintenance(int id)
     {
         var userId = this.GetUserId();

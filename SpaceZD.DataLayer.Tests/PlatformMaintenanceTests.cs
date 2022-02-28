@@ -13,7 +13,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class PlatformMaintenanceTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<PlatformMaintenance> _repository;
+    private IPlatformMaintenanceRepository _repository;
 
     [SetUp]
     public void Setup()
@@ -130,15 +130,18 @@ public class PlatformMaintenanceTests
         Assert.AreEqual(expected, received);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void GetListTest(bool includeAll)
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    public void GetListTest(int stationId, bool includeAll)
     {
         // given
-        var expected = _context.PlatformMaintenances.Where(t => !t.IsDeleted || includeAll).ToList();
+        var expected = _context.PlatformMaintenances
+            .Where(pm => !pm.IsDeleted || includeAll)
+            .Where(pm => pm.Platform.StationId == stationId)
+            .ToList();
 
         // when
-        var list = _repository.GetList(includeAll);
+        var list = _repository.GetListByStationId(stationId, includeAll);
 
         // then
         CollectionAssert.AreEqual(expected, list);
