@@ -80,7 +80,7 @@ public class PersonsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var person = _mapper.Map<PersonModel>(personModel);
-        var idAddedEntity = _personService.Add(person, userId.Value);
+        var idAddedEntity = _personService.Add(userId.Value, person);
 
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
@@ -94,7 +94,7 @@ public class PersonsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var personForEdit = _mapper.Map<PersonModel>(person);
-        _personService.Update(id, personForEdit, userId.Value);
+        _personService.Update(userId.Value, id, personForEdit);
         return Accepted();
 
     }

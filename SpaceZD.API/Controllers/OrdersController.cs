@@ -120,7 +120,7 @@ public class OrdersController : ControllerBase
 
 
         var orderModel = _mapper.Map<OrderModel>(order);
-        _orderService.Edit(userId.Value, id, orderModel);
+        _orderService.Update(userId.Value, id, orderModel);
 
         return NoContent();
     }

@@ -198,7 +198,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platform);
 
             //when
-            _service.Edit(42, platformModel);
+            _service.Update(42, 1, platformModel);
 
             //then
             _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
@@ -214,7 +214,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             //when then
-            Assert.Throws<NotFoundException>(() => _service.Edit(42, platform));
+            Assert.Throws<NotFoundException>(() => _service.Update(42, 1, platform));
             _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
         }
 
@@ -227,7 +227,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User() { Role = role });
 
             //when then
-            Assert.Throws<AuthorizationException>(() => _service.Edit(42, platform),
+            Assert.Throws<AuthorizationException>(() => _service.Update(42, 1, platform),
                 "Your current role doesn't have permissions to do this.");
             _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
         }
@@ -241,7 +241,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Platform?)null);
 
             //when then
-            Assert.Throws<NotFoundException>(() => _service.Edit(42, platform));
+            Assert.Throws<NotFoundException>(() => _service.Update(42, 1, platform));
             _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
             _platformRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
         }

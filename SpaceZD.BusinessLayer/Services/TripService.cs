@@ -47,6 +47,10 @@ public class TripService : BaseService, ITripService
         return _mapper.Map<List<TripModel>>(entities);
     }
 
+    public TripModel GetById(int userId, int id)
+    {
+        throw new NotImplementedException();
+    }
     public void Delete(int userId, int id)
     {
         CheckUserRole(userId, _allowedRoles);

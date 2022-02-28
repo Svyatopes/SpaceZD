@@ -76,7 +76,7 @@ namespace SpaceZD.BusinessLayer.Services
 
 
 
-        public void Update(int id, UserModel entity, int userId)
+        public void Update(int userId, int id, UserModel entity)
         {
             CheckUserRole(userId, _allowedAllRoles);
 

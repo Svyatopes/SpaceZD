@@ -72,7 +72,7 @@ public class TicketService : BaseService, ITicketService
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public int Add(TicketModel entity, int userId)
+    public int Add(int userId, TicketModel entity)
     {
         CheckUserRole(userId, _allowedRoles);
 
@@ -134,7 +134,7 @@ public class TicketService : BaseService, ITicketService
     }
 
 
-    public void Update(int id, TicketModel entity, int userId)
+    public void Update(int userId, int id, TicketModel entity)
     {
         CheckUserRole(userId, _allowedRoles);
 

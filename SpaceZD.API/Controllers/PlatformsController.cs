@@ -78,9 +78,8 @@ public class PlatformsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var platform = _mapper.Map<PlatformModel>(platformInputModel);
-        platform.Id = id;
 
-        _platformService.Edit(userId.Value, platform);
+        _platformService.Update(userId.Value, id, platform);
         return NoContent();
     }
 

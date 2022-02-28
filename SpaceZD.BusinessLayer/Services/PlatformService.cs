@@ -59,12 +59,12 @@ namespace SpaceZD.BusinessLayer.Services
             return platformId;
         }
 
-        public void Edit(int userId, PlatformModel platformModel)
+        public void Update(int userId, int platformId, PlatformModel platformModel)
         {
             CheckUserRole(userId, Role.Admin, Role.StationManager);
 
-            var platform = _platformRepository.GetById(platformModel.Id);
-            ThrowIfEntityNotFound(platform, platformModel.Id);
+            var platform = _platformRepository.GetById(platformId);
+            ThrowIfEntityNotFound(platform, platformId);
 
             var newPlatform = _mapper.Map<Platform>(platformModel);
 
