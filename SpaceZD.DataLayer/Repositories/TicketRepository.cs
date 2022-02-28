@@ -16,11 +16,11 @@ public class TicketRepository : BaseRepository, ITicketRepository
                 .Include(t => t.Person)
                 .FirstOrDefault(t => t.Id == id);
     
-    public List<Ticket> GetListById(int orderId) =>
+    public List<Ticket> GetListByOrderId(int orderId) =>
         _context.Tickets
                 .Include(t => t.Carriage)                
                 .Include(t => t.Person)
-                .Where(t => t.Order.Id == orderId).ToList();
+                .Where(t => t.Order.Id == orderId && !t.IsDeleted).ToList();
 
     public List<Ticket> GetList(bool includeAll = false) => _context.Tickets.Where(t => !t.IsDeleted || includeAll).ToList();
 

@@ -1,11 +1,14 @@
 ﻿using SpaceZD.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.BusinessLayer.Models;
+using SpaceZD.API.Attributes;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
 public class RouteTransitsController : ControllerBase
 {
     [HttpGet("{id}")]

@@ -13,7 +13,8 @@ namespace SpaceZD.DataLayer.Tests.TestMocks
                 FirstName = "Klark",
                 LastName = "Kent",
                 Patronymic = "KalEl",
-                Passport = "7777666555"
+                Passport = "7777666555",
+                User = new User(){ Name = "K" , Login = "KK", PasswordHash ="hgeurgeerj"}
             },
             new Person
             {
@@ -21,14 +22,16 @@ namespace SpaceZD.DataLayer.Tests.TestMocks
                 LastName = "Konor",
                 Patronymic = "Vyacheslavovna",
                 Passport = "3005123456",
-                IsDeleted = true
+                IsDeleted = true,
+                User = new User(){ Name = "S", Login = "SS", PasswordHash ="jhgfdsdfgh"}
             },
             new Person
             {
                 FirstName = "Enot",
                 LastName = "Poloskun",
                 Patronymic = "Enotovich",
-                Passport = "1234123456"
+                Passport = "1234123456",
+                User = new User(){ Name = "E", Login = "EE", PasswordHash ="ythythyhy"}
             }
         };
 

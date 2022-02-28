@@ -73,6 +73,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<ITrainService, TrainService>();
         services.AddScoped<IPlatformMaintenanceService, PlatformMaintenanceService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<ICarriageService, CarriageService>();
         services.AddScoped<ITransitService, TransitService>();
         services.AddScoped<ITripStationService, TripStationService>();
         services.AddScoped<ICarriageService, CarriageService>();
