@@ -6,6 +6,7 @@ using SpaceZD.API.Extensions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
@@ -23,6 +24,10 @@ public class StationsController : ControllerBase
 
     //api/Stations
     [HttpGet]
+    [SwaggerOperation(Summary = "Get all stations")]
+    [ProducesResponseType(typeof(List<StationShortOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<StationShortOutputModel>> GetStations()
     {
         var entities = _stationService.GetList();
@@ -33,6 +38,12 @@ public class StationsController : ControllerBase
     //api/Stations/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Get all deleted stations")]
+    [ProducesResponseType(typeof(List<StationShortOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<StationShortOutputModel>> GetDeletedStations()
     {
         var userId = this.GetUserId();
@@ -47,6 +58,12 @@ public class StationsController : ControllerBase
     //api/Stations/42
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Get station by id")]
+    [ProducesResponseType(typeof(StationFullOutputModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<StationFullOutputModel> GetStationById(int id)
     {
         var userId = this.GetUserId();
@@ -61,6 +78,12 @@ public class StationsController : ControllerBase
     //api/Stations/42/near-stations
     [HttpGet("{id}/near-stations")]
     [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Get near stations by station id")]
+    [ProducesResponseType(typeof(List<StationShortOutputModel>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<StationShortOutputModel>> GetNearStationsById(int id)
     {
         var userId = this.GetUserId();
@@ -75,6 +98,12 @@ public class StationsController : ControllerBase
     //api/Stations
     [HttpPost]
     [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Adding a new station")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult AddStation([FromBody] StationInputModel station)
     {
         var userId = this.GetUserId();
@@ -89,6 +118,12 @@ public class StationsController : ControllerBase
     //api/Stations/42
     [HttpPut("{id}")]
     [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Editing station by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult EditStation(int id, [FromBody] StationInputModel station)
     {
         var userId = this.GetUserId();
@@ -103,6 +138,12 @@ public class StationsController : ControllerBase
     //api/Stations/42
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Deleting station by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult DeleteStation(int id)
     {
         var userId = this.GetUserId();
@@ -116,6 +157,12 @@ public class StationsController : ControllerBase
     //api/Stations/42
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restoring station by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult RestoreStation(int id)
     {
         var userId = this.GetUserId();
