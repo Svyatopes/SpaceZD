@@ -9,16 +9,16 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
     {
         public static IEnumerable<TestCaseData> GetListTestCases()
         {
-            yield return new TestCaseData(GetTicket(), GetTicketModel(), false);
-            yield return new TestCaseData(GetTicket(), GetTicketModel(), true);
+            yield return new TestCaseData(GetTicket(), GetTicketModel(), false, 1);
+            yield return new TestCaseData(GetTicket(), GetTicketModel(), true, 2);
         }
 
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var tickets = GetTicket();
             var ticketModels = GetTicketModel();
-            yield return new TestCaseData(tickets[0], ticketModels[0]);
-            yield return new TestCaseData(tickets[1], ticketModels[1]);
+            yield return new TestCaseData(tickets[0], ticketModels[0], 1);
+            yield return new TestCaseData(tickets[1], ticketModels[1], 2);
         }
 
 

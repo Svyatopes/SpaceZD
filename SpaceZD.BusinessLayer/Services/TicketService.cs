@@ -49,21 +49,7 @@ public class TicketService : BaseService, ITicketService
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public List<TicketModel> GetListByOrderId(int orderId, int userId)
-    {
-        CheckUserRole(userId, _allowedRoles);
-
-        var user = _userRepository.GetById(userId);
-        var order = _orderRepository.GetById(orderId);
-        ThrowIfEntityNotFound(order, orderId);
-
-        if (user.Role == Role.Admin || user.Orders.Contains(order))
-            return _mapper.Map<List<TicketModel>>(order.Tickets);
-
-        throw new AccessViolationException();
-
-    }
-
+    
     public List<TicketModel> GetListDeleted(int userId)
     {
         CheckUserRole(userId, Role.Admin);
@@ -165,7 +151,6 @@ public class TicketService : BaseService, ITicketService
     }
 
 
-
     public void Delete(int id, int userId)
     {
         CheckUserRole(userId, _allowedRoles);
@@ -176,8 +161,9 @@ public class TicketService : BaseService, ITicketService
         if (entity.IsDeleted && user.Role != Role.Admin)
             throw new NotFoundException("Билет", id);
 
-
-        if (user.Persons.Contains(entity.Person))
+        if (user.Role == Role.Admin)
+            _ticketRepository.Update(entity, true);        
+        else if(user.Persons.Contains(entity.Person))
             _ticketRepository.Update(entity, true);
         else
             throw new AccessViolationException();
@@ -186,6 +172,7 @@ public class TicketService : BaseService, ITicketService
 
     public void Restore(int id, int userId)
     {
+        CheckUserRole(userId, Role.Admin);
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
         _ticketRepository.Update(entity, false);

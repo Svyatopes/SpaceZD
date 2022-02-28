@@ -54,20 +54,6 @@ public class TicketsController : ControllerBase
         return BadRequest();
     }
 
-    [HttpGet("by-order/{orderId}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
-    public ActionResult<List<TicketModel>> GetTicketByOrderId(int orderId)
-    {
-        var userId = this.GetUserId();
-        if (userId == null)
-            return Unauthorized("Not valid token, try login again");
-
-        var ticketModel = _ticketService.GetListByOrderId(orderId, userId.Value);
-        var tickets = _mapper.Map<List<TicketOutputModel>>(ticketModel);
-        if (tickets != null)
-            return Ok(tickets);
-        return BadRequest("Oh.....");
-    }
 
     
     [HttpGet("{id}")]
@@ -101,6 +87,7 @@ public class TicketsController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
 
     }
+
 
     [HttpPut("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]
