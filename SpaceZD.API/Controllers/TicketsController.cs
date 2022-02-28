@@ -96,7 +96,7 @@ public class TicketsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var ticket = _mapper.Map<TicketModel>(ticketModel);
-        var idAddedEntity = _ticketService.Add(ticket, userId.Value);
+        var idAddedEntity = _ticketService.Add(userId.Value, ticket);
 
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
 

@@ -112,7 +112,7 @@ public class UsersController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         var userForEdit = _mapper.Map<UserModel>(user);
-        _userService.Update(id, userForEdit, userId.Value);
+        _userService.Update(userId.Value, id, userForEdit);
         return Accepted();
 
     }

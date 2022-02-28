@@ -468,7 +468,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when
-        orderService.Edit(
+        orderService.Update(
             userId,
             2,
             new OrderModel
@@ -496,7 +496,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when then
-        Assert.Throws<NotFoundException>(() => orderService.Edit(
+        Assert.Throws<NotFoundException>(() => orderService.Update(
             1,
             2,
             new OrderModel
@@ -527,7 +527,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when then
-        Assert.Throws<AuthorizationException>(() => orderService.Edit(
+        Assert.Throws<AuthorizationException>(() => orderService.Update(
             1,
             2,
             new OrderModel
@@ -616,7 +616,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when then
-        Assert.Throws<NotFoundException>(() => orderService.Edit(
+        Assert.Throws<NotFoundException>(() => orderService.Update(
             1,
             2,
             new OrderModel
@@ -655,7 +655,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when then
-        Assert.Throws<NotFoundException>(() => orderService.Edit(
+        Assert.Throws<NotFoundException>(() => orderService.Update(
             1,
             2,
             new OrderModel
@@ -705,7 +705,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when then
-        Assert.Throws<InvalidDataException>(() => orderService.Edit(
+        Assert.Throws<InvalidDataException>(() => orderService.Update(
             1,
             2,
             new OrderModel
@@ -757,7 +757,7 @@ public class OrderServiceTests
              _userRepositoryMock.Object, _tripRepositoryMock.Object, _tripStationRepositoryMock.Object);
 
         // when
-        Assert.Throws<ArgumentException>(() => orderService.Edit(
+        Assert.Throws<ArgumentException>(() => orderService.Update(
             userId,
             2,
             new OrderModel

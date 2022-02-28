@@ -53,7 +53,7 @@ namespace SpaceZD.BusinessLayer.Services
         }
 
 
-        public int Add(PersonModel entity, int userId)
+        public int Add(int userId, PersonModel entity)
         {
             CheckUserRole(userId, _allowedRoles);
 
@@ -65,7 +65,7 @@ namespace SpaceZD.BusinessLayer.Services
         }
 
 
-        public void Update(int id, PersonModel entity, int userId)
+        public void Update(int userId, int id, PersonModel entity)
         {
             CheckUserRole(userId, _allowedRoles);
 

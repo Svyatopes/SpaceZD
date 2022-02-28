@@ -77,7 +77,7 @@ public class OrderService : BaseService, IOrderService
         return id;
     }
 
-    public void Edit(int userId, int orderId, OrderModel order)
+    public void Update(int userId, int orderId, OrderModel order)
     {
         var user = _userRepository.GetById(userId);
         ThrowIfEntityNotFound(user, userId);
