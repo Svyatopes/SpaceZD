@@ -1,8 +1,9 @@
+using SpaceZD.DataLayer.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SpaceZD.API.Models;
 
-public class OrderInputModel
+public class OrderAddInputModel
 {
     [Required]
     public int TripId { get; set; }

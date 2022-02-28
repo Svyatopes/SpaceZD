@@ -71,6 +71,7 @@ public class OrderService : BaseService, IOrderService
         orderEntity.EndStation = endStation!;
         orderEntity.Trip = trip!;
         orderEntity.User = user;
+        orderEntity.Status = OrderStatus.Draft;
 
         var id = _orderRepository.Add(orderEntity);
         return id;
@@ -89,7 +90,7 @@ public class OrderService : BaseService, IOrderService
         var orderEntity = _orderRepository.GetById(orderId);
         ThrowIfEntityNotFound(orderEntity, orderId);
 
-        if(orderEntity!.User.Id != user.Id && user.Role != Role.Admin)
+        if((orderEntity!.User.Id != user.Id || orderEntity.Status != OrderStatus.Draft) && user.Role != Role.Admin)
         {
             ThrowIfRoleDoesntHavePermissions();
         }
@@ -97,7 +98,7 @@ public class OrderService : BaseService, IOrderService
         (var startStation, var endStation, var trip) = GetStartEndStationsAndTripForAddEditToRepository(order);
 
         var updatedOrderEntiry = _mapper.Map<Order>(order);
-        updatedOrderEntiry.StartStation = startStation!;
+        updatedOrderEntiry.StartStation = startStation!;   
         updatedOrderEntiry.EndStation = endStation!;
         updatedOrderEntiry.Trip = trip!;
 
@@ -155,6 +156,22 @@ public class OrderService : BaseService, IOrderService
             throw new InvalidDataException("Start station not belong to specified trip");
         if (endStation!.Trip.Id != trip.Id)
             throw new InvalidDataException("End station not belong to specified trip");
+
+        var stations = trip.Stations.ToList();
+
+        bool findStartStation = false;
+
+        for (int i = 0; i < stations.Count; i++)
+        {
+            if (stations[i].Id == endStation.Id)
+                break;
+
+            if (stations[i].Id == startStation.Id)
+                findStartStation = true;
+        }
+
+        if (!findStartStation)
+            throw new ArgumentException("Данная комбинация начальной и конечной станции невозможна для данного Trip");
 
         return (startStation, endStation, trip);
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Exceptions;
 using System.Net;
 using System.Text.Json;
@@ -22,7 +23,7 @@ public class SpaceZdMiddleware
         }
         catch (AuthorizationException ex)
         {
-            await HandleExceptionAsync(context, (HttpStatusCode)403, ex.Message);
+            await HandleExceptionAsync(context, HttpStatusCode.Forbidden, ex.Message);
         }
         catch (AccessViolationException ex)
         {
@@ -48,7 +49,12 @@ public class SpaceZdMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode code, string message)
     {
-        var result = JsonSerializer.Serialize(new { error = message });
+        var result = JsonSerializer.Serialize(new ErrorOutputModel
+        {
+            Message = message,
+            StatusCode = (int)code,
+            StatusCodeName = code.ToString()
+        });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
 
