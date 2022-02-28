@@ -17,7 +17,7 @@ public class PlatformMaintenanceRepository : BaseRepository, IPlatformMaintenanc
     public List<PlatformMaintenance> GetListByStationId(int stationId, bool includeAll = false) =>
         _context.PlatformMaintenances
         .Include(p => p.Platform)
-        .Where(p => (!p.IsDeleted || includeAll)&& p.Platform.StationId == stationId)
+        .Where(p => (!p.IsDeleted || includeAll) && p.Platform.StationId == stationId)
         .ToList();
 
     public int Add(PlatformMaintenance platformMaintenance)
