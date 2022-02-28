@@ -50,7 +50,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var routeTransitModels = _service.GetListByRoute(10,10);
+            var routeTransitModels = _service.GetListByRouteId(10,10);
 
             // then
             _userRepositoryMock.Verify(x => x.GetById(10), Times.Once());
@@ -65,7 +65,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetListByRoute(10,10));
+            Assert.Throws<NotFoundException>(() => _service.GetListByRouteId(10,10));
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
 
             // when then
-            Assert.Throws<AuthorizationException>(() => _service.GetListByRoute(10, 10));
+            Assert.Throws<AuthorizationException>(() => _service.GetListByRouteId(10, 10));
         }
 
         // GetList
@@ -87,7 +87,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
 
             // when
-            var routeTransitModels = _service.GetListByRouteDeleted(10, 10);
+            var routeTransitModels = _service.GetListByRouteIdDeleted(10, 10);
 
             // then
             _userRepositoryMock.Verify(x => x.GetById(10), Times.Once());
@@ -102,7 +102,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
 
             // when then
-            Assert.Throws<NotFoundException>(() => _service.GetListByRouteDeleted(10, 10));
+            Assert.Throws<NotFoundException>(() => _service.GetListByRouteIdDeleted(10, 10));
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace SpaceZD.BusinessLayer.Tests
             _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.User });
 
             // when then
-            Assert.Throws<AuthorizationException>(() => _service.GetListByRouteDeleted(10, 10));
+            Assert.Throws<AuthorizationException>(() => _service.GetListByRouteIdDeleted(10, 10));
         }
 
         // GetById

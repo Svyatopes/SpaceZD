@@ -16,7 +16,7 @@ public class RouteTransitRepository : BaseRepository, IRouteTransitRepository
 
     public List<RouteTransit> GetList(int routeId, bool includeAll = false) =>
         _context.RouteTransits
-        .Where(r => !r.IsDeleted || includeAll && r.Route.Id == routeId)
+        .Where(r => (!r.IsDeleted || includeAll) && r.Route.Id == routeId)
         .ToList();
 
     public int Add(RouteTransit routeTransit)

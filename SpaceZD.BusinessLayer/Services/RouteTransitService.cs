@@ -34,7 +34,7 @@ namespace SpaceZD.BusinessLayer.Services
             return routeTransitModel;
         }
 
-        public List<RouteTransitModel> GetListByRoute(int userId, int routeId)
+        public List<RouteTransitModel> GetListByRouteId(int userId, int routeId)
         {
             CheckUserRole(userId, _allowedRoles);
 
@@ -43,7 +43,7 @@ namespace SpaceZD.BusinessLayer.Services
             return routeTransitListModel;
         }
 
-        public List<RouteTransitModel> GetListByRouteDeleted(int userId, int routeId)
+        public List<RouteTransitModel> GetListByRouteIdDeleted(int userId, int routeId)
         {
             CheckUserRole(userId, Role.Admin);
 
