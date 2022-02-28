@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
 
 namespace SpaceZD.DataLayer.Repositories;
@@ -47,7 +48,7 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
     public List<Person> GetListUserPersons(int id)
     {
         var entities = _context.Persons
-                               .Where(p => p.User.Id == id).ToList();
+                               .Where(p => p.User.Id == id && !p.IsDeleted).ToList();
 
         return entities;
     }
@@ -71,6 +72,21 @@ public class UserRepository : BaseRepository, IUserRepository, ILoginUser
     public void Update(User user, bool isDeleted)
     {
         user.IsDeleted = isDeleted;
+
+        _context.SaveChanges();
+
+    }
+    public void UpdateRole(User user, Role role)
+    {
+        user.Role = role;
+
+        _context.SaveChanges();
+
+    }
+    
+    public void UpdatePassword(User user, string passwordHash)
+    {
+        user.PasswordHash = passwordHash;
 
         _context.SaveChanges();
 

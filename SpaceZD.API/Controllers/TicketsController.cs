@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
-using SpaceZD.API.Extensions;
 
 namespace SpaceZD.API.Controllers;
 
@@ -37,9 +37,9 @@ public class TicketsController : ControllerBase
             return Ok(tickets);
         return BadRequest("Oh.....");
     }
-    
-    
-    [HttpGet("delete")]
+
+
+    [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
     public ActionResult<List<TicketModel>> GetTicketsDelete()
     {
@@ -69,7 +69,7 @@ public class TicketsController : ControllerBase
         return BadRequest("Oh.....");
     }
 
-    
+
     [HttpGet("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]
     public ActionResult<TicketModel> GetTicketById(int id)
@@ -89,7 +89,7 @@ public class TicketsController : ControllerBase
 
     [HttpPost]
     [AuthorizeRole(Role.User, Role.Admin)]
-    public ActionResult AddTicket([FromBody]TicketCreateInputModel ticketModel)
+    public ActionResult AddTicket([FromBody] TicketCreateInputModel ticketModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -102,20 +102,7 @@ public class TicketsController : ControllerBase
 
     }
 
-    [HttpPut("{id}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
-    public ActionResult EditTicket(int id, TicketUpdateInputModel ticketModel)
-    {
-        var userId = this.GetUserId();
-        if (userId == null)
-            return Unauthorized("Not valid token, try login again");
-
-        var ticket = _mapper.Map<TicketModel>(ticketModel);
-        _ticketService.Update(id, ticket, userId.Value);
-        return Accepted();
-    }
-
-   
+    
 
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]

@@ -2,7 +2,9 @@
 using NUnit.Framework;
 using SpaceZD.DataLayer.DbContextes;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Repositories;
+using SpaceZD.DataLayer.Tests.TestMocks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,119 +15,7 @@ public class UserRepositoryTests
     private VeryVeryImportantContext _context;
     private UserRepository _repository;
 
-    private User GetTestEntity() => new User()
-    {
-        Name = "Sasha",
-        Login = "SashahsaS",
-        PasswordHash = "hdebuvjcbh",
-        Role = Enums.Role.TrainRouteManager,
-        Orders = new List<Order>()
-        {
-            new()
-            {
-                StartStation = new TripStation()
-                {
-                    Station = new Station()
-                    {
-                        Name = "Spb"
-                    }
-                },
-                EndStation = new TripStation()
-                {
-                    Station = new Station()
-                    {
-                        Name = "Msk"
-                    }
-                }
-            }
-        }
-    };
-    private List<User> GetListTestEntities() => new List<User>()
-    {
-        new()
-        {
-            Name = "Sasha",
-            Login = "SashahsaS",
-            PasswordHash = "hdebuvjcbh",
-            Role = Enums.Role.TrainRouteManager,
-            Orders = new List<Order>()
-            {
-                new()
-                {
-                    StartStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Spb"
-                        }
-                    },
-                    EndStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Msk"
-                        }
-                    }
-                }
-            } 
-        },
-        new()
-        {
-            Name = "Masha",
-            Login = "MashahsaM",
-            PasswordHash = "wertyu",
-            Role = Enums.Role.User,
-            Orders = new List<Order>()
-            {
-                new()
-                {
-                    StartStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Pskov"
-                        }
-                    },
-                    EndStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Sbp"
-                        }
-                    }
-                }
-            }
-        },
-        new()
-        {
-            Name = "Pasha",
-            Login = "PashahsaP",
-            PasswordHash = "asdfghj",
-            Role = Enums.Role.TrainRouteManager,
-            Orders = new List<Order>()
-            {
-                new()
-                {
-                    StartStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Msk"
-                        }
-                    },
-                    EndStation = new TripStation()
-                    {
-                        Station = new Station()
-                        {
-                            Name = "Vladivostok"
-                        }
-                    }
-                }
-            }
-        }
-    };
-   
-
+    
     [SetUp]
     public void Setup()
     {
@@ -138,17 +28,18 @@ public class UserRepositoryTests
         _context.Database.EnsureCreated();
 
         _repository = new UserRepository(_context);
+                
     }
 
 
-    [Test]    
+    [Test]
     public void GetByIdTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = UserRepositoryMocks.GetTestEntity();
         _context.Users.Add(entityToAdd);
         _context.SaveChanges();
-        
+
         var user = _context.Users.Find(1);
 
         //when
@@ -161,13 +52,36 @@ public class UserRepositoryTests
 
     }
 
+    [TestCase("MashahsaM")]
+    [TestCase("SashahsaS")]
+    [TestCase("PashahsaP")]
+    public void GetByLoginTest(string login)
+    {
+        //given
+        var entitiesToAdd = UserRepositoryMocks.GetListTestEntities();
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Users.Add(item);
+            _context.SaveChanges();
+        }
+
+        var user = _context.Users.FirstOrDefault(t => t.Login == login);
+
+        //when
+        var received = _repository.GetByLogin(login);
+
+        //then
+        Assert.AreEqual(user, received);
+
+    }
+
 
     [TestCase(true)]
     [TestCase(false)]
     public void GetListTest(bool includeAll)
     {
         //given
-        var entitiesToAdd = GetListTestEntities();
+        var entitiesToAdd = UserRepositoryMocks.GetListTestEntities();
         entitiesToAdd.Last().IsDeleted = true;
         foreach (var item in entitiesToAdd)
         {
@@ -187,13 +101,38 @@ public class UserRepositoryTests
 
     }
 
-    
+
+    [TestCase(1)]
+    [TestCase(2)]
+    public void GetListUserPersons(int id)
+    {
+        //given
+        var entitiesToAdd = UserRepositoryMocks.GetPersons();
+        foreach (var item in entitiesToAdd)
+        {
+            _context.Persons.Add(item);
+            _context.SaveChanges();
+
+        }
+        var expected = _context.Persons.Where(p => p.User.Id == id && !p.IsDeleted).ToList();
+
+        //when
+        var entities = _repository.GetListUserPersons(id);
+
+        //then
+        Assert.IsNotNull(entities);
+        Assert.AreEqual(expected.Count, entities.Count);
+        CollectionAssert.AreEqual(expected, entities);
+
+    }
+
+
 
     [Test]
     public void AddTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = UserRepositoryMocks.GetTestEntity();
 
         //when 
         int id = _repository.Add(entityToAdd);
@@ -201,7 +140,7 @@ public class UserRepositoryTests
         //then
         var createdEntity = _context.Users.FirstOrDefault(o => o.Id == id);
 
-        
+
         Assert.AreEqual("Sasha", createdEntity.Name);
         Assert.AreEqual("SashahsaS", createdEntity.Login);
         Assert.AreEqual("hdebuvjcbh", createdEntity.PasswordHash);
@@ -212,11 +151,11 @@ public class UserRepositoryTests
     public void UpdateEntityTest()
     {
         //given
-        var entityToAdd = GetTestEntity();
+        var entityToAdd = UserRepositoryMocks.GetTestEntity();
         _context.Users.Add(entityToAdd);
         _context.SaveChanges();
 
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
         entityToEdit.Id = entityToAdd.Id;
         entityToEdit.Name = "Masha";
         entityToEdit.Login = "MashahsaM";
@@ -229,7 +168,7 @@ public class UserRepositoryTests
         //then
         var updatedEntity = _context.Users.FirstOrDefault(o => o.Id == entityToEdit.Id);
 
-        
+
         Assert.AreEqual("Masha", updatedEntity.Name);
         //не должно меняться
         Assert.AreEqual("SashahsaS", updatedEntity.Login);
@@ -242,7 +181,7 @@ public class UserRepositoryTests
     public void UpdateIsDeletedTest(bool isDeleted)
     {
         //given
-        var entityToEdit = GetTestEntity();
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
         entityToEdit.IsDeleted = !isDeleted;
         _context.Users.Add(entityToEdit);
         _context.SaveChanges();
@@ -251,8 +190,42 @@ public class UserRepositoryTests
         _repository.Update(entityToEdit, isDeleted);
 
         //then
-        
+
         Assert.AreEqual(isDeleted, entityToEdit.IsDeleted);
+    }
+
+    [TestCase(Role.User)]
+    [TestCase(Role.StationManager)]
+    public void UpdateRoleTest(Role role)
+    {
+        //given
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
+        _context.Users.Add(entityToEdit);
+        _context.SaveChanges();
+
+        //when 
+        _repository.UpdateRole(entityToEdit, role);
+
+        //then
+
+        Assert.AreEqual(role, entityToEdit.Role);
+    }
+    
+    [TestCase("sdfghjkhgfd")]
+    [TestCase("ertyuioiuytre")]
+    public void UpdatePasswordHashTest(string passwordHash)
+    {
+        //given
+        var entityToEdit = UserRepositoryMocks.GetTestEntity();
+        _context.Users.Add(entityToEdit);
+        _context.SaveChanges();
+
+        //when 
+        _repository.UpdatePassword(entityToEdit, passwordHash);
+
+        //then
+
+        Assert.AreEqual(passwordHash, entityToEdit.PasswordHash);
     }
 
 

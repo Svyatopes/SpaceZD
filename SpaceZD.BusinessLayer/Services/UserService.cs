@@ -29,7 +29,7 @@ namespace SpaceZD.BusinessLayer.Services
             CheckUserRole(userId, _allowedAllRoles);
 
             var entity = _userRepository.GetByLogin(login);
-            ThrowIfEntityNotFound(entity, entity.Id);
+            ThrowIfEntityNotFound(entity, userId);
             return _mapper.Map<UserModel>(entity);
         }
 
@@ -64,9 +64,14 @@ namespace SpaceZD.BusinessLayer.Services
         {
             var addEntity = _mapper.Map<User>(entity);
             addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
-            addEntity.Role = Role.User;            
+            addEntity.Role = Role.User;
+            var allUsers = _userRepository.GetByLogin(addEntity.Login);
+
+            if (allUsers is not null)
+                throw new AuthorizationException("This login is already taken");
+            
             var id = _userRepository.Add(addEntity);            
-            return id;
+            return id;            
         }
 
 
@@ -81,14 +86,47 @@ namespace SpaceZD.BusinessLayer.Services
             _userRepository.Update(userOld, userNew);
 
         }
+        
+        public void UpdateRole(int id, Role role, int userId)
+        {
+            CheckUserRole(userId, Role.Admin);
+
+            var user = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(user, id);
+            _userRepository.UpdateRole(user, role);
+
+        }
+        
+        public void UpdatePassword(string passwordOld, string passwordNew, int userId)
+        {
+            CheckUserRole(userId, _allowedAllRoles);
+
+            var user = _userRepository.GetById(userId);
+            ThrowIfEntityNotFound(user, userId);
+
+            if (!SecurePasswordHasher.Verify(passwordOld, user.PasswordHash))
+                throw new AuthenticationException("Password is not correct for this user.");
+
+            var passwordHash = SecurePasswordHasher.Hash(passwordNew);
+
+            _userRepository.UpdatePassword(user, passwordHash);        
+
+
+
+        }
 
         public void Delete(int id, int userId)
         {
             CheckUserRole(userId, _allowedAllRoles);
+            var userAllowed = _userRepository.GetById(userId);
 
-            var entity = _userRepository.GetById(id);
-            ThrowIfEntityNotFound(entity, id);
-            _userRepository.Update(entity, true);
+            var user = _userRepository.GetById(id);
+            ThrowIfEntityNotFound(user, id);
+
+            if (userAllowed.Id == id || userAllowed.Role == Role.Admin)          
+                _userRepository.Update(user, true);
+            else
+                throw new AccessViolationException();
 
         }
         
