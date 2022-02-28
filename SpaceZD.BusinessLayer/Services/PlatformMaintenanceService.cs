@@ -45,7 +45,7 @@ namespace SpaceZD.BusinessLayer.Services
         {
             CheckUserRole(userId, Role.Admin);
 
-            var platformsMaintenance = _platformMaintenanceRepository.GetListByStationId(stationId, true).Where(t => t.IsDeleted);
+            var platformsMaintenance = _platformMaintenanceRepository.GetListByStationId(stationId, true).Where(t => t.IsDeleted).ToList();
             var platformMaintenanceModels = _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
             return platformMaintenanceModels;
         }
@@ -56,8 +56,8 @@ namespace SpaceZD.BusinessLayer.Services
 
             var platformMaintenance = _mapper.Map<PlatformMaintenance>(platformMaintenanceModel);
             var platform = _platformRepository.GetById(platformMaintenanceModel.Platform.Id);
-            platformMaintenance.Platform = platform;
             ThrowIfEntityNotFound(platform, platformMaintenance.Platform.Id);
+            platformMaintenance.Platform = platform;
 
             return _platformMaintenanceRepository.Add(platformMaintenance);
         }

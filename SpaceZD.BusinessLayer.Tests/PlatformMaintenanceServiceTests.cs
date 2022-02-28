@@ -172,6 +172,17 @@ namespace SpaceZD.BusinessLayer.Tests
         }
 
         [Test]
+        public void AddNegativePlatformNullTest()
+        {
+            // given
+            _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Platform?)null);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.Add(10, new PlatformMaintenanceModel { Platform = new PlatformModel { Id = 1 } }));
+        }
+
+        [Test]
         public void AddNegativeNotFoundExceptionTest()
         {
             // given
@@ -238,6 +249,19 @@ namespace SpaceZD.BusinessLayer.Tests
             _platformMaintenanceRepositoryMock.Verify(s => s.Update(platformMaintenance, It.IsAny<PlatformMaintenance>()), Times.Once);
             _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
 
+        }
+
+        [Test]
+        public void UpdateNegativePlatformNullTest()
+        {
+            // given
+            var platformMaintenance = new PlatformMaintenance();
+            _platformMaintenanceRepositoryMock.Setup(x => x.Update(It.IsAny<PlatformMaintenance>(), It.IsAny<PlatformMaintenance>()));
+            _platformMaintenanceRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(platformMaintenance);
+            _platformRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Platform?)null);
+            _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = Role.Admin });
+            // when then
+            Assert.Throws<NotFoundException>(() => _service.Update(10,10, new PlatformMaintenanceModel { Platform = new PlatformModel { Id = 1 } }));
         }
 
         [Test]
