@@ -23,38 +23,43 @@ public class CarriageTypesController : ControllerBase
 
     //api/CarriageTypes
     [HttpGet]
-    public ActionResult<List<CarriageTypeOutputModel>> GetCarriageTypes()
+    public ActionResult<List<CarriageTypeFullOutputModel>> GetCarriageTypes()
     {
         var entities = _service.GetList();
-        var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
-        return Ok(result);
+        if (User.IsInRole(Role.Admin.ToString()) || User.IsInRole(Role.TrainRouteManager.ToString()))
+        {
+            var resultFull = _mapper.Map<List<CarriageTypeFullOutputModel>>(entities);
+            return Ok(resultFull);
+        }
+        var resultShort = _mapper.Map<List<CarriageTypeShortOutputModel>>(entities);
+        return Ok(resultShort);
     }
 
     //api/CarriageTypes/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<List<CarriageTypeOutputModel>> GetDeletedCarriageTypes()
+    public ActionResult<List<CarriageTypeFullOutputModel>> GetDeletedCarriageTypes()
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
         var entities = _service.GetListDeleted(userId.Value);
-        var result = _mapper.Map<List<CarriageTypeOutputModel>>(entities);
+        var result = _mapper.Map<List<CarriageTypeFullOutputModel>>(entities);
         return Ok(result);
     }
 
     //api/CarriageTypes/42
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
-    public ActionResult<CarriageTypeOutputModel> GetCarriageTypeById(int id)
+    public ActionResult<CarriageTypeFullOutputModel> GetCarriageTypeById(int id)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
         var entities = _service.GetById(userId.Value, id);
-        var result = _mapper.Map<CarriageTypeOutputModel>(entities);
+        var result = _mapper.Map<CarriageTypeFullOutputModel>(entities);
         return Ok(result);
     }
 
