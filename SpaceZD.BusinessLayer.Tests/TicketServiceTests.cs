@@ -182,11 +182,7 @@ public class TicketServiceTests
         Assert.Throws<AuthorizationException>(() => _service.GetById(42, userId));
     }
 
-    [TestCaseSource(typeof(TicketServiceTestCaseSource), nameof(TicketServiceTestCaseSource.GetListTestCases))]
-
-
     
-
 
     [TestCase(Role.Admin, 5)]
     public void DeleteTest(Role role, int userId)

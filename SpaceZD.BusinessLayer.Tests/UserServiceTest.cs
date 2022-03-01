@@ -306,7 +306,7 @@ public class UserServiceTest
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
         var entityNew = new UserModel() { Name = "test" };
         // when
-        _service.Update(5, entityNew, entity.Id);
+        _service.Update(5, entity.Id, entityNew );
 
         // then
         _userRepositoryMock.Verify(s => s.GetById(5), Times.Once);
@@ -324,7 +324,7 @@ public class UserServiceTest
         var entityNew = new UserModel() { Name = "test" };
         // when
         // then
-        Assert.Throws<NotFoundException>(() => _service.Update(5, entityNew, entity.Id));
+        Assert.Throws<NotFoundException>(() => _service.Update(5, entity.Id, entityNew));
     }
 
 
