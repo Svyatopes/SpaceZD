@@ -46,6 +46,21 @@ public class PersonRepositoryTests
         //then
         Assert.AreEqual(person, receivedOrder);
     }
+    
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void GetListByUserIdTest(int userId)
+    {
+        //given
+        var persons = _context.Persons.Where(p => p.User.Id == userId && !p.IsDeleted);
+
+        //when
+        var receivedPerson = _repository.GetByUserId(userId);
+
+        //then
+        Assert.AreEqual(persons, receivedPerson);
+    }
 
     [TestCase(true)]
     [TestCase(false)]

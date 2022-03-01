@@ -1,25 +1,31 @@
 ﻿using NUnit.Framework;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
 {
     internal class PlatformMaintenanceServiceTestCaseSource
     {
-        public static IEnumerable<TestCaseData> GetListTestCases()
+        public static IEnumerable<TestCaseData> GetListByIdStationTestCases()
         {
-            yield return new TestCaseData(GetPlatformMaintenance(), GetPlatformMaintenanceModel(), false);
-            yield return new TestCaseData(GetPlatformMaintenance(), GetPlatformMaintenanceModel(), true);
+            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), Role.Admin, 1);
+            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance()), Role.StationManager, 1);
+        }
+
+        public static IEnumerable<TestCaseData> GetListDeletdByIdStationTestCases()
+        {
+            yield return new TestCaseData(GetPlatformMaintenance(), ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenanceDeleted()), Role.Admin, 0);
         }
 
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var platformsMaintenance = GetPlatformMaintenance();
-            var platformsMaintenanceModels = GetPlatformMaintenanceModel();
-            yield return new TestCaseData(platformsMaintenance[0], platformsMaintenanceModels[0]);
-            yield return new TestCaseData(platformsMaintenance[1], platformsMaintenanceModels[1]);
+            yield return new TestCaseData(platformsMaintenance[0], ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance())[0], Role.Admin);
+            yield return new TestCaseData(platformsMaintenance[1], ConvertPlatformMaintenanceToPlatformMaintenanceModels(GetPlatformMaintenance())[1], Role.StationManager);
         }
 
         private static List<PlatformMaintenance> GetPlatformMaintenance() => new List<PlatformMaintenance>
@@ -105,65 +111,17 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                 }
         };
 
-        private static List<PlatformMaintenanceModel> GetPlatformMaintenanceModel() => new List<PlatformMaintenanceModel>
+        private static List<PlatformMaintenance> GetPlatformMaintenanceDeleted() => new List<PlatformMaintenance>
         {
-                new PlatformMaintenanceModel
+            new PlatformMaintenance
                 {
-                    Platform= new PlatformModel
-                    {
-                        Number= 1,
-                        Station= new StationModel
-                        {
-                            Name="СПБ",
-                            Platforms=new List<PlatformModel>
-                            {
-                                new()
-                                {
-                                    Number=1
-                                },
-                                new()
-                                {
-                                    Number=2
-                                }
-                            }
-                        }
-                    },
-                    StartTime= new DateTime(2000,1,1),
-                    EndTime= new DateTime(2001,1,1)
-                },
-                new PlatformMaintenanceModel
-                {
-                    Platform= new PlatformModel
-                    {
-                        Number= 2,
-                        Station= new StationModel
-                        {
-                            Name="Москва",
-                            Platforms=new List<PlatformModel>
-                            {
-                                new()
-                                {
-                                    Number=1
-                                },
-                                new()
-                                {
-                                    Number=2
-                                }
-                            }
-                        }
-                    },
-                    StartTime= new DateTime(2002,1,1),
-                    EndTime= new DateTime(2010,10,1)
-                },
-                new PlatformMaintenanceModel
-                {
-                    Platform= new PlatformModel
+                    Platform= new Platform
                     {
                         Number= 3,
-                        Station= new StationModel
+                        Station= new Station
                         {
                             Name="Пермь",
-                            Platforms=new List<PlatformModel>
+                            Platforms=new List<Platform>
                             {
                                 new()
                                 {
@@ -185,5 +143,25 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                     IsDeleted=true
                 }
         };
+
+        private static List<PlatformMaintenanceModel> ConvertPlatformMaintenanceToPlatformMaintenanceModels(List<PlatformMaintenance> platformMaintenance, bool includeAll = true)
+        {
+            return platformMaintenance
+                .Where(pm => includeAll || pm.IsDeleted)
+                .Select(platformMaintenance => new PlatformMaintenanceModel
+                {
+                    Id=platformMaintenance.Id,
+                    Platform = new PlatformModel
+                    {
+                        Id=platformMaintenance.Platform.Id,
+                        Number = platformMaintenance.Platform.Number,
+                        IsDeleted = platformMaintenance.Platform.IsDeleted,
+                        Station = new StationModel { Id=platformMaintenance.Platform.Station.Id, Name = platformMaintenance.Platform.Station.Name, IsDeleted = platformMaintenance.Platform.Station.IsDeleted }
+                    },
+                    StartTime = platformMaintenance.StartTime,
+                    EndTime = platformMaintenance.EndTime,
+                    IsDeleted = platformMaintenance.IsDeleted
+                }).ToList();
+        }
     }
 }

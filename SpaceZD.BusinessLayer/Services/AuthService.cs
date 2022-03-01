@@ -20,7 +20,7 @@ public class AuthService : IAuthService
     public string Login(string login, string password)
     {
         var user = _userRepository.GetUserByLogin(login);
-        if (user == null)
+        if (user == null || user.IsDeleted)
             throw new NotFoundException($"User with login {login} was not found.");
 
         if (!SecurePasswordHasher.Verify(password, user.PasswordHash))

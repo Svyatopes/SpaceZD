@@ -47,6 +47,7 @@ public class OrderRepository : BaseRepository, IOrderRepository
         oldOrder.Trip = newOrder.Trip;
         oldOrder.StartStation = newOrder.StartStation;
         oldOrder.EndStation = newOrder.EndStation;
+        oldOrder.Status = newOrder.Status;
         _context.SaveChanges();
     }
 

@@ -10,6 +10,7 @@ public class CarriageTypeApiMappingProfile : Profile
     {
         CreateMap<CarriageTypeInputModel, CarriageTypeModel>();
 
-        CreateMap<CarriageTypeModel, CarriageTypeOutputModel>();
+        CreateMap<CarriageTypeModel, CarriageTypeFullOutputModel>();
+        CreateMap<CarriageTypeModel, CarriageTypeShortOutputModel>();
     }
 }

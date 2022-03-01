@@ -74,6 +74,11 @@ namespace SpaceZD.DataLayer.Migrations
                     b.Property<int>("NumberOfSeats")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("PriceCoefficient")
+                        .HasPrecision(6, 3)
+                        .HasColumnType("decimal(6,3)")
+                        .HasDefaultValue(1m);
+
                     b.HasKey("Id");
 
                     b.ToTable("CarriageType");

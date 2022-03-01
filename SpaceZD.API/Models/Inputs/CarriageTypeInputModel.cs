@@ -11,4 +11,8 @@ public class CarriageTypeInputModel
     [Required]
     [Range(1, 1000)]
     public int NumberOfSeats { get; set; }
+    
+    [Required]
+    [Range(0.001, 999)]
+    public decimal PriceCoefficient { get; set; }
 }

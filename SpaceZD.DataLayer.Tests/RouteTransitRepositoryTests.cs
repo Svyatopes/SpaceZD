@@ -12,7 +12,7 @@ namespace SpaceZD.DataLayer.Tests;
 public class RouteTransitRepositoryTests
 {
     private VeryVeryImportantContext _context;
-    private IRepositorySoftDelete<RouteTransit> _repository;
+    private IRouteTransitRepository _repository;
 
     [SetUp]
     public void Setup()
@@ -83,15 +83,15 @@ public class RouteTransitRepositoryTests
         Assert.AreEqual(expectedEntity, receivedEntity);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void GetListTest(bool includeAll)
+    [TestCase(false, 1)]
+    [TestCase(true, 2)]
+    public void GetListTest(bool includeAll, int routeId)
     {
         // given
-        var expected = _context.RouteTransits.Where(t => !t.IsDeleted || includeAll).ToList();
+        var expected = _context.RouteTransits.Where(t => !t.IsDeleted || includeAll && t.Route.Id == routeId).ToList();
 
         // when
-        var list = _repository.GetList(includeAll);
+        var list = _repository.GetList(routeId, includeAll);
 
         // then
         CollectionAssert.AreEqual(expected, list);

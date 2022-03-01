@@ -58,7 +58,7 @@ public class TicketService : BaseService, ITicketService
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    public int Add(TicketModel entity, int userId)
+    public int Add(int userId, TicketModel entity)
     {
         CheckUserRole(userId, _allowedRoles);
 
@@ -86,6 +86,10 @@ public class TicketService : BaseService, ITicketService
         var endStation = ticket.Order.EndStation.Station;
         var afterTheStart = false;
 
+        if (!ticket.Order.Trip.Train.Carriages.Contains(carriage))
+            throw new AccessViolationException("Carriage number is incorrect");
+        
+
         var transits = ticket.Order.Trip.Route.RouteTransits.Select(t => t.Transit).ToList();
         foreach (var item in transits)
         {
@@ -106,7 +110,7 @@ public class TicketService : BaseService, ITicketService
         if (entity.IsTeaIncluded)
             price += (decimal)50;
 
-        ticket.Price = price;
+        ticket.Price = price.Value;
 
         if (person.User.Id == user.Id && order.User.Id == user.Id)
             return _ticketRepository.Add(ticket);
@@ -116,7 +120,7 @@ public class TicketService : BaseService, ITicketService
     }
 
 
-    public void Update(int id, TicketModel entity, int userId)
+    public void Update(int userId, int id, TicketModel entity)
     {
         CheckUserRole(userId, _allowedRoles);
 

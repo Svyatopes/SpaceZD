@@ -45,12 +45,17 @@ public class VeryVeryImportantContext : DbContext
                     .Property(p => p.Price)
                     .HasPrecision(9, 2);
 
+        modelBuilder.Entity<CarriageType>()
+                    .Property(p => p.PriceCoefficient)
+                    .HasPrecision(6, 3)
+                    .HasDefaultValue(1);
+
         modelBuilder.DisableCascadeDelete();
 
         modelBuilder.Entity<Transit>()
                     .HasIndex(p => new { p.StartStationId, p.EndStationId })
                     .IsUnique();
-        
+
         modelBuilder.Entity<Platform>()
                     .HasIndex(p => new { p.Number, p.StationId })
                     .IsUnique();

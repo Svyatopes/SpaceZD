@@ -5,12 +5,16 @@ public class CarriageTypeModel
     public int Id { get; set; }
     public string Name { get; set; }
     public int NumberOfSeats { get; set; }
+    public decimal PriceCoefficient { get; set; }
     public bool IsDeleted { get; set; }
 
 
     private bool Equals(CarriageTypeModel other)
     {
-        return Name == other.Name && NumberOfSeats == other.NumberOfSeats && IsDeleted == other.IsDeleted;
+        return Name == other.Name &&
+            NumberOfSeats == other.NumberOfSeats &&
+            PriceCoefficient == other.PriceCoefficient &&
+            IsDeleted == other.IsDeleted;
     }
 
     public override bool Equals(object? obj)

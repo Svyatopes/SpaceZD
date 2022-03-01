@@ -2,55 +2,90 @@
 using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using SpaceZD.DataLayer.Repositories;
 
 namespace SpaceZD.BusinessLayer.Services
 {
-    public class PlatformMaintenanceService : IPlatformMaintenanceServices
+    public class PlatformMaintenanceService : BaseService, IPlatformMaintenanceService
     {
-        private readonly IMapper _mapper;
-        private readonly IRepositorySoftDelete<PlatformMaintenance> _platformMaintenanceRepository;
+        private readonly IPlatformMaintenanceRepository _platformMaintenanceRepository;
+        private readonly IPlatformRepository _platformRepository;
+        private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
 
-        public PlatformMaintenanceService(IMapper mapper, IRepositorySoftDelete<PlatformMaintenance> platformMaintenanceRepository)
+        public PlatformMaintenanceService(IMapper mapper, IUserRepository userRepository,
+            IPlatformMaintenanceRepository platformMaintenanceRepository, IPlatformRepository platformRepository)
+            : base(mapper, userRepository)
         {
-            _mapper = mapper;
             _platformMaintenanceRepository = platformMaintenanceRepository;
+            _platformRepository = platformRepository;
         }
 
-        public PlatformMaintenanceModel GetById(int id)
+
+        public PlatformMaintenanceModel GetById(int id, int userId)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var platformMaintenance = GetPlatformMaintenanceById(id);
-            return _mapper.Map<PlatformMaintenanceModel>(platformMaintenance);
+            var platformMaintenanceModel = _mapper.Map<PlatformMaintenanceModel>(platformMaintenance);
+            return platformMaintenanceModel;
         }
 
-        public List<PlatformMaintenanceModel> GetList(bool allIncluded)
+        public List<PlatformMaintenanceModel> GetListByStationId(int stationId, int userId)
         {
-            var platformsMaintenance = _platformMaintenanceRepository.GetList(allIncluded);
-            return _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
+            CheckUserRole(userId, _allowedRoles);
+
+            var platformsMaintenance = _platformMaintenanceRepository.GetListByStationId(stationId);
+            var platformMaintenanceModels = _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
+            return platformMaintenanceModels;
         }
 
-        public int Add(PlatformMaintenanceModel platformMaintenance)
+        public List<PlatformMaintenanceModel> GetListDeletedByStationId(int stationId, int userId)
         {
-            var platformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
-            var id = _platformMaintenanceRepository.Add(platformMaintenanceEntity);
-            return id;
+            CheckUserRole(userId, Role.Admin);
+
+            var platformsMaintenance = _platformMaintenanceRepository.GetListByStationId(stationId, true).Where(t => t.IsDeleted).ToList();
+            var platformMaintenanceModels = _mapper.Map<List<PlatformMaintenanceModel>>(platformsMaintenance);
+            return platformMaintenanceModels;
         }
 
-        public void Update(int id, PlatformMaintenanceModel platformMaintenance)
+        public int Add(int userId, PlatformMaintenanceModel platformMaintenanceModel)
         {
-            var platformMaintenanceEntity = GetPlatformMaintenanceById(id);
-            var newPlatformMaintenanceEntity = _mapper.Map<PlatformMaintenance>(platformMaintenance);
-            _platformMaintenanceRepository.Update(platformMaintenanceEntity, newPlatformMaintenanceEntity);
+            CheckUserRole(userId, _allowedRoles);
+
+            var platformMaintenance = _mapper.Map<PlatformMaintenance>(platformMaintenanceModel);
+            var platform = _platformRepository.GetById(platformMaintenanceModel.Platform.Id);
+            ThrowIfEntityNotFound(platform, platformMaintenance.Platform.Id);
+            platformMaintenance.Platform = platform;
+
+            return _platformMaintenanceRepository.Add(platformMaintenance);
         }
 
-        public void Restore(int id)
+        public void Update(int userId, int id, PlatformMaintenanceModel platformMaintenanceModel)
         {
+            CheckUserRole(userId, _allowedRoles);
+
+            var platformMaintenance = GetPlatformMaintenanceById(id);
+            var newPlatformMaintenance = _mapper.Map<PlatformMaintenance>(platformMaintenanceModel);
+            var platform = _platformRepository.GetById(platformMaintenanceModel.Platform.Id);
+            ThrowIfEntityNotFound(platform, platformMaintenanceModel.Platform.Id);
+            newPlatformMaintenance.Platform = platform;
+            _platformMaintenanceRepository.Update(platformMaintenance, newPlatformMaintenance);
+        }
+
+        public void Restore(int userId, int id)
+        {
+            CheckUserRole(userId, Role.Admin);
+
             var platformMaintenance = GetPlatformMaintenanceById(id);
             _platformMaintenanceRepository.Update(platformMaintenance, false);
         }
 
-        public void Delete(int id)
+        public void Delete(int userId, int id)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var platformMaintenance = GetPlatformMaintenanceById(id);
             _platformMaintenanceRepository.Update(platformMaintenance, true);
         }

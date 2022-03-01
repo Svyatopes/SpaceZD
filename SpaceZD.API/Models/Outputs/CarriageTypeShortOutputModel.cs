@@ -1,6 +1,6 @@
 namespace SpaceZD.API.Models;
 
-public class CarriageTypeOutputModel
+public class CarriageTypeShortOutputModel
 {
     public int Id { get; set; }
     public string Name { get; set; }

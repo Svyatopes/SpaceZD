@@ -31,9 +31,9 @@ public class TripsController : ControllerBase
         return Ok(result);
     }
     
-    //api/Trips/from-date/2022-1-1
-    [HttpGet("from-date/{date}")]
-    public ActionResult<List<TripShortOutputModel>> GetTripsFromDate(DateTime date)
+    //api/Trips/from-date?date=2022-02-22
+    [HttpGet("from-date")]
+    public ActionResult<List<TripShortOutputModel>> GetTripsFromDate([FromQuery] DateTime date)
     {
         var entities = _service.GetList().Where(g => g.StartTime.Date == date.Date);
         var result = _mapper.Map<List<TripShortOutputModel>>(entities);
