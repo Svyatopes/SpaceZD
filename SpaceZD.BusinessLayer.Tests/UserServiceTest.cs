@@ -125,7 +125,7 @@ public class UserServiceTest
     public void DeleteTest()
     {
         // given
-        var entity = new User() { Role = Role.User };
+        var entity = new User() { Role = Role.User, Id = 5 };
         _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
 
