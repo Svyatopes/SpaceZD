@@ -82,7 +82,7 @@ public class TripStationsController : ControllerBase
     }
 
     //api/TripStations/42/ready-platforms
-    [HttpGet("{id}/ready-platforms")]
+    [HttpGet("{id}/available-platforms")]
     [SwaggerOperation(Summary = "Get available platform by trip station id")]
     [ProducesResponseType(typeof(List<PlatformOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]

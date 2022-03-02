@@ -83,7 +83,7 @@ public class TripsController : ControllerBase
     }
 
     //api/Trips/42/seats
-    [HttpPost("{id}/seats")]
+    [HttpPost("{id}/seats-state")]
     [SwaggerOperation(Summary = "Get status of seats (free or not) from trip by id and start/end station id")]
     [ProducesResponseType(typeof(TripFullOutputModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
