@@ -412,47 +412,4 @@ public class TicketServiceTests
         _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
 
     }
-
-
-    //[TestCaseSource(typeof(TicketServiceTestCaseSource), nameof(TicketServiceTestCaseSource.GetByIdTestCases))]
-
-    //public void gggAddNegativeCarriageNotFoundExceptionTest(Ticket ticket, TicketModel expected, int userId)
-    //{
-    //    // given
-    //    _ticketRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(ticket);
-    //    _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.User, Id = 4 });
-    //    _carriageRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Carriage() { Id = 5 });
-    //    _personRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Person() { Id = 5 });
-    //    _orderRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(
-    //        new Order() 
-    //        { 
-    //            Trip = new Trip() 
-    //            { 
-    //                Train = new Train() 
-    //                { 
-    //                    Carriages = new List<Carriage>() { new Carriage() { Id = 5} }
-    //                } ,
-    //                Route = new Route() 
-    //                { 
-    //                    RouteTransits = new List<RouteTransit>() { new RouteTransit() { Id = 5} }
-    //                }
-    //            }, 
-    //            Id = 5, 
-    //            StartStation = new TripStation() { Station = new Station() { Id = 5 } }, 
-    //            EndStation = new TripStation() { Station = new Station() { Id = 5 } } 
-    //        });
-
-    //    // when
-    //    // then
-    //    Assert.Throws<NotFoundException>(() => _service.Add(4, new TicketModel()
-    //    {
-    //        Carriage = new CarriageModel(),
-    //        Order = new OrderModel() { StartStation = new TripStationModel() { Station = new StationModel() { Id = 5 } },EndStation = new TripStationModel() { Station = new StationModel() { Id = 5 } }, Trip = new TripModel() { Train = new TrainModel() { Carriages = new List<CarriageModel>() { new CarriageModel() { Id = 5 } } } } },
-    //        Person = new PersonModel(),
-    //        SeatNumber = 5
-    //    }));
-    //    _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
-
-    //}
-
 }
