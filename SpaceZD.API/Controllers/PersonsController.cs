@@ -6,6 +6,7 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
@@ -15,7 +16,7 @@ namespace SpaceZD.API.Controllers;
 
 public class PersonsController : ControllerBase
 {
-    
+
     private readonly IPersonService _personService;
     private readonly IMapper _mapper;
 
@@ -25,9 +26,18 @@ public class PersonsController : ControllerBase
         _mapper = mapper;
 
     }
+
+
     [HttpGet]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<List<PersonModel>> GetPersons()
+    [SwaggerOperation(Summary = "Get all persons (only Admin)")]
+    [ProducesResponseType(typeof(List<PersonOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<List<PersonOutputModel>> GetPersons()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -40,9 +50,17 @@ public class PersonsController : ControllerBase
         return BadRequest();
     }
 
+
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<PersonModel> GetPersonById(int id)
+    [SwaggerOperation(Summary = "Get person by id")]
+    [ProducesResponseType(typeof(PersonOutputModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<PersonOutputModel> GetPersonById(int id)
     {
 
         var userId = this.GetUserId();
@@ -53,26 +71,42 @@ public class PersonsController : ControllerBase
         var user = _mapper.Map<PersonOutputModel>(userModel);
         if (user != null)
             return Ok(user);
-        else
-            return BadRequest("Person doesn't exist");
+        return BadRequest("Person doesn't exist");
     }
 
 
-    [HttpGet("by-user-login")]
-    public ActionResult<PersonModel> GetPersonByUserId()
+    [HttpGet("by-user")]
+    [AuthorizeRole(Role.User)]
+    [SwaggerOperation(Summary = "Get persons by user")]
+    [ProducesResponseType(typeof(List<PersonOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<List<PersonOutputModel>> GetPersonsByUser()
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
         var personModel = _personService.GetByUserId(userId.Value);
-        var user = _mapper.Map<List<PersonOutputModel>>(personModel);
-        return Ok(user);
-       
+        var persons = _mapper.Map<List<PersonOutputModel>>(personModel);
+        if (persons != null)
+            return Ok(persons);
+        return BadRequest("Persons doesn't exist");
+
     }
 
 
     [HttpPost]
+    [SwaggerOperation(Summary = "Add new person")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult AddPerson([FromBody] PersonInputModel personModel)
     {
         var userId = this.GetUserId();
@@ -87,7 +121,14 @@ public class PersonsController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public ActionResult EditPerson(int id, PersonInputModel person)
+    [SwaggerOperation(Summary = "Edit person by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult EditPerson(int id, [FromBody] PersonInputModel person)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -95,12 +136,19 @@ public class PersonsController : ControllerBase
 
         var personForEdit = _mapper.Map<PersonModel>(person);
         _personService.Update(userId.Value, id, personForEdit);
-        return Accepted();
+        return NoContent();
 
     }
-    
+
 
     [HttpDelete("{id}")]
+    [SwaggerOperation(Summary = "Delete person by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult DeletePerson(int id)
     {
         var userId = this.GetUserId();
@@ -108,12 +156,19 @@ public class PersonsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         _personService.Delete(id, userId.Value);
-        return Accepted();
+        return NoContent();
     }
 
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restore person by id (only Admin)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult RestorePerson(int id)
     {
         var userId = this.GetUserId();
@@ -121,6 +176,6 @@ public class PersonsController : ControllerBase
             return Unauthorized("Not valid token, try login again");
 
         _personService.Restore(id, userId.Value);
-        return Accepted();
+        return NoContent();
     }
 }

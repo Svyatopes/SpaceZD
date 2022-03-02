@@ -74,7 +74,7 @@ public class TicketService : BaseService, ITicketService
 
     public int Add(int userId, TicketModel entity)
     {
-        CheckUserRole(userId, _allowedRoles);
+        CheckUserRole(userId, Role.User);
 
         if (entity.Carriage is null || entity.Person is null || entity.Order is null || entity.SeatNumber == 0)
         {

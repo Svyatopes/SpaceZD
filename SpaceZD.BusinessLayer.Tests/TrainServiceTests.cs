@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Configuration;
+using SpaceZD.BusinessLayer.Exceptions;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
+using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceZD.BusinessLayer.Tests;
 
@@ -16,6 +18,7 @@ public class TrainServiceTests
 {
     private Mock<IRepositorySoftDelete<Train>> _trainRepositoryMock;
     private Mock<IUserRepository> _userRepositoryMock;
+    private ITrainService _service;
     private readonly IMapper _mapper;
 
     public TrainServiceTests()
@@ -28,135 +31,243 @@ public class TrainServiceTests
     {
         _trainRepositoryMock = new Mock<IRepositorySoftDelete<Train>>();
         _userRepositoryMock = new Mock<IUserRepository>();
+        _service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
     }
 
 
-
     [TestCaseSource(typeof(TrainServiceTestCaseSource), nameof(TrainServiceTestCaseSource.GetListTestCases))]
-
-    public void GetListTest(List<Train> trains, List<TrainModel> expectedTrainModels, bool allIncluded)
+    public void GetListTest(List<Train> trains, List<TrainModel> expectedTrainModels, int userId)
     {
         // given
-        var trainsFiltredByIsDeletedProp = trains.Where(o => !o.IsDeleted || allIncluded).ToList();
+        var trainsFiltredByIsDeletedProp = trains.Where(o => !o.IsDeleted || false).ToList();
         _trainRepositoryMock.Setup(x => x.GetList(It.IsAny<bool>()))
             .Returns(trainsFiltredByIsDeletedProp);
-
-        expectedTrainModels = expectedTrainModels.Where(o => !o.IsDeleted || allIncluded).ToList();
-
-        var trainService = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
-
-        // when
-        var trainModels = trainService.GetList(allIncluded);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.Admin, Id = userId });
+        expectedTrainModels = expectedTrainModels.Where(o => !o.IsDeleted || false).ToList();
+        
+        // when   
+        var trainModels = _service.GetList(userId);
 
         // then
         CollectionAssert.AreEqual(expectedTrainModels, trainModels);
         _trainRepositoryMock.Verify(s => s.GetList(It.IsAny<bool>()), Times.Once);
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+
+
+    [TestCase(Role.StationManager)]
+    [TestCase(Role.User)]
+    public void GetListNegativeAuthorizationExceptionTest(Role role)
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
+        // when        
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.GetList(5));
+    }
+
+
+    [TestCaseSource(typeof(TrainServiceTestCaseSource), nameof(TrainServiceTestCaseSource.GetListTestCases))]
+    public void GetListDeleteTest(List<Train> trains, List<TrainModel> expectedTrainModels, int userId)
+    {
+        // given
+        var trainsFiltredByIsDeletedProp = trains.Where(o => !o.IsDeleted || true).ToList();
+        _trainRepositoryMock.Setup(x => x.GetList(It.IsAny<bool>()))
+            .Returns(trainsFiltredByIsDeletedProp);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.Admin, Id = userId });
+        expectedTrainModels = expectedTrainModels.Where(o => !o.IsDeleted || true).ToList();
+        
+        // when   
+        var trainModels = _service.GetList(userId);
+
+        // then
+        CollectionAssert.AreEqual(expectedTrainModels, trainModels);
+        _trainRepositoryMock.Verify(s => s.GetList(It.IsAny<bool>()), Times.Once);
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+
+
+    [TestCase(Role.StationManager)]
+    [TestCase(Role.User)]
+    public void GetListDeleteNegativeAuthorizationExceptionTest(Role role)
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new User { Role = role });
+
+        // when        
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.GetListDeleted(5));
     }
 
 
     [TestCaseSource(typeof(TrainServiceTestCaseSource), nameof(TrainServiceTestCaseSource.GetByIdTestCases))]
-    public void GetByIdTest(Train train, TrainModel expected)
+    public void GetByIdTest(Train train, TrainModel expected, int userId)
     {
         // given
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.Admin, Id = userId });
+
         _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
 
         // when
-        var actual = service.GetById(5);
+        var actual = _service.GetById(5, userId);
 
         // then
         Assert.AreEqual(expected, actual);
-
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+        _trainRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
     }
 
 
-
-    [TestCase(5)]
-    public void AddTest(int expected)
+    [TestCase(Role.StationManager)]
+    [TestCase(Role.User)]
+    public void GetByIdNegativeAuthorizationExceptionTest(Role role)
     {
         // given
-        _trainRepositoryMock.Setup(x => x.Add(It.IsAny<Train>())).Returns(expected);
-        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 3 });
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train());
 
         // when
-        int actual = service.Add(new TrainModel
-        {
-            Carriages = new List<CarriageModel>()
-            {
-                new CarriageModel()
-                {
-                    Number = 8,
-                    IsDeleted = false,
-                    Type = new CarriageTypeModel()
-                    {
-                        Name = "Эконом",
-                        NumberOfSeats = 5,
-                        IsDeleted = false
-                    }
-                }
-            }        
-        });
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.GetById(5, 3));
+    }
+
+
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    public void GetByIdNegativeNotFoundExceptionTest(Role role)
+    {
+        // given
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 3 });
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Train?)null);
+
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.GetById(5, 3));
+    }
+
+
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    public void AddTest(Role role)
+    {
+        // given
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 3 });
+
+        // when
+        int actual = _service.Add(3);
 
         // then
         _trainRepositoryMock.Verify(s => s.Add(It.IsAny<Train>()), Times.Once);
-        Assert.AreEqual(expected, actual);
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+
     }
-
-
-    [Test]
-    public void UpdateTest()
+    
+    
+    [TestCase(Role.User)]
+    [TestCase(Role.StationManager)]
+    public void AddNegativeAuthorizationExceptionTest(Role role)
     {
         // given
-        var train = new Train();
-        _trainRepositoryMock.Setup(x => x.Update(It.IsAny<Train>(), It.IsAny<Train>()));
-        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 3 });
 
-        // when
-        service.Update(5, new TrainModel());
-
+        // when     
         // then
-        _trainRepositoryMock.Verify(s => s.GetById(5), Times.Once);
-        _trainRepositoryMock.Verify(s => s.Update(train, It.IsAny<Train>()), Times.Once);
+        Assert.Throws<AuthorizationException>(() => _service.Add(3));
     }
 
-   
 
-
-    [Test]
-    public void DeleteTest()
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    public void DeleteTest(Role role)
     {
         // given
-        var train = new Train();
-        _trainRepositoryMock.Setup(x => x.Update(It.IsAny<Train>(), true));
-        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train() { IsDeleted = false});
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 4 });
 
         // when
-        service.Delete(5);
+        _service.Delete(5, 4);
 
         // then
-        _trainRepositoryMock.Verify(s => s.GetById(5), Times.Once);
-        _trainRepositoryMock.Verify(s => s.Update(train, true), Times.Once);
+        _trainRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        _trainRepositoryMock.Verify(s => s.Update(It.IsAny<Train>(), true), Times.Once);
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+
     }
 
-   
 
-    //Restore
-    [Test]
+    [TestCase(Role.User)]
+    [TestCase(Role.StationManager)]
+    public void DeleteNegativeAuthorizationExceptionTest(Role role)
+    {
+        // given
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train() { IsDeleted = false});
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 4 });
+
+        // when
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.Delete(5, 4));
+    }
+
+
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    public void DeleteNegativeNotFoundExceptionTest(Role role)
+    {
+        // given
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Train?)null);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 4 });
+
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Delete(5, 4));
+    }
+
+
+    [Test]    
     public void RestoreTest()
     {
         // given
-        var train = new Train();
-        _trainRepositoryMock.Setup(x => x.Update(It.IsAny<Train>(), false));
-        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(train);
-        var service = new TrainService(_mapper, _userRepositoryMock.Object, _trainRepositoryMock.Object);
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train() { IsDeleted = true});
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.Admin, Id = 4 });
 
         // when
-        service.Restore(5);
+        _service.Restore(5, 4);
 
         // then
-        _trainRepositoryMock.Verify(s => s.GetById(5), Times.Once);
-        _trainRepositoryMock.Verify(s => s.Update(train, false), Times.Once);
+        _trainRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+        _trainRepositoryMock.Verify(s => s.Update(It.IsAny<Train>(), false), Times.Once);
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Once);
+
     }
+
+
+    [TestCase(Role.User)]
+    [TestCase(Role.StationManager)]
+    [TestCase(Role.TrainRouteManager)]
+    public void RestoreNegativeAuthorizationExceptionTest(Role role)
+    {
+        // given
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(new Train() { IsDeleted = true});
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 4 });
+
+        // when
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.Restore(5, 4));
+    }
+
+
+    [Test]    
+    public void RestoreNegativeNotFoundExceptionTest()
+    {
+        // given
+        _trainRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((Train?)null);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.Admin, Id = 4 });
+
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Restore(5, 4));
+    }    
 }

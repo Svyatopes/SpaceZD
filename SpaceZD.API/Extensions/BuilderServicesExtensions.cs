@@ -89,7 +89,7 @@ public static class BuilderServicesExtensions
         {
             c.EnableAnnotations();
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Test01", Version = "v1" });
-
+            c.EnableAnnotations();
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
             {
                 Name = "Authorization",
@@ -99,7 +99,7 @@ public static class BuilderServicesExtensions
                 In = ParameterLocation.Header,
                 Description = "JWT Authorization header using the Bearer scheme."
 
-            });
+            });        
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {

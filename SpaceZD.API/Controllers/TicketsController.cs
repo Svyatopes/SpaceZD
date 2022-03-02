@@ -6,11 +6,14 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.User, Role.Admin)]
+
 public class TicketsController : ControllerBase
 {
     private readonly ITicketService _ticketService;
@@ -23,9 +26,17 @@ public class TicketsController : ControllerBase
 
     }
 
+
     [HttpGet]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<List<TicketModel>> GetTickets()
+    [SwaggerOperation(Summary = "Get all tickets (only Admin)")]
+    [ProducesResponseType(typeof(List<TicketOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<List<TicketOutputModel>> GetTickets()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -41,7 +52,14 @@ public class TicketsController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    public ActionResult<List<TicketModel>> GetTicketsDelete()
+    [SwaggerOperation(Summary = "Get all deleted tickets (only Admin)")]
+    [ProducesResponseType(typeof(List<TicketOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<List<TicketOutputModel>> GetTicketsDelete()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -54,9 +72,16 @@ public class TicketsController : ControllerBase
         return BadRequest();
     }
 
+
     [HttpGet("by-order/{orderId}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
-    public ActionResult<List<TicketModel>> GetTicketByOrderId(int orderId)
+    [SwaggerOperation(Summary = "Get tickets by order id")]
+    [ProducesResponseType(typeof(List<TicketOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<List<TicketOutputModel>> GetTicketByOrderId(int orderId)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -71,8 +96,14 @@ public class TicketsController : ControllerBase
 
 
     [HttpGet("{id}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
-    public ActionResult<TicketModel> GetTicketById(int id)
+    [SwaggerOperation(Summary = "Get ticket by id")]
+    [ProducesResponseType(typeof(TicketOutputModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<TicketOutputModel> GetTicketById(int id)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -82,13 +113,19 @@ public class TicketsController : ControllerBase
         var ticket = _mapper.Map<TicketOutputModel>(ticketModel);
         if (ticket != null)
             return Ok(ticket);
-        else
-            return BadRequest("User doesn't exist");
+        return BadRequest("User doesn't exist");
     }
 
 
     [HttpPost]
-    [AuthorizeRole(Role.User, Role.Admin)]
+    [AuthorizeRole(Role.User)]
+    [SwaggerOperation(Summary = "Add new ticket")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult AddTicket([FromBody] TicketCreateInputModel ticketModel)
     {
         var userId = this.GetUserId();
@@ -102,10 +139,15 @@ public class TicketsController : ControllerBase
 
     }
 
-    
 
     [HttpDelete("{id}")]
-    [AuthorizeRole(Role.User, Role.Admin)]
+    [SwaggerOperation(Summary = "Delete ticket by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult DeleteTicket(int id)
     {
         var userId = this.GetUserId();
@@ -119,6 +161,13 @@ public class TicketsController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restore ticket by id (only Admin)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult RestoreTicket(int id)
     {
         var userId = this.GetUserId();
