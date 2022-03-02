@@ -44,7 +44,7 @@ public class CarriageTypesController : ControllerBase
     //api/CarriageTypes/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted сarriage types")]
+    [SwaggerOperation(Summary = "Get all deleted сarriage types (only Admin)")]
     [ProducesResponseType(typeof(List<CarriageTypeFullOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -143,7 +143,7 @@ public class CarriageTypesController : ControllerBase
     //api/CarriageTypes/42
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restoring carriage type by id")]
+    [SwaggerOperation(Summary = "Restoring carriage type by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

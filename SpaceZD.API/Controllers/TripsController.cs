@@ -38,7 +38,7 @@ public class TripsController : ControllerBase
     
     //api/Trips/from-date?date=2022-02-22
     [HttpGet("from-date")]
-    [SwaggerOperation(Summary = "Get all trips from select date")]
+    [SwaggerOperation(Summary = "Get all trips for the selected date")]
     [ProducesResponseType(typeof(List<TripShortOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
@@ -52,7 +52,7 @@ public class TripsController : ControllerBase
     //api/Trips/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted trips")]
+    [SwaggerOperation(Summary = "Get all deleted trips (only Admin)")]
     [ProducesResponseType(typeof(List<TripShortOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -84,7 +84,7 @@ public class TripsController : ControllerBase
 
     //api/Trips/42/seats
     [HttpPost("{id}/seats")]
-    [SwaggerOperation(Summary = "Get seats from trip by id and start/end station id")]
+    [SwaggerOperation(Summary = "Get status of seats (free or not) from trip by id and start/end station id")]
     [ProducesResponseType(typeof(TripFullOutputModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
@@ -157,7 +157,7 @@ public class TripsController : ControllerBase
     //api/Trips/42
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restoring trip by id")]
+    [SwaggerOperation(Summary = "Restoring trip by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -38,7 +38,7 @@ public class StationsController : ControllerBase
     //api/Stations/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted stations")]
+    [SwaggerOperation(Summary = "Get all deleted stations (only Admin)")]
     [ProducesResponseType(typeof(List<StationShortOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -157,7 +157,7 @@ public class StationsController : ControllerBase
     //api/Stations/42
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restoring station by id")]
+    [SwaggerOperation(Summary = "Restoring station by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -46,7 +46,7 @@ public class RoutesController : ControllerBase
     //api/Routes/deleted
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted routes")]
+    [SwaggerOperation(Summary = "Get all deleted routes (only Admin)")]
     [ProducesResponseType(typeof(List<RouteOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -141,7 +141,7 @@ public class RoutesController : ControllerBase
     //api/Routes/42
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restoring route by id")]
+    [SwaggerOperation(Summary = "Restoring route by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
