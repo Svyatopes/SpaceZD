@@ -87,6 +87,7 @@ public static class BuilderServicesExtensions
     {
         services.AddSwaggerGen(c =>
         {
+            c.EnableAnnotations();
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Test01", Version = "v1" });
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()

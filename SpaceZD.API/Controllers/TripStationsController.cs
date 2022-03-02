@@ -6,6 +6,7 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
@@ -26,6 +27,12 @@ public class TripStationsController : ControllerBase
 
     //api/TripStations/42
     [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Get trip station by id")]
+    [ProducesResponseType(typeof(TripStationOutputModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<TripStationOutputModel> GetTripStationById(int id)
     {
         var userId = this.GetUserId();
@@ -39,6 +46,12 @@ public class TripStationsController : ControllerBase
 
     //api/TripStations/42
     [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Editing trip station by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult EditTripStation(int id, [FromBody] TripStationUpdateInputModel tripStation)
     {
         var userId = this.GetUserId();
@@ -52,6 +65,12 @@ public class TripStationsController : ControllerBase
 
     //api/TripStations/42/set-platform?platformId=22
     [HttpPut("{id}/set-platform")]
+    [SwaggerOperation(Summary = "Set platform for trip station id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult SetPlatformTripStation(int id, [FromQuery] int platformId)
     {
         var userId = this.GetUserId();
@@ -63,7 +82,13 @@ public class TripStationsController : ControllerBase
     }
 
     //api/TripStations/42/ready-platforms
-    [HttpGet("{id}/ready-platforms")]
+    [HttpGet("{id}/available-platforms")]
+    [SwaggerOperation(Summary = "Get available platform by trip station id")]
+    [ProducesResponseType(typeof(List<PlatformOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<PlatformOutputModel>> GetReadyPlatforms(int id)
     {
         var userId = this.GetUserId();
