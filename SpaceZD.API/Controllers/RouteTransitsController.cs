@@ -6,6 +6,8 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
@@ -23,6 +25,12 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Get RouteTransit by id")]
+    [ProducesResponseType(typeof(List<RouteTransitOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<RouteTransitOutputModel> GetRouteTransitById(int id)
     {
         var userId = this.GetUserId();
@@ -35,6 +43,12 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpGet]
+    [SwaggerOperation(Summary = "Get all RouteTransit By Routem")]
+    [ProducesResponseType(typeof(List<RouteTransitOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<RouteTransitOutputModel>> GetRouteTransitsByRouteId(int routeId)
     {
         var userId = this.GetUserId();
@@ -48,6 +62,12 @@ public class RouteTransitsController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Get all deleted RouteTransit By Routem for Admin")]
+    [ProducesResponseType(typeof(List<RouteTransitOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<RouteTransitOutputModel>> GetRouteTransitsByRouteIdDeleted(int routeId)
     {
         var userId = this.GetUserId();
@@ -60,6 +80,12 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpPost]
+    [SwaggerOperation(Summary = "Adding a new RouteTransit")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult AddRouteTransit([FromBody] RouteTransitInputModel routeTransitInputModel)
     {
         var userId = this.GetUserId();
@@ -72,6 +98,12 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Editing RouteTransit by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult EditRouteTransit(int id, [FromBody] RouteTransitInputModel routeTransitInputModel)
     {
         var userId = this.GetUserId();
@@ -85,6 +117,12 @@ public class RouteTransitsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [SwaggerOperation(Summary = "Deleting RouteTransit by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult DeleteRouteTransit(int id)
     {
         var userId = this.GetUserId();
@@ -97,6 +135,12 @@ public class RouteTransitsController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restoring RouteTransit by id (only Admin)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult RestoreRouteTransit(int id)
     {
         var userId = this.GetUserId();
