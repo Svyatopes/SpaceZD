@@ -10,12 +10,12 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public class UserService : BaseService, IUserService
     {
-        private readonly Role[] _allowedAllRoles = { Role.Admin, Role.User , Role.StationManager, Role.TrainRouteManager};
-        private readonly Role[] _allowedRoles = { Role.Admin, Role.User};
-                
-        public UserService(IMapper mapper, IUserRepository userRepository) : base(mapper, userRepository) {}
+        private readonly Role[] _allowedAllRoles = { Role.Admin, Role.User, Role.StationManager, Role.TrainRouteManager };
+        private readonly Role[] _allowedRoles = { Role.Admin, Role.User };
 
-        
+        public UserService(IMapper mapper, IUserRepository userRepository) : base(mapper, userRepository) { }
+
+
         public UserModel GetById(int id, int userId)
         {
             CheckUserRole(userId, Role.Admin);
@@ -43,23 +43,13 @@ namespace SpaceZD.BusinessLayer.Services
             return _mapper.Map<List<UserModel>>(entities);
         }
 
-        public List<PersonModel> GetListUserPersons(int userId)
-        {
-            CheckUserRole(userId, Role.User);
-
-            var entities = _userRepository.GetListUserPersons(userId);
-            return _mapper.Map<List<PersonModel>>(entities);
-        }
-
         public List<UserModel> GetListDelete(int userId)
         {
             CheckUserRole(userId, Role.Admin);
 
             var entities = _userRepository.GetList(true).Where(t => t.IsDeleted);
             return _mapper.Map<List<UserModel>>(entities);
-
         }
-
 
         public int Add(UserModel entity, string password)
         {
@@ -70,12 +60,10 @@ namespace SpaceZD.BusinessLayer.Services
 
             if (allUsers is not null)
                 throw new AuthorizationException("This login is already taken");
-            
-            var id = _userRepository.Add(addEntity);            
-            return id;            
+
+            var id = _userRepository.Add(addEntity);
+            return id;
         }
-
-
 
         public void Update(int userId, int id, UserModel entity)
         {
@@ -87,7 +75,7 @@ namespace SpaceZD.BusinessLayer.Services
             _userRepository.Update(userOld, userNew);
 
         }
-        
+
         public void UpdateRole(int id, Role role, int userId)
         {
             CheckUserRole(userId, Role.Admin);
@@ -97,7 +85,7 @@ namespace SpaceZD.BusinessLayer.Services
             _userRepository.UpdateRole(user, role);
 
         }
-        
+
         public void UpdatePassword(string passwordOld, string passwordNew, int userId)
         {
             CheckUserRole(userId, _allowedAllRoles);
@@ -110,9 +98,7 @@ namespace SpaceZD.BusinessLayer.Services
 
             var passwordHash = SecurePasswordHasher.Hash(passwordNew);
 
-            _userRepository.UpdatePassword(user, passwordHash);        
-
-
+            _userRepository.UpdatePassword(user, passwordHash);
 
         }
 
@@ -124,13 +110,13 @@ namespace SpaceZD.BusinessLayer.Services
             var user = _userRepository.GetById(id);
             ThrowIfEntityNotFound(user, id);
 
-            if (userAllowed.Id == id || userAllowed.Role == Role.Admin)          
+            if (userAllowed.Id == id || userAllowed.Role == Role.Admin)
                 _userRepository.Update(user, true);
             else
                 throw new AccessViolationException();
 
         }
-        
+
         public void Restore(int id, int userId)
         {
             CheckUserRole(userId, Role.Admin);
@@ -138,7 +124,6 @@ namespace SpaceZD.BusinessLayer.Services
             var entity = _userRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
             _userRepository.Update(entity, false);
-
         }
     }
 }

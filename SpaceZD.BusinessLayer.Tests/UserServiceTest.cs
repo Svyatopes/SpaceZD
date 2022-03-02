@@ -16,7 +16,6 @@ namespace SpaceZD.BusinessLayer.Tests;
 
 public class UserServiceTest
 {
-
     private Mock<IUserRepository> _userRepositoryMock;
     private IUserService _service;
     private readonly IMapper _mapper;
@@ -25,12 +24,15 @@ public class UserServiceTest
     {
         _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<BusinessLayerMapper>()));
     }
+
+
     [SetUp]
     public void Setup()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
         _service = new UserService(_mapper, _userRepositoryMock.Object);
     }
+
 
     [TestCase(6)]
     [TestCase(3)]
@@ -53,18 +55,14 @@ public class UserServiceTest
     public void GetListTest(List<User> entities, List<UserModel> expected, int userId)
     {
         // given
-        List<User> usersFiltredByIsDeletedProp = entities.Where(o => !o.IsDeleted).ToList();
-
-        _userRepositoryMock.Setup(x => x.GetList(false)).Returns(usersFiltredByIsDeletedProp);
+        _userRepositoryMock.Setup(x => x.GetList(false)).Returns(entities);
         _userRepositoryMock.Setup(x => x.GetById(userId)).Returns(entities[0]);
-
-        List<UserModel> expectedFiltredByIsDeletedProp = expected.Where(o => !o.IsDeleted).ToList();
 
         // when
         var actual = _service.GetList(userId);
 
         // then       
-        CollectionAssert.AreEqual(expectedFiltredByIsDeletedProp, actual);
+        CollectionAssert.AreEqual(expected, actual);
         _userRepositoryMock.Verify(s => s.GetList(false), Times.Once);
 
     }
@@ -84,23 +82,18 @@ public class UserServiceTest
     }
 
 
-
-    [TestCaseSource(typeof(UserServiceTestCaseSource), nameof(UserServiceTestCaseSource.GetListTestCases))]
+    [TestCaseSource(typeof(UserServiceTestCaseSource), nameof(UserServiceTestCaseSource.GetListDeletedTestCases))]
     public void GetListDeletedTest(List<User> entities, List<UserModel> expected, int userId)
     {
         // given
-        List<User> usersFiltredByIsDeletedProp = entities.Where(o => o.IsDeleted).ToList();
-
-        _userRepositoryMock.Setup(x => x.GetList(true)).Returns(usersFiltredByIsDeletedProp);
+        _userRepositoryMock.Setup(x => x.GetList(true)).Returns(entities);
         _userRepositoryMock.Setup(x => x.GetById(userId)).Returns(entities[0]);
-
-        List<UserModel> expectedFiltredByIsDeletedProp = expected.Where(o => o.IsDeleted).ToList();
 
         // when
         var actual = _service.GetListDelete(userId);
 
         // then       
-        CollectionAssert.AreEqual(expectedFiltredByIsDeletedProp, actual);
+        CollectionAssert.AreEqual(expected, actual);
         _userRepositoryMock.Verify(s => s.GetList(true), Times.Once);
         _userRepositoryMock.Verify(s => s.GetById(userId), Times.Once);
 
@@ -171,7 +164,6 @@ public class UserServiceTest
     }
 
 
-
     [TestCase(Role.User, 10)]
     [TestCase(Role.TrainRouteManager, 10)]
     [TestCase(Role.StationManager, 10)]
@@ -202,16 +194,16 @@ public class UserServiceTest
         // then
         Assert.Throws<NotFoundException>(() => _service.Restore(6, 1));
 
-    }     
+    }
 
 
-    [Test]        
+    [Test]
     public void GetByIdTest()
     {
         // given
         var user = new User() { Name = "f", Role = Role.Admin, IsDeleted = false, Login = "y" };
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(user);
-        
+
         // when
         var actual = _service.GetById(2, user.Id);
 
@@ -224,28 +216,29 @@ public class UserServiceTest
             IsDeleted = user.IsDeleted
         }, actual);
     }
-    
-    
-    [Test]        
+
+
+    [Test]
     public void GetByIdNegativeAuthorizationExceptionTest()
     {
         // given
         var user = new User() { Name = "f", Role = Role.User, IsDeleted = false, Login = "y" };
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(user);
-        
+
         // when
         // then
         Assert.Throws<AuthorizationException>(() => _service.GetById(2, user.Id));
 
     }
-    
-    [Test]        
+
+
+    [Test]
     public void GetByIdNegativeNotFoundExceptionTest()
     {
         // given
         var user = new User() { Name = "f", Role = Role.User, IsDeleted = false, Login = "y" };
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
-        
+
         // when
         // then
         Assert.Throws<NotFoundException>(() => _service.GetById(2, user.Id));
@@ -276,8 +269,8 @@ public class UserServiceTest
             IsDeleted = user.IsDeleted
         }, actual);
     }
-    
-    
+
+
     [Test]
     public void GetByLoginNegativeNotFoundExceptionTest()
     {
@@ -293,7 +286,6 @@ public class UserServiceTest
     }
 
 
-
     [TestCase(Role.User)]
     [TestCase(Role.Admin)]
     [TestCase(Role.TrainRouteManager)]
@@ -301,12 +293,13 @@ public class UserServiceTest
     public void UpdateTest(Role role)
     {
         // given
-        var entity = new User() { Role= role};
+        var entity = new User() { Role = role };
         _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
         var entityNew = new UserModel() { Name = "test" };
+
         // when
-        _service.Update(5, entity.Id, entityNew );
+        _service.Update(5, entity.Id, entityNew);
 
         // then
         _userRepositoryMock.Verify(s => s.GetById(5), Times.Once);
@@ -315,6 +308,9 @@ public class UserServiceTest
 
 
     [TestCase(Role.User)]
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    [TestCase(Role.StationManager)]
     public void UpdateNegativeNotFoundExceptionTest(Role role)
     {
         // given
@@ -322,10 +318,54 @@ public class UserServiceTest
         _userRepositoryMock.Setup(x => x.Update(It.IsAny<User>(), true));
         _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
         var entityNew = new UserModel() { Name = "test" };
+
         // when
         // then
         Assert.Throws<NotFoundException>(() => _service.Update(5, entity.Id, entityNew));
     }
 
 
+    [TestCase(Role.Admin, Role.User)]
+    [TestCase(Role.Admin, Role.TrainRouteManager)]
+    [TestCase(Role.Admin, Role.StationManager)]
+    public void UpdateRoleTest(Role role, Role newRole)
+    {
+        // given
+        var entity = new User { Role = role, Id = 5 };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+
+        // when
+        _service.UpdateRole(5, newRole, 5);
+
+        // then
+        _userRepositoryMock.Verify(s => s.GetById(5), Times.Exactly(2));
+        _userRepositoryMock.Verify(s => s.UpdateRole(It.IsAny<User>(), It.IsAny<Role>()), Times.Once);
+    }
+
+
+    [TestCase(Role.User)]
+    [TestCase(Role.TrainRouteManager)]
+    [TestCase(Role.StationManager)]
+    public void UpdateRoleNegativeAuthorizationExceptionTest(Role role)
+    {
+        // given
+        var entity = new User { Role = role, Id = 5 };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+
+        // when
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.UpdateRole(5, Role.Admin, 5));
+    }
+
+
+    [Test]
+    public void UpdateRoleNegativeNotFoundExceptionTest()
+    {
+        // given
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns((User?)null);
+
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.UpdateRole(5, Role.Admin, 5));
+    }
 }
