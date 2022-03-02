@@ -94,7 +94,7 @@ namespace SpaceZD.BusinessLayer.Services
             ThrowIfEntityNotFound(user, userId);
 
             if (!SecurePasswordHasher.Verify(passwordOld, user.PasswordHash))
-                throw new AuthenticationException("Password is not correct for this user.");
+                throw new AccessViolationException("Password is not correct for this user.");
 
             var passwordHash = SecurePasswordHasher.Hash(passwordNew);
 

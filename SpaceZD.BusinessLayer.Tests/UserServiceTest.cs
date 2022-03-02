@@ -3,14 +3,15 @@ using Moq;
 using NUnit.Framework;
 using SpaceZD.BusinessLayer.Configuration;
 using SpaceZD.BusinessLayer.Exceptions;
+using SpaceZD.BusinessLayer.Helpers;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpaceZD.BusinessLayer.Tests;
 
@@ -47,6 +48,24 @@ public class UserServiceTest
         // then
         _userRepositoryMock.Verify(s => s.Add(It.IsAny<User>()), Times.Once);
         Assert.AreEqual(expected, actual);
+
+    }
+
+    [TestCase(6)]
+    [TestCase(3)]
+    public void AddNegativeTest(int expected)
+    {
+        // given
+        var us = new UserModel()
+        {
+            Login = "hhhh"
+        };
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Login = "hhhh" });
+        _userRepositoryMock.Setup(u => u.GetByLogin(It.IsAny<string>())).Returns(new User() { Login = "hhhh" });
+        var userNew = new UserModel() { Login = "hhhh" };
+
+        // when then
+        Assert.Throws<AuthorizationException>(() => _service.Add(userNew, "q"));
 
     }
 
@@ -143,6 +162,20 @@ public class UserServiceTest
         // when
         // then
         Assert.Throws<AuthorizationException>(() => _service.Delete(5, 1));
+
+    }
+
+
+    [Test]
+    public void DeleteNegativeAccessViolationExceptionTest()
+    {
+        // given
+        var entity = new User() { Role = Role.User, Id = 2 };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+
+        // when
+        // then
+        Assert.Throws<AccessViolationException>(() => _service.Delete(5, 1));
 
     }
 
@@ -368,4 +401,42 @@ public class UserServiceTest
         // then
         Assert.Throws<NotFoundException>(() => _service.UpdateRole(5, Role.Admin, 5));
     }
+
+
+    [TestCase(Role.User)]
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    [TestCase(Role.StationManager)]
+    public void UpdatePasswordTest(Role role)
+    {
+        // given
+        var passwordHash = SecurePasswordHasher.Hash("yy");
+        var entity = new User { Role = role, Id = 5, PasswordHash = passwordHash };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+        // when
+        _service.UpdatePassword("yy", "tt", 5);
+
+        // then
+        _userRepositoryMock.Verify(s => s.GetById(5), Times.Exactly(2));
+        _userRepositoryMock.Verify(s => s.UpdatePassword(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+    }
+
+
+    [TestCase(Role.User)]
+    [TestCase(Role.Admin)]
+    [TestCase(Role.TrainRouteManager)]
+    [TestCase(Role.StationManager)]
+    public void UpdatePasswordNegativeAccessViolationExceptionTest(Role role)
+    {
+        // given
+        var passwordHash = SecurePasswordHasher.Hash("yy");
+        var entity = new User { Role = role, Id = 5, PasswordHash = passwordHash };
+        _userRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns(entity);
+
+        // when then
+        Assert.Throws<AccessViolationException>(() => _service.UpdatePassword("yyy", "tt", 5));
+    }
+
+
+
 }
