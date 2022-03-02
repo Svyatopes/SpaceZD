@@ -12,6 +12,7 @@ namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
 public class TrainsController : ControllerBase
 {
 
@@ -25,7 +26,6 @@ public class TrainsController : ControllerBase
 
 
     [HttpGet]
-    [AuthorizeRole(Role.Admin)]
     [SwaggerOperation(Summary = "Get all trains")]
     [ProducesResponseType(typeof(List<TrainOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
@@ -33,7 +33,7 @@ public class TrainsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<List<TrainModel>> GetTrains()
+    public ActionResult<List<TrainOutputModel>> GetTrains()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -49,14 +49,14 @@ public class TrainsController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted trains")]
+    [SwaggerOperation(Summary = "Get all deleted trains (only Admin)")]
     [ProducesResponseType(typeof(List<TrainOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<List<TrainModel>> GetTrainsDelete()
+    public ActionResult<List<TrainOutputModel>> GetTrainsDelete()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -71,7 +71,6 @@ public class TrainsController : ControllerBase
 
 
     [HttpGet("{id}")]
-    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [SwaggerOperation(Summary = "Get train by id")]
     [ProducesResponseType(typeof(TrainOutputModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
@@ -79,7 +78,7 @@ public class TrainsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<TrainModel> GetTrainById(int id)
+    public ActionResult<TrainOutputModel> GetTrainById(int id)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -95,7 +94,6 @@ public class TrainsController : ControllerBase
 
 
     [HttpPost]
-    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [SwaggerOperation(Summary = "Add new train")]
     [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -108,14 +106,13 @@ public class TrainsController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var idAddedEntity = _trainService.Add(new TrainModel(), userId.Value);
+        var idAddedEntity = _trainService.Add(new TrainModel());
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
 
     }
 
 
     [HttpDelete("{id}")]
-    [AuthorizeRole(Role.Admin, Role.TrainRouteManager)]
     [SwaggerOperation(Summary = "Delete train by id")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
@@ -136,7 +133,7 @@ public class TrainsController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restore train by id")]
+    [SwaggerOperation(Summary = "Restore train by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

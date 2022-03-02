@@ -27,7 +27,6 @@ public class TransitsController : ControllerBase
 
 
     [HttpGet]
-    [AuthorizeRole(Role.Admin)]
     [SwaggerOperation(Summary = "Get all transits")]
     [ProducesResponseType(typeof(List<TransitOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
@@ -51,7 +50,7 @@ public class TransitsController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted transits")]
+    [SwaggerOperation(Summary = "Get all deleted transits (only Admin)")]
     [ProducesResponseType(typeof(List<TransitOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -102,7 +101,7 @@ public class TransitsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult AddTransit(TransitCreateInputModel transitModel)
+    public ActionResult AddTransit([FromBody] TransitCreateInputModel transitModel)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -122,7 +121,7 @@ public class TransitsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult EditTransit(int id, TransitUpdateInputModel transit)
+    public ActionResult EditTransit(int id, [FromBody] TransitUpdateInputModel transit)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -157,7 +156,7 @@ public class TransitsController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restore transit by id")]
+    [SwaggerOperation(Summary = "Restore transit by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

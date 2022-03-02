@@ -30,7 +30,7 @@ public class PersonsController : ControllerBase
 
     [HttpGet]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all persons")]
+    [SwaggerOperation(Summary = "Get all persons (only Admin)")]
     [ProducesResponseType(typeof(List<PersonOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -75,16 +75,16 @@ public class PersonsController : ControllerBase
     }
 
 
-    [HttpGet("by-user-id")]
+    [HttpGet("by-user")]
     [AuthorizeRole(Role.User)]
-    [SwaggerOperation(Summary = "Get persons by user id")]
+    [SwaggerOperation(Summary = "Get persons by user")]
     [ProducesResponseType(typeof(List<PersonOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<PersonModel> GetPersonsByUserId()
+    public ActionResult<List<PersonModel>> GetPersonsByUser()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -128,7 +128,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult EditPerson(int id, PersonInputModel person)
+    public ActionResult EditPerson(int id, [FromBody] PersonInputModel person)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -162,7 +162,7 @@ public class PersonsController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restore person by id")]
+    [SwaggerOperation(Summary = "Restore person by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

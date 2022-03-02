@@ -30,14 +30,14 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary ="Get all users")]
+    [SwaggerOperation(Summary = "Get all users (only Admin)")]
     [ProducesResponseType(typeof(List<UserShortOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<List<UserModel>> GetUsers()
+    public ActionResult<List<UserShortOutputModel>> GetUsers()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -53,14 +53,14 @@ public class UsersController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted users")]
+    [SwaggerOperation(Summary = "Get all deleted users (only Admin)")]
     [ProducesResponseType(typeof(List<UserShortOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<List<UserModel>> GetUsersDelete()
+    public ActionResult<List<UserShortOutputModel>> GetUsersDelete()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -77,14 +77,14 @@ public class UsersController : ControllerBase
     
     [HttpGet("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get user by id")]
+    [SwaggerOperation(Summary = "Get user by id (only Admin)")]
     [ProducesResponseType(typeof(UserFullOutputModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<UserModel> GetUserById(int id)
+    public ActionResult<UserFullOutputModel> GetUserById(int id)
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -99,16 +99,16 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("by-login")]
+    [HttpGet("about-youself")]
     [Authorize]
-    [SwaggerOperation(Summary = "Get inforation about youself")]
+    [SwaggerOperation(Summary = "Get information about youself")]
     [ProducesResponseType(typeof(UserFullOutputModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<UserModel> GetUserByLogin()
+    public ActionResult<UserFullOutputModel> GetUserByLogin()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -136,7 +136,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize]
     [SwaggerOperation(Summary = "Edit information about youself")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -145,14 +145,14 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult EditUser(int id, [FromBody] UserUpdateInputModel user)
+    public ActionResult EditUser([FromBody] UserUpdateInputModel user)
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
         var userForEdit = _mapper.Map<UserModel>(user);
-        _userService.Update(userId.Value, id, userForEdit);
+        _userService.Update(userId.Value, userId.Value, userForEdit);
         return NoContent();
 
     }
@@ -160,7 +160,7 @@ public class UsersController : ControllerBase
 
     [HttpPut("{id}/role")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Edit role in user")]
+    [SwaggerOperation(Summary = "Edit role in user (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -182,7 +182,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPut("{id}/password")]
+    [HttpPut("edit-password")]
     [Authorize]
     [SwaggerOperation(Summary = "Edit your passwort")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -204,22 +204,22 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpDelete("{id}")]
+    [HttpDelete]
     [Authorize]
-    [SwaggerOperation(Summary = "Delete user by id")]
+    [SwaggerOperation(Summary = "Delete youself")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult DeleteUser(int id)
+    public ActionResult DeleteUser()
     {
         var userId = this.GetUserId();
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        _userService.Delete(id, userId.Value);
+        _userService.Delete(userId.Value, userId.Value);
         return NoContent();
 
     }
@@ -227,7 +227,7 @@ public class UsersController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restore user by id")]
+    [SwaggerOperation(Summary = "Restore user by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

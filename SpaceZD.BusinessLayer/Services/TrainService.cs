@@ -44,10 +44,8 @@ namespace SpaceZD.BusinessLayer.Services
 
         }
 
-        public int Add(TrainModel entity, int userId)
+        public int Add(TrainModel entity)
         {
-            CheckUserRole(userId, _allowedRoles);
-            
             var addEntity = _mapper.Map<Train>(entity);
             var id = _trainRepository.Add(addEntity);
             return id;
@@ -81,12 +79,5 @@ namespace SpaceZD.BusinessLayer.Services
             _trainRepository.Update(entity, false);
 
         }
-
-        private static void ThrowIfEntityNotFound<T>(T? entity, int id)
-        {
-            if (entity is null)
-                throw new NotFoundException(typeof(T).Name, id);
-        }
-
     }
 }

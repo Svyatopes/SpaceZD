@@ -32,7 +32,7 @@ namespace SpaceZD.BusinessLayer.Services
 
         public List<TransitModel> GetList(int userId)
         {
-            CheckUserRole(userId, Role.Admin);
+            CheckUserRole(userId, _allowedRoles);
 
             var entities = _transitRepository.GetList(false);
             return _mapper.Map<List<TransitModel>>(entities);
@@ -95,8 +95,6 @@ namespace SpaceZD.BusinessLayer.Services
                 _transitRepository.Update(transitOld, transitNew);
             }
         }
-
-        private static void NotFound(string name, int id) => throw new NotFoundException($"{name} c Id = {id} не найден");
     }
 }
 
