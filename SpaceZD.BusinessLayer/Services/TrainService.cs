@@ -44,21 +44,13 @@ namespace SpaceZD.BusinessLayer.Services
 
         }
 
-        public int Add(TrainModel entity)
+        public int Add(int userId)
         {
-            var addEntity = _mapper.Map<Train>(entity);
-            var id = _trainRepository.Add(addEntity);
+            CheckUserRole(userId, _allowedRoles);
+            var id = _trainRepository.Add(new Train());
             return id;
         }
-
-        public void Update(int id, TrainModel entity)
-        {
-            var userOld = _trainRepository.GetById(id);
-            ThrowIfEntityNotFound(userOld, id);
-            var userNew = _mapper.Map<Train>(entity);
-            _trainRepository.Update(userOld, userNew);
-
-        }
+        
 
         public void Delete(int id, int userId)
         {

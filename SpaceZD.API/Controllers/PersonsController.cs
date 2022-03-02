@@ -37,7 +37,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<List<PersonModel>> GetPersons()
+    public ActionResult<List<PersonOutputModel>> GetPersons()
     {
         var userId = this.GetUserId();
         if (userId == null)
@@ -60,7 +60,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<PersonModel> GetPersonById(int id)
+    public ActionResult<PersonOutputModel> GetPersonById(int id)
     {
 
         var userId = this.GetUserId();
@@ -84,7 +84,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
 
-    public ActionResult<List<PersonModel>> GetPersonsByUser()
+    public ActionResult<List<PersonOutputModel>> GetPersonsByUser()
     {
         var userId = this.GetUserId();
         if (userId == null)

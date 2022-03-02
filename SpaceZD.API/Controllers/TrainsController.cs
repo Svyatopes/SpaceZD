@@ -106,7 +106,7 @@ public class TrainsController : ControllerBase
         if (userId == null)
             return Unauthorized("Not valid token, try login again");
 
-        var idAddedEntity = _trainService.Add(new TrainModel());
+        var idAddedEntity = _trainService.Add(userId.Value);
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
 
     }
