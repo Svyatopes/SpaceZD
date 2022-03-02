@@ -9,8 +9,13 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
     {
         public static IEnumerable<TestCaseData> GetListTestCases()
         {
-            yield return new TestCaseData(GetTicket(), GetTicketModel(), false, 1);
-            yield return new TestCaseData(GetTicket(), GetTicketModel(), true, 2);
+            yield return new TestCaseData(GetTicket(), GetTicketModel(), 1);
+            yield return new TestCaseData(GetTicket(), GetTicketModel(), 2);
+        }
+        public static IEnumerable<TestCaseData> GetListDeleteTestCases()
+        {
+            yield return new TestCaseData(GetTicketDelete(), GetTicketModelDelete(), 1);
+            yield return new TestCaseData(GetTicketDelete(), GetTicketModelDelete(), 2);
         }
 
         public static IEnumerable<TestCaseData> GetByIdTestCases()
@@ -31,7 +36,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                     SeatNumber = 45,
                     Carriage = new Carriage()
                     {
-                        Number = 34                        
+                        Number = 34
                     },
                     Person = new Person()
                     {
@@ -46,7 +51,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                         {
                             Station = new Station { Name  = "Moscow"}
                         },
-                        
+
                     },
                     Price = 798,
                     IsDeleted = false
@@ -77,7 +82,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
                         }
                     },
                     Price = 367,
-                    IsDeleted = true
+                    IsDeleted = false
                 }
             };
             return listTicket;
@@ -144,10 +149,110 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
 
                     },
                     Price = 367,
+                    IsDeleted = false
+                }
+            };
+            return listTicketModel;
+        }
+
+
+        private static List<Ticket> GetTicketDelete()
+        {
+            var listTicket = new List<Ticket>()
+            {
+                new Ticket
+                {
+                    SeatNumber = 45,
+                    Carriage = new Carriage()
+                    {
+                        Number = 34
+                    },
+                    Person = new Person()
+                    {
+                        FirstName = "Petya",
+                        LastName = "Petrov",
+                        Patronymic = "Petrovich",
+                        Passport = "4567890"
+                    },
+                    Order = new Order()
+                    {
+                        StartStation = new TripStation()
+                        {
+                            Station = new Station { Name  = "Moscow"}
+                        },
+
+                    },
+                    Price = 798,
+                    IsDeleted = true
+                },
+                new Ticket
+                {
+                    SeatNumber = 8,
+                    Carriage = new Carriage()
+                    {
+                        Number = 16,
+                        Train = new Train()
+                        {
+                            Carriages = new List<Carriage>()
+                        }
+                    },
+                    Person = new Person()
+                    {
+                        FirstName = "Vasya",
+                        LastName = "Vastrov",
+                        Patronymic = "Vastrovich",
+                        Passport = "9876543"
+                    },
+                    Order = new Order()
+                    {
+                        StartStation = new TripStation()
+                        {
+                            Station = new Station { Name  = "SPb"}
+                        }
+                    },
+                    Price = 367,
+                    IsDeleted = false
+                }
+            };
+            return listTicket;
+        }
+
+        private static List<TicketModel> GetTicketModelDelete()
+        {
+            var listTicketModel = new List<TicketModel>()
+            {
+                new TicketModel
+                {
+                    SeatNumber = 45,
+                    Carriage = new CarriageModel()
+                    {
+                        Number = 34,
+                        Train = new TrainModel()
+                        {
+                            Carriages = new List<CarriageModel>()
+                        }
+                    },
+                    Person = new PersonModel()
+                    {
+                        FirstName = "Petya",
+                        LastName = "Petrov",
+                        Patronymic = "Petrovich",
+                        Passport = "4567890"
+                    },
+
+                    Order = new OrderModel()
+                    {
+                        StartStation = new TripStationModel()
+                        {
+                            Station = new StationModel { Name = "Moscow"}
+                        },
+
+                    },
+                    Price = 798,
                     IsDeleted = true
                 }
             };
             return listTicketModel;
-        }        
+        }
     }
 }

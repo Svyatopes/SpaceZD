@@ -55,7 +55,7 @@ public class TicketsController : ControllerBase
     }
 
 
-    
+
     [HttpGet("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]
     public ActionResult<TicketModel> GetTicketById(int id)
@@ -66,10 +66,7 @@ public class TicketsController : ControllerBase
 
         var ticketModel = _ticketService.GetById(id, userId.Value);
         var ticket = _mapper.Map<TicketOutputModel>(ticketModel);
-        if (ticket != null)
-            return Ok(ticket);
-        else
-            return BadRequest("User doesn't exist");
+        return Ok(ticket);
     }
 
 
@@ -88,7 +85,7 @@ public class TicketsController : ControllerBase
 
     }
 
-    
+
 
     [HttpDelete("{id}")]
     [AuthorizeRole(Role.User, Role.Admin)]

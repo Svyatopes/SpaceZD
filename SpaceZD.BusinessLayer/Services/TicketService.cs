@@ -28,10 +28,10 @@ public class TicketService : BaseService, ITicketService
 
     public TicketModel GetById(int id, int userId)
     {
-        CheckUserRole(userId, _allowedRoles);
+        var user = CheckUserRole(userId, _allowedRoles);
+
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
-        var user = _userRepository.GetById(userId);
 
         if (user.Role == Role.Admin || user.Orders.SelectMany(g => g.Tickets).Contains(entity))
             return _mapper.Map<TicketModel>(entity);
@@ -49,7 +49,7 @@ public class TicketService : BaseService, ITicketService
         return _mapper.Map<List<TicketModel>>(entities);
     }
 
-    
+
     public List<TicketModel> GetListDeleted(int userId)
     {
         CheckUserRole(userId, Role.Admin);
@@ -60,13 +60,12 @@ public class TicketService : BaseService, ITicketService
 
     public int Add(int userId, TicketModel entity)
     {
-        CheckUserRole(userId, _allowedRoles);
+        var user = CheckUserRole(userId, _allowedRoles);
 
         if (entity.Carriage is null || entity.Person is null || entity.Order is null || entity.SeatNumber == 0)
         {
             throw new NullReferenceException();
         }
-        var user = _userRepository.GetById(userId);
         var ticket = _mapper.Map<Ticket>(entity);
 
         var carriage = _carriageRepository.GetById(entity.Carriage.Id);
@@ -88,7 +87,7 @@ public class TicketService : BaseService, ITicketService
 
         if (!ticket.Order.Trip.Train.Carriages.Contains(carriage))
             throw new AccessViolationException("Carriage number is incorrect");
-        
+
 
         var transits = ticket.Order.Trip.Route.RouteTransits.Select(t => t.Transit).ToList();
         foreach (var item in transits)
@@ -120,54 +119,16 @@ public class TicketService : BaseService, ITicketService
     }
 
 
-    public void Update(int userId, int id, TicketModel entity)
-    {
-        CheckUserRole(userId, _allowedRoles);
-
-        if (entity.Carriage is null || entity.Person is null || entity.SeatNumber == 0)
-        {
-            throw new NullReferenceException();
-        }
-        var user = _userRepository.GetById(userId);
-        var ticketOld = _ticketRepository.GetById(id);
-        var ticketNew = _mapper.Map<Ticket>(entity);
-        ThrowIfEntityNotFound(ticketOld, id);
-
-        if (ticketOld.Order.User.Id == userId || user.Role == Role.Admin)
-        {
-            var carriageNew = _carriageRepository.GetById(entity.Carriage.Id);
-            ThrowIfEntityNotFound(carriageNew, carriageNew.Id);
-
-            var personNew = _personRepository.GetById(entity.Person.Id);
-            ThrowIfEntityNotFound(personNew, personNew.Id);
-            ticketNew.Carriage = carriageNew;
-            ticketNew.Person = personNew;
-
-            if (personNew.User.Id == user.Id)
-                _ticketRepository.Update(ticketOld, ticketNew);
-            else
-                throw new AccessViolationException();
-        }
-        else
-        {
-            throw new AccessViolationException();
-        }
-    }
-
-
     public void Delete(int id, int userId)
     {
-        CheckUserRole(userId, _allowedRoles);
+        var user = CheckUserRole(userId, _allowedRoles);
 
-        var user = _userRepository.GetById(userId);
         var entity = _ticketRepository.GetById(id);
         ThrowIfEntityNotFound(entity, id);
         if (entity.IsDeleted && user.Role != Role.Admin)
             throw new NotFoundException("Билет", id);
 
-        if (user.Role == Role.Admin)
-            _ticketRepository.Update(entity, true);        
-        else if(user.Persons.Contains(entity.Person))
+        if (user.Role == Role.Admin || user.Persons.Contains(entity.Person))
             _ticketRepository.Update(entity, true);
         else
             throw new AccessViolationException();
@@ -181,11 +142,5 @@ public class TicketService : BaseService, ITicketService
         ThrowIfEntityNotFound(entity, id);
         _ticketRepository.Update(entity, false);
 
-    }
-
-    private static void ThrowIfEntityNotFound<T>(T? entity, int id)
-    {
-        if (entity is null)
-            throw new NotFoundException(typeof(T).Name, id);
     }
 }
