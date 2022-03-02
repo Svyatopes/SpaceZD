@@ -62,20 +62,20 @@ public class TicketService : BaseService, ITicketService
     {
         var user = CheckUserRole(userId, _allowedRoles);
 
-        if (entity.Carriage is null || entity.Person is null || entity.Order is null || entity.SeatNumber == 0)
+        if (entity.Carriage is null && entity.Person is null && entity.Order is null && entity.SeatNumber == 0)
         {
             throw new NullReferenceException();
         }
         var ticket = _mapper.Map<Ticket>(entity);
 
         var carriage = _carriageRepository.GetById(entity.Carriage.Id);
-        ThrowIfEntityNotFound(carriage, carriage.Id);
+        ThrowIfEntityNotFound(carriage, entity.Carriage.Id);
 
         var order = _orderRepository.GetById(entity.Order.Id);
-        ThrowIfEntityNotFound(order, order.Id);
+        ThrowIfEntityNotFound(order, entity.Order.Id);
 
         var person = _personRepository.GetById(entity.Person.Id);
-        ThrowIfEntityNotFound(person, person.Id);
+        ThrowIfEntityNotFound(person, entity.Person.Id);
         ticket.Carriage = carriage;
         ticket.Person = person;
         ticket.Order = order;

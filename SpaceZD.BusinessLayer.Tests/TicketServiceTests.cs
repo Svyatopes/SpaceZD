@@ -9,6 +9,7 @@ using SpaceZD.BusinessLayer.Tests.TestCaseSources;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Enums;
 using SpaceZD.DataLayer.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace SpaceZD.BusinessLayer.Tests;
@@ -290,7 +291,6 @@ public class TicketServiceTests
     [TestCase(Role.StationManager, 1)]
     [TestCase(Role.TrainRouteManager, 21)]
     [TestCase(Role.User, 41)]
-
     public void RestoreNegativeAuthorizationExceptionTest(Role role, int userId)
     {
         // given
@@ -303,5 +303,156 @@ public class TicketServiceTests
         _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
         _ticketRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Never);
     }
+
+
+
+    [TestCase(Role.StationManager)]
+    [TestCase(Role.TrainRouteManager)]    
+    public void AddNegativeAuthorizationExceptionTest(Role role)
+    {
+        // given
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 4});
+        
+        // when
+        // then
+        Assert.Throws<AuthorizationException>(() => _service.Add(4, new TicketModel()));
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+    
+
+    [TestCase(Role.Admin)]
+    [TestCase(Role.User)]    
+    public void AddNegativeNotFoundExceptionTest(Role role)
+    {
+        // given
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = role, Id = 4});
+        _carriageRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns((Carriage?)null);
+        _personRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns((Person?)null);
+        _orderRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns((Order?)null);
+        _ticketRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Ticket() { SeatNumber = 7});
+        
+        // when
+        // then
+        Assert.Throws<NullReferenceException>(() => _service.Add(4, new TicketModel()));
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+
+
+    [TestCaseSource(typeof(TicketServiceTestCaseSource), nameof(TicketServiceTestCaseSource.GetByIdTestCases))]
+
+    public void AddNegativeCarriageNotFoundExceptionTest(Ticket ticket, TicketModel expected, int userId)
+    {
+        // given
+        _ticketRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(ticket);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.User, Id = 4});
+        _carriageRepositoryMock.Setup(u => u.GetById(7)).Returns(new Carriage() { Id = 5 });
+        _personRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Person() { Id = 5 });
+        _orderRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Order() { Id = 5 });
+        
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Add(4, new TicketModel() 
+        { 
+            Carriage = new CarriageModel(),
+            Order = new OrderModel(),
+            Person = new PersonModel(),
+            SeatNumber = 5
+        }));
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+    
+    
+    [TestCaseSource(typeof(TicketServiceTestCaseSource), nameof(TicketServiceTestCaseSource.GetByIdTestCases))]
+
+    public void AddNegativePersonNotFoundExceptionTest(Ticket ticket, TicketModel expected, int userId)
+    {
+        // given
+        _ticketRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(ticket);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.User, Id = 4});
+        _carriageRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Carriage() { Id = 5 });
+        _personRepositoryMock.Setup(u => u.GetById(77)).Returns(new Person() { Id = 5 });
+        _orderRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Order() { Id = 5 });
+        
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Add(4, new TicketModel() 
+        { 
+            Carriage = new CarriageModel(),
+            Order = new OrderModel(),
+            Person = new PersonModel(),
+            SeatNumber = 5
+        }));
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+    
+    [TestCaseSource(typeof(TicketServiceTestCaseSource), nameof(TicketServiceTestCaseSource.GetByIdTestCases))]
+
+    public void AddNegativeOrderNotFoundExceptionTest(Ticket ticket, TicketModel expected, int userId)
+    {
+        // given
+        _ticketRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(ticket);
+        _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.User, Id = 4});
+        _carriageRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Carriage() { Id = 5 });
+        _personRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Person() { Id = 5 });
+        _orderRepositoryMock.Setup(u => u.GetById(77)).Returns(new Order() { Id = 5 });
+        
+        // when
+        // then
+        Assert.Throws<NotFoundException>(() => _service.Add(4, new TicketModel() 
+        { 
+            Carriage = new CarriageModel(),
+            Order = new OrderModel(),
+            Person = new PersonModel(),
+            SeatNumber = 5
+        }));
+        _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
+    }
+
+
+    //[TestCaseSource(typeof(TicketServiceTestCaseSource), nameof(TicketServiceTestCaseSource.GetByIdTestCases))]
+
+    //public void gggAddNegativeCarriageNotFoundExceptionTest(Ticket ticket, TicketModel expected, int userId)
+    //{
+    //    // given
+    //    _ticketRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(ticket);
+    //    _userRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new User() { Role = Role.User, Id = 4 });
+    //    _carriageRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Carriage() { Id = 5 });
+    //    _personRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(new Person() { Id = 5 });
+    //    _orderRepositoryMock.Setup(u => u.GetById(It.IsAny<int>())).Returns(
+    //        new Order() 
+    //        { 
+    //            Trip = new Trip() 
+    //            { 
+    //                Train = new Train() 
+    //                { 
+    //                    Carriages = new List<Carriage>() { new Carriage() { Id = 5} }
+    //                } ,
+    //                Route = new Route() 
+    //                { 
+    //                    RouteTransits = new List<RouteTransit>() { new RouteTransit() { Id = 5} }
+    //                }
+    //            }, 
+    //            Id = 5, 
+    //            StartStation = new TripStation() { Station = new Station() { Id = 5 } }, 
+    //            EndStation = new TripStation() { Station = new Station() { Id = 5 } } 
+    //        });
+
+    //    // when
+    //    // then
+    //    Assert.Throws<NotFoundException>(() => _service.Add(4, new TicketModel()
+    //    {
+    //        Carriage = new CarriageModel(),
+    //        Order = new OrderModel() { StartStation = new TripStationModel() { Station = new StationModel() { Id = 5 } },EndStation = new TripStationModel() { Station = new StationModel() { Id = 5 } }, Trip = new TripModel() { Train = new TrainModel() { Carriages = new List<CarriageModel>() { new CarriageModel() { Id = 5 } } } } },
+    //        Person = new PersonModel(),
+    //        SeatNumber = 5
+    //    }));
+    //    _userRepositoryMock.Verify(s => s.GetById(It.IsAny<int>()), Times.Once);
+
+    //}
 
 }
