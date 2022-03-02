@@ -29,7 +29,7 @@ namespace SpaceZD.BusinessLayer.Services
 
         public List<TrainModel> GetList(int userId)
         {
-            CheckUserRole(userId, Role.Admin);
+            CheckUserRole(userId, _allowedRoles);
 
             var entities = _trainRepository.GetList(false);
             return _mapper.Map<List<TrainModel>>(entities);

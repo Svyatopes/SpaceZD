@@ -9,16 +9,16 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
     {
         public static IEnumerable<TestCaseData> GetListTestCases()
         {
-            yield return new TestCaseData(GetTrain(), GetTicketModel(), false);
-            yield return new TestCaseData(GetTrain(), GetTicketModel(), true);
+            yield return new TestCaseData(GetTrain(), GetTrainModel(), 7);
+            yield return new TestCaseData(GetTrain(), GetTrainModel(), 4);
         }
 
         public static IEnumerable<TestCaseData> GetByIdTestCases()
         {
             var trains = GetTrain();
-            var trainModels = GetTicketModel();
-            yield return new TestCaseData(trains[0], trainModels[0]);
-            yield return new TestCaseData(trains[1], trainModels[1]);
+            var trainModels = GetTrainModel();
+            yield return new TestCaseData(trains[0], trainModels[0], 5);
+            yield return new TestCaseData(trains[1], trainModels[1], 6);
         }
 
 
@@ -67,7 +67,7 @@ namespace SpaceZD.BusinessLayer.Tests.TestCaseSources
             return listTrain;
         }
 
-        private static List<TrainModel> GetTicketModel()
+        public static List<TrainModel> GetTrainModel()
         {
             var listTrainModel = new List<TrainModel>()
             {
