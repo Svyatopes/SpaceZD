@@ -44,7 +44,7 @@ public class PlatformMaintenancesController : ControllerBase
     [HttpGet]
     [Route("list-by-station-deleted/{stationId}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted PlatformMaintenances For Station for Admin")]
+    [SwaggerOperation(Summary = "Get all deleted PlatformMaintenances By Station for Admin")]
     [ProducesResponseType(typeof(List<PlatformMaintenanceOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

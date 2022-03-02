@@ -62,7 +62,7 @@ public class RouteTransitsController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted RouteTransit By Routem for Admin")]
+    [SwaggerOperation(Summary = "Get all deleted RouteTransit By Route for Admin")]
     [ProducesResponseType(typeof(List<RouteTransitOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

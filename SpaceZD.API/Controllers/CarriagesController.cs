@@ -24,7 +24,7 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpGet]
-    [SwaggerOperation(Summary = "Get all ñarriage")]
+    [SwaggerOperation(Summary = "Get all Carriage")]
     [ProducesResponseType(typeof(List<CarriageOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
@@ -40,7 +40,7 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Get ñarriage by id")]
+    [SwaggerOperation(Summary = "Get Carriage by id")]
     [ProducesResponseType(typeof(List<CarriageTypeFullOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -59,7 +59,7 @@ public class CarriagesController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Get all deleted ñarriage for Admin")]
+    [SwaggerOperation(Summary = "Get all deleted Carriage for Admin")]
     [ProducesResponseType(typeof(List<CarriageOutputModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -77,7 +77,7 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Adding a new ñarriage")]
+    [SwaggerOperation(Summary = "Adding a new Carriage")]
     [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -95,7 +95,7 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [SwaggerOperation(Summary = "Editing carriage by id")]
+    [SwaggerOperation(Summary = "Editing Carriage by id")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -114,7 +114,7 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Deleting carriage by id")]
+    [SwaggerOperation(Summary = "Deleting Carriage by id")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -133,7 +133,7 @@ public class CarriagesController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
-    [SwaggerOperation(Summary = "Restoring carriage by id (only Admin)")]
+    [SwaggerOperation(Summary = "Restoring Carriage by id (only Admin)")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
