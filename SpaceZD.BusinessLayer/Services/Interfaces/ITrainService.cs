@@ -4,12 +4,12 @@ namespace SpaceZD.BusinessLayer.Services
 {
     public interface ITrainService
     {
-        int Add(TrainModel entity);
-        TrainModel GetById(int id);
-        List<TrainModel> GetList(bool includeAll = false);
-        List<TrainModel> GetListDeleted(bool includeAll = true);
-        void Restore(int id);
-        void Delete(int id);
+        int Add(TrainModel entity, int userId);
+        TrainModel GetById(int id, int userId);
+        List<TrainModel> GetList(int userId);
+        List<TrainModel> GetListDeleted(int userId);
+        void Restore(int id, int userId);
+        void Delete(int id, int userId);
         void Update(int id, TrainModel entity);
     }
 }

@@ -4,6 +4,7 @@ using SpaceZD.BusinessLayer.Models;
 using SpaceZD.DataLayer.Entities;
 using SpaceZD.DataLayer.Interfaces;
 using SpaceZD.BusinessLayer.Services;
+using SpaceZD.DataLayer.Enums;
 
 namespace SpaceZD.BusinessLayer.Services
 {
@@ -11,6 +12,8 @@ namespace SpaceZD.BusinessLayer.Services
     {
         private readonly IRepositorySoftDelete<Transit> _transitRepository;
         private readonly IStationRepository _stationRepository;
+        private readonly Role[] _allowedRoles = { Role.Admin, Role.StationManager };
+
 
         public TransitService(IMapper mapper, IUserRepository userRepository, IRepositorySoftDelete<Transit> transitRepository, IStationRepository stationRepository) : base(mapper, userRepository)
         {
@@ -18,28 +21,36 @@ namespace SpaceZD.BusinessLayer.Services
             _stationRepository = stationRepository;
         }
 
-        public TransitModel GetById(int id)
+        public TransitModel GetById(int id, int userId)
         {
+            CheckUserRole(userId, _allowedRoles);
+            
             var entity = _transitRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
             return _mapper.Map<TransitModel>(entity);
         }
 
-        public List<TransitModel> GetList(bool includeAll = false)
+        public List<TransitModel> GetList(int userId)
         {
-            var entities = _transitRepository.GetList(includeAll);
+            CheckUserRole(userId, Role.Admin);
+
+            var entities = _transitRepository.GetList(false);
             return _mapper.Map<List<TransitModel>>(entities);
         }
 
-        public List<TransitModel> GetListDeleted(bool includeAll = true)
+        public List<TransitModel> GetListDeleted(int userId)
         {
-            var entities = _transitRepository.GetList(includeAll).Where(t => t.IsDeleted);
+            CheckUserRole(userId, Role.Admin);
+
+            var entities = _transitRepository.GetList(true).Where(t => t.IsDeleted);
             return _mapper.Map<List<TransitModel>>(entities);
 
         }
 
-        public int Add(TransitModel transitModel)
+        public int Add(TransitModel transitModel, int userId)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var startStation = _stationRepository.GetById(transitModel.StartStation.Id);
             var endStation = _stationRepository.GetById(transitModel.EndStation.Id);
             
@@ -52,22 +63,28 @@ namespace SpaceZD.BusinessLayer.Services
 
 
 
-        public void Delete(int id)
+        public void Delete(int id, int userId)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var entity = _transitRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
             _transitRepository.Update(entity, true);
         }
 
-        public void Restore(int id)
+        public void Restore(int id, int userId)
         {
+            CheckUserRole(userId, Role.Admin);
+
             var entity = _transitRepository.GetById(id);
             ThrowIfEntityNotFound(entity, id);
             _transitRepository.Update(entity, false);
         }
 
-        public void Update(int id, TransitModel transitModel)
+        public void Update(int id, TransitModel transitModel, int userId)
         {
+            CheckUserRole(userId, _allowedRoles);
+
             var transitOld = _transitRepository.GetById(id);
             ThrowIfEntityNotFound(transitOld, id);
             var transitNew = _mapper.Map<Transit>(transitModel);

@@ -1,15 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SpaceZD.API.Attributes;
+using SpaceZD.API.Extensions;
 using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AuthorizeRole(Role.Admin, Role.StationManager)]
+
 public class TransitsController : ControllerBase
 {
 
@@ -24,9 +28,43 @@ public class TransitsController : ControllerBase
 
     [HttpGet]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Get all transits")]
+    [ProducesResponseType(typeof(List<TransitOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult<List<TransitOutputModel>> GetTransits()
     {
-        var transitModel = _transitService.GetList();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var transitModel = _transitService.GetList(userId.Value);
+        var transits = _mapper.Map<List<TransitOutputModel>>(transitModel);
+        if (transits != null)
+            return Ok(transits);
+        return BadRequest();
+    }
+
+
+    [HttpGet("deleted")]
+    [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Get all deleted transits")]
+    [ProducesResponseType(typeof(List<TransitOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
+    public ActionResult<List<TransitOutputModel>> GetTransitsDelete()
+    {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var transitModel = _transitService.GetListDeleted(userId.Value);
         var transits = _mapper.Map<List<TransitOutputModel>>(transitModel);
         if (transits != null)
             return Ok(transits);
@@ -35,56 +73,105 @@ public class TransitsController : ControllerBase
 
 
     [HttpGet("{id}")]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Get transit by id")]
+    [ProducesResponseType(typeof(TransitOutputModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult<TransitOutputModel> GetTransitById(int id)
     {
-        var transitModel = _transitService.GetById(id);
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        var transitModel = _transitService.GetById(id, userId.Value);
         var transit = _mapper.Map<TransitOutputModel>(transitModel);
         if (transit != null)
             return Ok(transit);
-        else
-            return BadRequest("Transit doesn't exist");
+        return BadRequest("Transit doesn't exist");
     }
 
 
     [HttpPost]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Add new transit")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult AddTransit(TransitCreateInputModel transitModel)
     {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
         var transit = _mapper.Map<TransitModel>(transitModel);
-        var idAddedEntity = _transitService.Add(transit);
+        var idAddedEntity = _transitService.Add(transit, userId.Value);
         return StatusCode(StatusCodes.Status201Created, idAddedEntity);
     }
 
 
     [HttpPut("{id}")]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Edit transit by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult EditTransit(int id, TransitUpdateInputModel transit)
     {
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
 
         var transitForEdit = _mapper.Map<TransitModel>(transit);
-        _transitService.Update(id, transitForEdit);
-        return Accepted();
+        _transitService.Update(id, transitForEdit, userId.Value);
+        return NoContent();
 
     }
 
 
     [HttpDelete("{id}")]
-    [AuthorizeRole(Role.Admin, Role.StationManager)]
+    [SwaggerOperation(Summary = "Delete transit by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult DeleteTransit(int id)
     {
-        _transitService.Delete(id);
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _transitService.Delete(id, userId.Value);
+        return NoContent();
 
     }
 
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restore transit by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult RestoreTransit(int id)
     {
-        _transitService.Restore(id);
-        return Accepted();
+        var userId = this.GetUserId();
+        if (userId == null)
+            return Unauthorized("Not valid token, try login again");
+
+        _transitService.Restore(id, userId.Value);
+        return NoContent();
 
     }
 

@@ -37,7 +37,6 @@ namespace SpaceZD.BusinessLayer.Services
         {
             CheckUserRole(userId, Role.Admin);
 
-            CheckUserRole(userId, _allowedRoles);
             var entities = _userRepository.GetList(false);
             return _mapper.Map<List<UserModel>>(entities);
         }
@@ -65,9 +64,9 @@ namespace SpaceZD.BusinessLayer.Services
             var addEntity = _mapper.Map<User>(entity);
             addEntity.PasswordHash = SecurePasswordHasher.Hash(password);
             addEntity.Role = Role.User;
-            var allUsers = _userRepository.GetByLogin(addEntity.Login);
+            var user = _userRepository.GetByLogin(addEntity.Login);
 
-            if (allUsers is not null)
+            if (user is not null)
                 throw new AuthorizationException("This login is already taken");
             
             var id = _userRepository.Add(addEntity);            
