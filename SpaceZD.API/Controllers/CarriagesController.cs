@@ -6,6 +6,7 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
@@ -23,6 +24,10 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpGet]
+    [SwaggerOperation(Summary = "Get all Carriage")]
+    [ProducesResponseType(typeof(List<CarriageOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<CarriageOutputModel>> GetCarriages()
     {
         var userId = this.GetUserId();
@@ -35,6 +40,12 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Get Carriage by id")]
+    [ProducesResponseType(typeof(List<CarriageTypeFullOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<CarriageOutputModel> GetCarriageById(int id)
     {
         var userId = this.GetUserId();
@@ -48,6 +59,12 @@ public class CarriagesController : ControllerBase
 
     [HttpGet("deleted")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Get all deleted Carriage for Admin")]
+    [ProducesResponseType(typeof(List<CarriageOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<CarriageOutputModel>> GetDeletedCarriages()
     {
         var userId = this.GetUserId();
@@ -60,6 +77,12 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpPost]
+    [SwaggerOperation(Summary = "Adding a new Carriage")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult AddCarriage([FromBody] CarriageInputModel carriage)
     {
         var userId = this.GetUserId();
@@ -72,6 +95,12 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Editing Carriage by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult EditCarriage(int id, [FromBody] CarriageInputModel carriage)
     {
         var userId = this.GetUserId();
@@ -85,7 +114,12 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Deleting Carriage by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult DeleteCarriage(int id)
     {
         var userId = this.GetUserId();
@@ -98,7 +132,13 @@ public class CarriagesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-       [AuthorizeRole(Role.Admin)]
+    [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restoring Carriage by id (only Admin)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult RestoreCarriage(int id)
     {
         var userId = this.GetUserId();

@@ -6,6 +6,7 @@ using SpaceZD.API.Models;
 using SpaceZD.BusinessLayer.Models;
 using SpaceZD.BusinessLayer.Services;
 using SpaceZD.DataLayer.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpaceZD.API.Controllers;
 
@@ -25,6 +26,10 @@ public class PlatformMaintenancesController : ControllerBase
 
     [HttpGet]
     [Route("list-by-station/{stationId}")]
+    [SwaggerOperation(Summary = "Get all PlatformMaintenances For Station")]
+    [ProducesResponseType(typeof(List<PlatformMaintenanceOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenances(int stationId)
     {
         var userId = this.GetUserId();
@@ -39,6 +44,12 @@ public class PlatformMaintenancesController : ControllerBase
     [HttpGet]
     [Route("list-by-station-deleted/{stationId}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Get all deleted PlatformMaintenances By Station for Admin")]
+    [ProducesResponseType(typeof(List<PlatformMaintenanceOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<List<PlatformMaintenanceOutputModel>> GetPlatformMaintenancesDeleted(int stationId)
     {
         var userId = this.GetUserId();
@@ -51,6 +62,12 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Get PlatformMaintenance by id")]
+    [ProducesResponseType(typeof(List<PlatformMaintenanceOutputModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult<PlatformMaintenanceOutputModel> GetPlatformMaintenanceById(int id)
     {
         var userId = this.GetUserId();
@@ -64,6 +81,13 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpPost]
+    [SwaggerOperation(Summary = "Adding a new PlatformMaintenance")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult AddPlatformMaintenance([FromBody] PlatformMaintenanceInputModel platformMaintenance)
     {
         var userId = this.GetUserId();
@@ -76,6 +100,12 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Editing PlatformMaintenance by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult EditPlatformMaintenance(int id, [FromBody] PlatformMaintenanceInputModel platformMaintenance)
     {
         var userId = this.GetUserId();
@@ -89,6 +119,13 @@ public class PlatformMaintenancesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [SwaggerOperation(Summary = "Deleting PlatformMaintenance by id")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
+
     public ActionResult DeletePlatformMaintenance(int id)
     {
         var userId = this.GetUserId();
@@ -101,6 +138,12 @@ public class PlatformMaintenancesController : ControllerBase
 
     [HttpPatch("{id}")]
     [AuthorizeRole(Role.Admin)]
+    [SwaggerOperation(Summary = "Restoring carriage by id (only Admin)")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorOutputModel), StatusCodes.Status404NotFound)]
     public ActionResult RestorePlatformMaintenance(int id)
     {
         var userId = this.GetUserId();
